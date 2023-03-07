@@ -1,0 +1,34 @@
+
+@font-face {
+  font-family: 'Garet';
+  src: url('../../../../public/fonts/garet/Garet-book.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'GaretBold';
+  src: url('../../../../public/fonts/garet/Garet-Heavy.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Inter', sans-serif;
+  src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap') format('truetype')
+}
+
+$primary-color: #e7dfd8;
+$secondary-color: #ffffff;
+
+$primary-font-family: 'Garet';
+$secondary-font-family: 'Inter';
+$third-font-family: 'GaretBold';
+
+@mixin flex-centre{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@mixin flex-column-centre{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}

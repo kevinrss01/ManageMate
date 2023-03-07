@@ -1,0 +1,140 @@
+body{
+  all: unset;
+}
+
+.mainHomePage{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.firstContainer{
+  background-color: chartreuse;
+  height: 800px;
+  display: flex;
+
+  .textSide{
+    width: 50%;
+    height: 100%;
+    background-color: $primary-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+
+    .imageContainer{
+      width: 100%;
+      height: auto;
+      display: flex;
+      .logoHomePage{
+        padding-left: 30px;
+        height: auto;
+        width: 150px;
+      }
+    }
+
+    .mainTextContainer{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: column;
+      font-size: 25px;
+      width: 100%;
+      height: 280px;
+
+      .h1{
+        padding: 0%;
+
+        width: 100%;
+        h1{
+          margin: 0;
+          padding-left: 20%;
+          word-spacing: 0.1em;
+        }
+      }
+
+      .p{
+        padding: 0%;
+        width: 100%;
+        span{
+          margin: 0;
+          padding-left: 20%;
+          font-size: 30px;
+        }
+      }
+    }
+
+    .createAccountBtnContainer{
+      width: 100%;
+      display: flex;
+      height: auto;
+      padding-bottom: 50px;
+
+      .buttonCreateAccount{
+        @include flex-centre;
+        width: 200px;
+        height: 50px;
+        margin-left: 20%;
+        font-size: 20px;
+        font-weight: bold;
+        border: 3px solid black;
+      }
+    }
+  }
+
+  .imageSide{
+    background-color: red;
+    width: 50%;
+    height: 100%;
+    background-image: url('../../../../public/images/someone_working_hard_in_a_office_wearing_a_suit_realis_fdc14cfa-6a9c-428f-b465-2b4fdaecceec.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+  }
+}
+
+.logInButton{
+  position: fixed;
+  text-align: center;
+  width: 120px;
+  background-color: white;
+  border: 3px solid black;
+  padding: 10px;
+  font-weight: bold;
+  top: 20px;
+  right: 20px;
+}
+
+.secondContainer{
+  width: 100%;
+  height: 600px;
+  @include flex-column-centre;
+
+  .titleSecondContainer{
+    @include flex-column-centre;
+
+    img{
+      height: auto;
+      width: 80px;
+    }
+
+    h2{
+      margin: 0px;
+      font-size: 70px;
+    }
+
+    p{
+      width: 50%;
+      font-size: 23px;
+      text-align: center;
+      line-height: 1.8em;
+    };
+  }
+}
+
+.thirdContainer{
+  width: 100%;
+  height: 600px;
+  background-color: $primary-color;
+}
