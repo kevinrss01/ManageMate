@@ -1,8 +1,10 @@
 
 h1, h2, h3, h4{
     font-family: $primary-font-family;
+    margin: 0px;
 }
 
 span, a, p, div, li, ul, input{
     font-family: $secondary-font-family;
 }
+

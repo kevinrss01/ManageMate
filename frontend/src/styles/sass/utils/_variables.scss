@@ -16,19 +16,12 @@
 
 $primary-color: #e7dfd8;
 $secondary-color: #ffffff;
+$black-color: #3f363f;
+$icons-color: #9f9a9f;
+$grey-container: #f8f6f5;
 
 $primary-font-family: 'Garet';
 $secondary-font-family: 'Inter';
 $third-font-family: 'GaretBold';
 
-@mixin flex-centre{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-@mixin flex-column-centre{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+

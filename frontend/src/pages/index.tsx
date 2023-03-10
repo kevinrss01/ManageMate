@@ -1,9 +1,9 @@
 import Head from "next/head";
-import FirstPart from "@/pages/index.FirstPart";
+import FirstPart from "@/pages/components/index/index.FirstPart";
 // @ts-ignore
-import SecondPart from "@/pages/index.SecondPart";
-import ThirdPart from "@/pages/index.ThirdPart";
-import FifthPart from "@/pages/index.FifthPart";
+import SecondPart from "@/pages/components/index/index.SecondPart";
+import ThirdPart from "@/pages/components/index/index.ThirdPart";
+import FifthPart from "@/pages/components/index/index.FifthPart";
 
 export default function Home() {
   return (
