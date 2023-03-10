@@ -1,0 +1,88 @@
+#registrationPageContainer{
+  background-color: $primary-color;
+  height: 100%;
+  width: 100%;
+
+  @include flex-centre;
+
+  .contentContainer{
+    height: 600px;
+    width: 80%;
+
+    margin: 100px;
+    display: flex;
+  }
+
+  .logoContainer{
+    @include flex-centre;
+    height: 100%;
+    width: 50%;
+  }
+
+  .infoContainer{
+    height: 100%;
+    width: 50%;
+    background-color: white;
+
+    .infoChildContainer{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+        align-items: center;
+      padding: 0 50px;
+      margin: 40px 0;
+
+      h2{
+        font-size: 30px;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 30px;
+      }
+
+      .inputsContainer{
+        @include flex-column-centre;
+        width: 100%;
+      }
+
+      input{
+        all: unset;
+        border: 2px solid black;
+        background-color: $secondary-color;
+        font-size: 20px;
+        padding: 10px;
+        width: 90%;
+      }
+
+      .nextButton{
+        width: 90%;
+        padding:10px;
+        border: 2px solid black;
+        cursor: pointer;
+        background-color: black;
+        color: white;
+        font-size: 25px;
+        text-align: center;
+        margin: 30px 0;
+        transition: color 0.2s ease-out, background-color 0.2s ease-out;
+      }
+
+      .nextButton:hover{
+        color: black;
+        background-color: $primary-color;
+      }
+
+      .divider{
+        display: flex;
+        width: 90%;
+        padding: 12px;
+        color: grey;
+        .solid{
+            width: 40%;
+            height: 1px;
+            background-color: grey;
+        }
+      }
+    }
+  }
+
+}

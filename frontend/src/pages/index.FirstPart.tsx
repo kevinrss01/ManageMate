@@ -1,6 +1,7 @@
 import Image from "next/image";
 import logo from "../../public/images/ManageMate-logo.png";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function FirstPart() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -42,9 +43,10 @@ export default function FirstPart() {
                   : "buttonCreateAccount"
               }
               id="button"
-              onClick={() => {}}
             >
-              Créer un compte
+              <Link style={{ all: "unset" }} href={"/auth/registrationPage"}>
+                Créer un compte
+              </Link>
             </div>
           </div>
         </div>
