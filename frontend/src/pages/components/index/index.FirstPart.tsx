@@ -32,7 +32,7 @@ export default function FirstPart() {
               </h1>
             </div>
             <div className="p">
-              <span>Par Kevin R. et Kilian M.</span>
+              <span>Par Kevin R. et Killian M.</span>
             </div>
           </div>
           <div className="createAccountBtnContainer">
