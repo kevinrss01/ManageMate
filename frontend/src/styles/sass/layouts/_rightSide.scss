@@ -1,6 +1,36 @@
 .rightSideContainer{
   height: 800px;
   width: 300px;
+  padding: 15px;
   background-color: $grey-container;
-  margin: 15px;
+
+
+  .infoUserContainer{
+    height: 70px;
+    width: 100%;
+    background-color: $primary-color;
+    padding: 5px;
+    border: 1px solid grey;
+    display: flex;
+    justify-content: center;
+
+    .nameAndEmailContainer{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      h3{
+        font-size: 18px;
+        margin: 0;
+        padding: 0;
+      }
+
+      p{
+        font-size: 12px;
+        margin: 5px 0 0 0 ;
+        padding: 0;
+        color: grey;
+      }
+    }
+  }
 }
