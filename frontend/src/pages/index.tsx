@@ -4,6 +4,7 @@ import FirstPart from "@/pages/components/index/index.FirstPart";
 import SecondPart from "@/pages/components/index/index.SecondPart";
 import ThirdPart from "@/pages/components/index/index.ThirdPart";
 import FifthPart from "@/pages/components/index/index.FifthPart";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -12,9 +13,9 @@ export default function Home() {
         <title>Next APP</title>
       </Head>
       <main className="mainHomePage">
-        <div className="logInButton" id="button">
+        <Link href="/auth/loginPage" className="logInButton" id="button">
           Se connecter
-        </div>
+        </Link>
         <FirstPart />
         <SecondPart />
         <ThirdPart />

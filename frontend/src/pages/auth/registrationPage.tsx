@@ -1,5 +1,3 @@
-import logo from "../../../public/images/ManageMate-logo.png";
-import Image from "next/image";
 import React, { useState } from "react";
 import {
   AiFillFacebook,
@@ -21,23 +19,32 @@ export default function RegistrationPage() {
   ] = useState(false);
   const [next, setNext] = useState(false);
 
-  console.log("emailValid", emailValid);
-  console.log("passwordValid", passwordValid);
-  console.log(next);
-
   const SignupSchema = Yup.object().shape({
     firstName: Yup.string()
       .min(3, "Le prénom doit contenir au moins 3 caractères")
       .max(50, "Le prénom doit contenir au maximum 50 caractères")
+      .matches(
+        /^[a-zA-ZÀ-ÿ\s-]+$/,
+        "Le prénom ne doit contenir que des lettres"
+      )
       .required("Prénom requis"),
     lastName: Yup.string()
       .min(3, "Le nom doit contenir au moins 3 caractères")
       .max(50, "Le nom doit contenir au maximum 50 caractères")
+      .matches(/^[a-zA-ZÀ-ÿ\s-]+$/, "Le nom ne doit contenir que des lettres")
       .required("Nom requis"),
     email: Yup.string().email("Email invalide").required("Email requis"),
     password: Yup.string()
       .min(8, "Le mot de passe doit contenir au moins 8 caractères")
       .max(100, "Le mot de passe doit contenir au maximum 100 caractères")
+      .matches(
+        /[A-Z]/,
+        "Le mot de passe doit contenir au moins une majuscule et un caractère spécial"
+      )
+      .matches(
+        /[^A-Za-z0-9]/,
+        "Le mot de passe doit contenir au moins un caractère spécial et une majuscule"
+      )
       .required("Mot de passe requis"),
   });
 
@@ -48,7 +55,7 @@ export default function RegistrationPage() {
     lastName: string;
   }) => {
     const { email, password, firstName, lastName } = data;
-    if (!data) {
+    if (!data || !email || !password || !firstName || !lastName) {
       throw new Error("No data or invalid data");
     }
 
@@ -70,7 +77,11 @@ export default function RegistrationPage() {
   ) => {
     if (errors[field] && touched[field]) {
       setFieldValid(false);
-      return <div>{errors[field]}</div>;
+      return (
+        <p style={{ width: "90%", textAlign: "center", margin: 0 }}>
+          {errors[field]}
+        </p>
+      );
     } else if (!touched[field]) {
       setFieldValid(false);
     } else if (touched[field] && !errors[field]) {
@@ -87,13 +98,6 @@ export default function RegistrationPage() {
           <IoArrowBackSharp className="backButtonIcon" />
         </Link>
         <div className="contentContainer">
-          <div className="logoContainer">
-            <Image
-              style={{ height: "auto", width: "500Px" }}
-              src={logo}
-              alt={"logo"}
-            />
-          </div>
           <div className="infoContainer">
             <div className="infoChildContainer">
               <div className="titleContainer">
@@ -120,7 +124,7 @@ export default function RegistrationPage() {
                   onSubmit={onSubmit}
                   validationSchema={SignupSchema}
                 >
-                  {({ errors, touched, isValid }) => (
+                  {({ errors, touched }) => (
                     <Form
                       style={{
                         display: "flex",
@@ -129,6 +133,20 @@ export default function RegistrationPage() {
                         flexDirection: "column",
                         height: "100%",
                         width: "100%",
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          if (!next) {
+                            event.preventDefault();
+                            // Empêche l'envoi du formulaire
+                            if (emailValid && passwordValid) {
+                              setNext(true);
+                              setDisplayInvalidInputsErrorMessage(false);
+                            } else {
+                              setDisplayInvalidInputsErrorMessage(true);
+                            }
+                          }
+                        }
                       }}
                     >
                       {!next ? (
@@ -216,7 +234,7 @@ export default function RegistrationPage() {
                     <AiFillFacebook className="iconSocialMedia" />
                   </div>
                   <div className="containerText colorFb2">
-                    Connexion avec Facebook
+                    Inscription avec Facebook
                   </div>
                 </div>
 
@@ -225,7 +243,7 @@ export default function RegistrationPage() {
                     <AiOutlineTwitter className="iconSocialMedia" />
                   </div>
                   <div className="containerText colorTwitter2">
-                    Connexion avec Twitter
+                    Inscription avec Twitter
                   </div>
                 </div>
 
@@ -234,7 +252,7 @@ export default function RegistrationPage() {
                     <AiOutlineGoogle className="iconSocialMedia" />
                   </div>
                   <div className="containerText colorGoogle2">
-                    Connexion avec Google
+                    Inscription avec Google
                   </div>
                 </div>
               </div>

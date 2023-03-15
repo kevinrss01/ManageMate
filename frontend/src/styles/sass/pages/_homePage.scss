@@ -39,14 +39,14 @@ body{
       justify-content: space-between;
       align-items: center;
       flex-direction: column;
-      font-size: 25px;
+      font-size: 24px;
       width: 100%;
       height: 280px;
 
       .h1{
         padding: 0%;
-
         width: 100%;
+
         h1{
           margin: 0;
           padding-left: 20%;
@@ -74,7 +74,7 @@ body{
       .buttonCreateAccount{
         @include flex-centre;
         width: 200px;
-        height: 50px;
+        height: 40px;
         margin-left: 20%;
         font-size: 20px;
         font-weight: bold;
@@ -88,12 +88,13 @@ body{
         top: 20px;
         left: 20px;
         width: 200px;
-        height: 50px;
+        height: 40px;
         margin: 0px;
         font-size: 20px;
         font-weight: bold;
         border: 3px solid black;
         background-color: $secondary-color;
+        z-index: 10;
       }
     }
   }
@@ -102,7 +103,7 @@ body{
     background-color: red;
     width: 50%;
     height: 100%;
-    background-image: url('../../../../public/images/someone_working_hard_in_a_office_wearing_a_suit_realis_fdc14cfa-6a9c-428f-b465-2b4fdaecceec.png');
+    background-image: url('../../../../public/images/someone_working_hard_in_a_office_wearing_a_suit_realis_fdc14cfa-6a9c-428f-b465-2b4fdaecceec-min.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -112,6 +113,7 @@ body{
 
 
 .logInButton{
+  all: unset;
   position: fixed;
   text-align: center;
   width: 120px;
@@ -121,6 +123,7 @@ body{
   font-weight: bold;
   top: 20px;
   right: 20px;
+  z-index: 10;
 }
 
 .secondContainer{
@@ -139,12 +142,12 @@ body{
 
     h2{
       margin: 0px;
-      font-size: 70px;
+      font-size: 60px;
     }
 
     p{
       width: 50%;
-      font-size: 23px;
+      font-size: 18px;
       text-align: center;
       line-height: 1.8em;
     };
@@ -160,7 +163,7 @@ body{
     @include flex-centre;
 
     h2{
-      font-size: 45px;
+      font-size: 40px;
     }
   }
 
@@ -174,7 +177,7 @@ body{
 
     .square{
       height: 400px;
-      width: 400px;
+      width: 30%;
       background-color: white;
       display: flex;
       flex-direction: column;
@@ -184,7 +187,7 @@ body{
         width: 120px;
         border-radius: 100px;
         position: relative;
-        left: 150px;
+        left: 35%;
         top: -60px;
         background-color: black;
         @include flex-centre;
@@ -206,12 +209,15 @@ body{
       h2{
         font-family: $third-font-family;
         margin: 0px;
-        font-size: 25px;
+        font-size: 20px;
         padding: 0px 20px;
+        text-align: center;
       }
 
       li{
-        font-size: 25px;
+        font-size: 22px;
+        text-align: start;
+        width: 85%;
       }
     }
   }
@@ -227,7 +233,7 @@ body{
   background-color: white;
 
   h2{
-    font-size: 65px;
+    font-size: 55px;
     text-align: center;
     margin: 0px;
   }
@@ -237,7 +243,7 @@ body{
     height: 300px;
     background-color: blueviolet;
     margin-top: 50px;
-    background-image: url('../../../../public/images/Beautiful_hight_modern_grey_building_with_beautiful_ar_c11e5731-9992-476a-8cec-f65f20f811f8.png');
+    background-image: url('../../../../public/images/Beautiful_hight_modern_grey_building_with_beautiful_ar_c11e5731-9992-476a-8cec-f65f20f811f8-min.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -250,7 +256,7 @@ body{
   background-color: $primary-color;
   display: flex;
   justify-content: center;
-align-items: center;
+  align-items: center;
 
   .contactContainer{
     width: 90%;
@@ -265,16 +271,14 @@ align-items: center;
 
     .textContainer{
       padding: 50px;
-
-
         h2{
-            font-size: 50px;
+            font-size: 40px;
         }
 
       h4{
         letter-spacing: 0.4em;
         margin-top: 50px;
-        font-size: 30px;
+        font-size: 20px;
         font-family: $third-font-family;
       }
 
@@ -296,7 +300,7 @@ align-items: center;
     width: 50%;
     height: 100%;
     background-color: red;
-    background-image: url('../../../../public/images/A_happy_man_and_a_happy_woman_wearing_suits_sitting_ar_47a59586-2881-47ea-82c8-502cdfb9e457.png');
+    background-image: url('../../../../public/images/A_happy_man_and_a_happy_woman_wearing_suits_sitting_ar_47a59586-2881-47ea-82c8-502cdfb9e457-min.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
