@@ -1,19 +1,19 @@
-.mainHomePageContainer{
-  background-color: aqua;
+.homePageContainer{
+  background-color: white;
   display: flex;
   justify-content: space-between;
 ;
 }
 
-.homePageContainer{
+.mainPageContainer{
   margin-left: 80px;
   padding: 15px;
-  background-color: red;
+
   width: 90%;
 }
 
 .welcomeContainer{
-  background-color: #f8f6f5;
+  background-color: $grey-container;
   border: lightgray 1px solid;
   width: 95%;
   display: flex;
@@ -36,7 +36,7 @@
 
   .searchContainer{
     @include flex-centre;
-    background-color: #f8f6f5;
+    background-color: $grey-container;
     width: 50%;
     height: 100%;
     border-left: none;
