@@ -12,7 +12,6 @@ export default function SecondPart() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrollPosition]);
 
-  console.log(scrollPosition);
   return (
     <>
       <div className="secondContainer">

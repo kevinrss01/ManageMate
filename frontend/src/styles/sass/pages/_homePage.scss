@@ -1,19 +1,19 @@
-body{
+body {
   all: unset;
 }
 
-.mainHomePage{
+.mainHomePage {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
 }
 
-.firstContainer{
+.firstContainer {
   height: 800px;
   display: flex;
 
-  .textSide{
+  .textSide {
     width: 50%;
     height: 100%;
     background-color: $primary-color;
@@ -22,19 +22,19 @@ body{
     align-items: center;
     flex-direction: column;
 
-    .imageContainer{
+    .imageContainer {
       width: 100%;
       height: auto;
       display: flex;
       animation: slide-in 1000ms;
-      .logoHomePage{
+      .logoHomePage {
         padding-left: 30px;
         height: auto;
         width: 150px;
       }
     }
 
-    .mainTextContainer{
+    .mainTextContainer {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -42,23 +42,23 @@ body{
       font-size: 24px;
       width: 100%;
       height: 280px;
-      animation: slide-in 1000ms;
+      animation: opacity 2s 0.4s both, slide-in 2s 0.4s both;
 
-      .h1{
+      .h1 {
         padding: 0%;
         width: 100%;
 
-        h1{
+        h1 {
           margin: 0;
           padding-left: 20%;
           word-spacing: 0.1em;
         }
       }
 
-      .p{
+      .p {
         padding: 0%;
         width: 100%;
-        span{
+        span {
           margin: 0;
           padding-left: 20%;
           font-size: 30px;
@@ -66,14 +66,14 @@ body{
       }
     }
 
-    .createAccountBtnContainer{
+    .createAccountBtnContainer {
       width: 100%;
       display: flex;
       height: auto;
       padding-bottom: 50px;
       animation: slide-in 1000ms;
 
-      .buttonCreateAccount{
+      .buttonCreateAccount {
         @include flex-centre;
         width: 200px;
         height: 40px;
@@ -84,7 +84,7 @@ body{
         background-color: $secondary-color;
       }
 
-      .buttonCreateAccountFixed{
+      .buttonCreateAccountFixed {
         @include flex-centre;
         position: fixed;
         top: 20px;
@@ -101,10 +101,10 @@ body{
     }
   }
 
-  .imageSide{
+  .imageSide {
     width: 50%;
     height: 100%;
-    background-image: url('../../../../public/images/someone_working_hard_in_a_office_wearing_a_suit_realis_fdc14cfa-6a9c-428f-b465-2b4fdaecceec-min.png');
+    background-image: url("../../../../public/images/someone_working_hard_in_a_office_wearing_a_suit_realis_fdc14cfa-6a9c-428f-b465-2b4fdaecceec-min.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -112,9 +112,7 @@ body{
   }
 }
 
-
-
-.logInButton{
+.logInButton {
   all: unset;
   position: fixed;
   text-align: center;
@@ -128,64 +126,63 @@ body{
   z-index: 10;
 }
 
-.secondContainer{
+.secondContainer {
   width: 100%;
   height: 600px;
   @include flex-column-centre;
   background-color: white;
 
-  .titleSecondContainer{
+  .titleSecondContainer {
     @include flex-column-centre;
     animation: opacity 2s ease-in-out;
 
-    img{
+    img {
       height: auto;
       width: 80px;
     }
 
-    h2{
+    h2 {
       margin: 0px;
       font-size: 60px;
     }
 
-    p{
+    p {
       width: 50%;
       font-size: 18px;
       text-align: center;
       line-height: 1.8em;
-    };
+    }
   }
 }
 
-.thirdContainer{
+.thirdContainer {
   width: 100%;
   height: 800px;
   background-color: $primary-color;
   @include flex-column-centre;
-  .titleThirdContainer{
+  .titleThirdContainer {
     @include flex-centre;
 
-    h2{
+    h2 {
       font-size: 40px;
     }
   }
 
-  .squareContainer{
+  .squareContainer {
     width: 90%;
     height: 600px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-
-    .square{
+    .square {
       height: 400px;
       width: 30%;
       background-color: white;
       display: flex;
       flex-direction: column;
 
-      .squareLogoContainer{
+      .squareLogoContainer {
         height: 120px;
         width: 120px;
         border-radius: 100px;
@@ -195,21 +192,20 @@ body{
         background-color: black;
         @include flex-centre;
 
-        .squareIcon{
+        .squareIcon {
           color: white;
           font-size: 60px;
         }
       }
 
-      .squareTextContainer{
+      .squareTextContainer {
         width: 100%;
         height: 300px;
         display: flex;
         flex-direction: column;
-
       }
 
-      h2{
+      h2 {
         font-family: $third-font-family;
         margin: 0px;
         font-size: 20px;
@@ -217,16 +213,28 @@ body{
         text-align: center;
       }
 
-      li{
+      li {
         font-size: 22px;
         text-align: start;
         width: 85%;
       }
     }
+
+    .square-one {
+      animation: slide-in 2000ms;
+    }
+
+    .square-three {
+      animation: slide-in-reverse 2000ms 0.5s both, opacity 1.5s 0.5s both;
+    }
+
+    .square-two {
+      animation: slide-in-from-top 2000ms 0.8s both, opacity 1.5s 0.8s both;
+    }
   }
 }
 
-.fourthContainer{
+.fourthContainer {
   width: 100%;
   height: 700px;
   display: flex;
@@ -235,25 +243,25 @@ body{
   justify-content: center;
   background-color: white;
 
-  h2{
+  h2 {
     font-size: 55px;
     text-align: center;
     margin: 0px;
   }
 
-  .imageFourthContainer{
+  .imageFourthContainer {
     width: 80%;
     height: 300px;
     background-color: blueviolet;
     margin-top: 50px;
-    background-image: url('../../../../public/images/Beautiful_hight_modern_grey_building_with_beautiful_ar_c11e5731-9992-476a-8cec-f65f20f811f8-min.png');
+    background-image: url("../../../../public/images/Beautiful_hight_modern_grey_building_with_beautiful_ar_c11e5731-9992-476a-8cec-f65f20f811f8-min.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
   }
 }
 
-.fifthContainer{
+.fifthContainer {
   width: 100%;
   height: 800px;
   background-color: $primary-color;
@@ -261,49 +269,49 @@ body{
   justify-content: center;
   align-items: center;
 
-  .contactContainer{
+  .contactContainer {
     width: 90%;
     height: 80%;
     display: flex;
   }
 
-  .textSide{
+  .textSide {
     width: 50%;
     height: 100%;
 
-
-    .textContainer{
+    .textContainer {
       padding: 50px;
-        h2{
-            font-size: 40px;
-        }
+      animation: slide-in-reverse 1500ms;
 
-      h4{
+      h2 {
+        font-size: 40px;
+      }
+
+      h4 {
         letter-spacing: 0.4em;
         margin-top: 50px;
         font-size: 20px;
         font-family: $third-font-family;
       }
 
-      span{
+      span {
         font-size: 20px;
       }
     }
   }
 
-  .margin20{
+  .margin20 {
     margin: 20px;
   }
 
-  .textSide{
-
+  .textSide {
   }
 
-  .imageSide{
+  .imageSide {
     width: 50%;
     height: 100%;
     background-color: red;
-    background-image: url('../../../../public/images/A_happy_man_and_a_happy_woman_wearing_suits_sitting_ar_47a59586-2881-47ea-82c8-502cdfb9e457-min.png');
+    background-image: url("../../../../public/images/A_happy_man_and_a_happy_woman_wearing_suits_sitting_ar_47a59586-2881-47ea-82c8-502cdfb9e457-min.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
