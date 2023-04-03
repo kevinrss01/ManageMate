@@ -12,7 +12,7 @@ export default function Welcome() {
 
   const searchFiles = () => {
     if (searchValue) {
-      console.log(searchValue);
+      //console.log(searchValue);
     }
   };
 

@@ -11,7 +11,6 @@ export default function FifthPart() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrollPosition]);
 
-  console.log(scrollPosition);
   return (
     <>
       <div className="fifthContainer">

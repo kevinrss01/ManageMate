@@ -34,8 +34,6 @@ export default function RegistrationPage() {
     if (!data || !email || !password) {
       throw new Error("No data or invalid data");
     }
-
-    console.log(data);
   };
 
   const initialValues = {
