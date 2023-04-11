@@ -1,23 +1,22 @@
 // UTILS -> Variables, fonctions, mixins.
-@import 'utils/variables';
-@import 'utils/mixins';
-@import 'utils/animations';
+@import "utils/variables";
+@import "utils/mixins";
+@import "utils/animations";
 
 // BASE -> Fondations du site, polices de caractère, normes, box-sizing, etc...
-@import 'base/base';
+@import "base/base";
 
 // COMPONENTS -> Blocs indépendants comme les boutons ou un loader.
-@import 'components/buttons';
+@import "components/buttons";
 
 // LAYOUTS -> Ce qui est réutilisable comme le footer ou le header ou une navbar.
-@import 'layouts/navbar';
-@import 'layouts/rightSide';
+@import "layouts/navbar";
+@import "layouts/rightSide";
 
 // PAGES -> Blocs de code qui ne s'applique qu'a une seule page. Les règles spécifiques à une seule page.
 // Par exemple, le style d'une page d'inscription ou de connexion.
-@import 'pages/app/homePage';
-@import 'pages/registrationAndLoginPage';
-
-@import 'pages/app.homePage';
+@import "pages/homePage";
+@import "pages/registrationAndLoginPage";
+@import "pages/app/app.homePage";
 
 //N'oublie pas que quand tu créer les fichiers tu dois ajouter '_' avant le nom du fichier pour que le fichier soit pris en compte par le compilateur.
