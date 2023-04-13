@@ -2,13 +2,13 @@ import { useState } from "react";
 import { SlMagnifier } from "react-icons/sl";
 import { FcApproval } from "react-icons/fc";
 import { useSelector, useDispatch } from "react-redux";
-import { selectValue } from "../../../../../slices/userSlice";
+import { selectUser } from "../../../../../slices/userSlice";
 
 export default function Welcome() {
   const [searchValue, setSearchValue] = useState("");
 
   //Redux
-  const userData = useSelector(selectValue);
+  const userData = useSelector(selectUser);
 
   const searchFiles = () => {
     if (searchValue) {

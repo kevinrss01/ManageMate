@@ -49,4 +49,43 @@
       }
     }
   }
+
+  .storageUsageContainer{
+    margin-top: 25px;
+
+    .titleContainer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-right: 1px solid grey;
+        border-left: 1px solid grey;
+        border-top: 1px solid grey;
+      background-color: #3f363f;
+      width: 100%;
+      padding: 5px;
+      color: white;
+      font-size: 14px;
+      height: 60px;
+    }
+
+    .infoUsageContainer{
+      width: 100%;
+      border: 1px solid grey;
+      padding: 25px 5px 15px 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .colorUsage{
+        width: 85%;
+        height: 40px;
+        border: 1px solid black;
+
+      }
+    }
+
+
+
+  }
 }
