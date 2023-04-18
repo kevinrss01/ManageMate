@@ -5,3 +5,17 @@ export interface File {
   size: number;
   dateAdded: string;
 }
+
+// REDUX
+export interface UserState {
+  firstName: string;
+  lastName: string;
+  email: string;
+  totalUserStorage: number;
+}
+
+export interface StorageState {
+  availableStorage: number;
+  usedStorage: number;
+  files: File[];
+}

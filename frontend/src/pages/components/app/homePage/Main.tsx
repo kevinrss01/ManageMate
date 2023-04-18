@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";
 import { AiFillFileText } from "react-icons/ai";
 import { MdAudioFile } from "react-icons/md";
 import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
-import { selectStorage, updateStorage } from "../../../../../slices/userSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { File } from "@/interfaces/Interfaces";
+import { selectStorage } from "../../../../../slices/userSlice";
+import { useSelector } from "react-redux";
+import { formatFileSize } from "@/pages/app/homepage";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -24,60 +24,6 @@ const iconsType: Record<string, string> = {
   mp4: "Fichier audio",
   word: "Fichier Word",
   mov: "Fichier vidéo",
-};
-
-const fetchFiles = async (): Promise<File[]> => {
-  return [
-    {
-      id: "1",
-      name: "Whitepaper",
-      type: "pdf",
-      size: 2045,
-      dateAdded: "2022-05-05",
-    },
-    {
-      id: "2",
-      name: "imageOfThisAmazingDay",
-      type: "jpeg",
-      size: 5500,
-      dateAdded: "2023-05-05",
-    },
-    {
-      id: "3",
-      name: "Image",
-      type: "png",
-      size: 5700,
-      dateAdded: "2019-05-05",
-    },
-    {
-      id: "4",
-      name: "musique",
-      type: "mp4",
-      size: 1700,
-      dateAdded: "2017-05-05",
-    },
-    {
-      id: "5",
-      name: "test5",
-      type: "word",
-      size: 1200,
-      dateAdded: "2018-05-05",
-    },
-  ];
-};
-
-export const formatFileSize = (sizeInKb: number): string => {
-  if (sizeInKb < 1024) {
-    return `${sizeInKb} ko`;
-  }
-
-  const sizeInMb = sizeInKb / 1024;
-  if (sizeInMb < 1024) {
-    return `${sizeInMb.toFixed(1)} Mo`;
-  }
-
-  const sizeInGb = sizeInMb / 1024;
-  return `${sizeInGb.toFixed(1)} Go`;
 };
 
 export function getTimeSinceAdd(dateString: string): string {
@@ -111,34 +57,11 @@ export function getTimeSinceAdd(dateString: string): string {
 }
 
 export default function Main() {
-  const [files, setFiles] = useState(Array<File>);
   const [showTrash, setShowTrash] = useState(true);
   const [fileID, setFileID] = useState("");
 
-  const dispatch = useDispatch();
-  const storageDataFromRedux = useSelector(selectStorage);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const userFiles = await fetchFiles();
-      setFiles(userFiles);
-
-      const sizeUsed = userFiles.reduce(
-        (accumulator, file) => accumulator + file.size,
-        0
-      );
-      const availableStorage = storageDataFromRedux.availableStorage - sizeUsed;
-
-      dispatch(
-        updateStorage({
-          availableStorage: availableStorage,
-          usedStorage: sizeUsed,
-        })
-      );
-    };
-
-    fetchData();
-  }, [dispatch]);
+  const storageData = useSelector(selectStorage);
+  const userFiles = storageData.files;
 
   const getIcon = (typeOfIcon: string) => {
     return icons[typeOfIcon];
@@ -153,7 +76,7 @@ export default function Main() {
       <div className="mainContainer">
         <h3>Fichier(s) récent(s)</h3>
         <div className="filesContainer">
-          {files.length === 0 ? (
+          {userFiles.length === 0 ? (
             <>
               <p>Vous n'avez pas encore de fichier.</p>
             </>
@@ -165,7 +88,7 @@ export default function Main() {
                 <h3>Taille</h3>
               </div>
 
-              {files
+              {[...userFiles]
                 .sort((a, b) => {
                   const dateA = new Date(a.dateAdded);
                   const dateB = new Date(b.dateAdded);
@@ -177,7 +100,7 @@ export default function Main() {
                     <div
                       className="file"
                       key={file.id}
-                      style={files.length < 4 ? {} : {}}
+                      style={userFiles.length < 4 ? {} : {}}
                     >
                       <div className="containerInfoAndIcon">
                         <div className="fileIcon">{getIcon(file.type)}</div>

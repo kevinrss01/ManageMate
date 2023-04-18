@@ -1,27 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store";
-
-export interface UserState {
-  firstName: string | undefined;
-  lastName: string | undefined;
-  email: string | undefined;
-}
+import { UserState, StorageState } from "@/interfaces/Interfaces";
 
 const initialState: UserState = {
   firstName: "",
   lastName: "",
   email: "",
+  totalUserStorage: 0,
 };
 
-export interface StorageState {
-  availableStorage: number;
-  usedStorage: number;
-}
-
 const initialStorage: StorageState = {
-  availableStorage: 20971520,
+  availableStorage: 0,
   usedStorage: 0,
+  files: [],
 };
 
 export const userSlice = createSlice({
@@ -32,6 +24,7 @@ export const userSlice = createSlice({
       state.firstName = action.payload.firstName;
       state.lastName = action.payload.lastName;
       state.email = action.payload.email;
+      state.totalUserStorage = action.payload.totalUserStorage;
     },
     remove: (state) => {
       //
@@ -46,6 +39,7 @@ export const storageSlice = createSlice({
     updateStorage: (state, action: PayloadAction<StorageState>) => {
       state.availableStorage = action.payload.availableStorage;
       state.usedStorage = action.payload.usedStorage;
+      state.files = action.payload.files;
     },
     remove: (state) => {
       //
