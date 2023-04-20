@@ -260,7 +260,9 @@ export default function RightSide() {
                 </div>
               </div>
             </div>
-            <div className="upgradeSpace"></div>
+            <div className="upgradeSpace">
+              {/*//Add image of rocket => look canva*/}
+            </div>
           </div>
         </div>
       </div>
