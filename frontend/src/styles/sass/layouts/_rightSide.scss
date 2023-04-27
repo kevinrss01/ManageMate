@@ -1,10 +1,9 @@
-.rightSideContainer{
+.rightSideContainer {
   height: 800px;
   width: 300px;
   padding: 15px;
 
-
-  .infoUserContainer{
+  .infoUserContainer {
     height: 70px;
     width: 100%;
     padding: 5px;
@@ -13,53 +12,57 @@
     justify-content: center;
     background-color: $grey-container;
 
-    .nameAndEmailContainer{
+    .nameAndEmailContainer {
       display: flex;
       flex-direction: column;
       justify-content: center;
       padding: 15px;
+      cursor: pointer;
 
-      h3{
+      h3 {
         font-size: 18px;
         margin: 0;
         padding: 0;
       }
 
-      p{
+      p {
         font-size: 12px;
-        margin: 5px 0 0 0 ;
+        margin: 5px 0 0 0;
         padding: 0;
         color: grey;
       }
     }
 
-    .userActionsContainer{
+    .nameAndEmailContainer:hover > * {
+      color: black;
+    }
 
+    .userActionsContainer {
       @include flex-centre;
 
-      :first-child{
+      :first-child {
         font-size: 30px;
         color: grey;
         transition: color 0.3s ease-in-out;
         cursor: pointer;
 
-        &:hover{
+        &:hover {
           color: black;
         }
       }
     }
   }
 
-  .storageUsageContainer{
+  .storageUsageContainer {
     margin-top: 25px;
 
-    .titleContainer{
+    .titleContainer {
       display: flex;
       justify-content: center;
       align-items: center;
       border-right: 1px solid grey;
-        border-left: 1px solid grey;
-        border-top: 1px solid grey;
+      border-left: 1px solid grey;
+      border-top: 1px solid grey;
       background-color: #3f363f;
       width: 100%;
       padding: 5px;
@@ -68,7 +71,7 @@
       height: 60px;
     }
 
-    .infoUsageContainer{
+    .infoUsageContainer {
       width: 100%;
       border: 1px solid grey;
       padding: 25px 5px 15px 5px;
@@ -78,21 +81,21 @@
       align-items: center;
       background-color: $grey-container;
 
-      .colorUsage{
+      .colorUsage {
         width: 85%;
         height: 40px;
         border: 1px solid grey;
         display: flex;
         align-items: center;
 
-        span{
+        span {
           margin-left: 20%;
           color: grey;
-            font-size: 15px;
+          font-size: 15px;
         }
       }
 
-      .availableUsageContainer{
+      .availableUsageContainer {
         width: 85%;
         height: 65px;
         border: 1px solid grey;
@@ -101,19 +104,18 @@
         justify-content: center;
         align-items: center;
 
-        .availableSpace, .totalSpace{
-
+        .availableSpace,
+        .totalSpace {
           padding: 0 15px;
 
-          p{
+          p {
             margin: 0;
             padding: 0;
             font-size: 10px;
             color: grey;
-
           }
 
-          span{
+          span {
             margin: 0;
             padding: 0;
             font-weight: bold;
@@ -121,48 +123,47 @@
         }
       }
 
-      .detailUsage{
+      .detailUsage {
         width: 85%;
 
-        .fileTypeUsage{
+        .fileTypeUsage {
           width: 100%;
           height: 45px;
           margin: 15px 0;
           display: flex;
 
-          .icon{
+          .icon {
             height: 100%;
             width: 45px;
             @include flex-centre;
             margin-right: 10px;
 
-            :first-child{
+            :first-child {
               font-size: 26px;
             }
           }
-          .type{
+          .type {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
 
-            .title{
+            .title {
               font-size: 14px;
             }
 
-            .filesNumber{
-                font-size: 13px;
-                color: grey;
+            .filesNumber {
+              font-size: 13px;
+              color: grey;
             }
-
           }
 
-          .typeAndSizeContainer{
+          .typeAndSizeContainer {
             display: flex;
             justify-content: space-between;
             width: 70%;
           }
 
-          .size{
+          .size {
             font-size: 13px;
             font-weight: bolder;
             height: 100%;
@@ -172,14 +173,43 @@
         }
       }
 
-      .upgradeSpace{
+      .upgradeSpace {
         width: 85%;
         height: 200px;
         border: 1px solid grey;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .rocketImage {
+          width: 50px;
+          height: 50px;
+        }
+
+        h3 {
+          font-size: 17px;
+          margin: 0;
+          padding: 0;
+          text-align: center;
+          margin: 10px;
+        }
+
+        div {
+          width: 60%;
+          height: 50px;
+          font-size: 14px;
+          color: white;
+          background-color: #3f363f;
+          @include flex-centre;
+          cursor: pointer;
+          transition: background-color 0.3s ease-in;
+
+          &:hover {
+            background-color: $orange;
+          }
+        }
       }
     }
-
-
-
   }
 }

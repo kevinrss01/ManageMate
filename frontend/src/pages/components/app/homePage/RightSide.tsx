@@ -1,4 +1,3 @@
-import { MdMoreVert } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { selectStorage, selectUser } from "../../../../../slices/userSlice";
 import { formatFileSize } from "@/pages/app/homepage";
@@ -8,6 +7,8 @@ import React from "react";
 import { RiFoldersFill } from "react-icons/ri";
 import { MdLocalMovies } from "react-icons/md";
 import { AiOutlinePicture } from "react-icons/ai";
+import Image from "next/image";
+import rocket from "../../../../../public/images/rocket.png";
 
 export default function RightSide() {
   //Redux
@@ -106,12 +107,14 @@ export default function RightSide() {
     <>
       <div className="rightSideContainer">
         <div className="infoUserContainer">
-          <div className="nameAndEmailContainer">
+          <div
+            className="nameAndEmailContainer"
+            onClick={() => {
+              //GO to profile page
+            }}
+          >
             <h3>{userData.firstName + " " + userData.lastName}</h3>
             <p>{userData.email}</p>
-          </div>
-          <div className="userActionsContainer">
-            <MdMoreVert />
           </div>
         </div>
         <div className="storageUsageContainer">
@@ -261,7 +264,16 @@ export default function RightSide() {
               </div>
             </div>
             <div className="upgradeSpace">
-              {/*//Add image of rocket => look canva*/}
+              <Image
+                src={rocket}
+                className="rocketImage"
+                alt="Image of a rocket"
+              />
+              <h3>Besoin de plus d'espace ?</h3>
+              <div>
+                Augmenter
+                <br /> Maintenant
+              </div>
             </div>
           </div>
         </div>
