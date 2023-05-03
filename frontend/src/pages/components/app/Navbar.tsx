@@ -4,8 +4,16 @@ import { RiFoldersLine } from "react-icons/ri";
 import { BsFillPersonFill } from "react-icons/bs";
 import Image from "next/image";
 import logo from "../../../../public/images/ManageMate.png";
+import Link from "next/link";
+import React from "react";
 
 export default function Navbar() {
+  let currentURL = "";
+
+  if (typeof window !== "undefined") {
+    currentURL = window.location.href;
+  }
+
   return (
     <>
       <div className="navbarContainer">
@@ -18,13 +26,35 @@ export default function Navbar() {
               <BsPlus className="icon" />
             </div>
             <div className="button">
-              <AiFillHome className="icon" />
+              <Link href="/app/homepage">
+                <AiFillHome
+                  className="icon"
+                  style={
+                    currentURL.includes("homepage") ? { color: "#f77e3f" } : {}
+                  }
+                ></AiFillHome>
+              </Link>
+            </div>
+
+            <div className="button">
+              <Link href="/app/files">
+                <RiFoldersLine
+                  className="icon"
+                  style={
+                    currentURL.includes("files") ? { color: "#f77e3f" } : {}
+                  }
+                />
+              </Link>
             </div>
             <div className="button">
-              <RiFoldersLine className="icon" />
-            </div>
-            <div className="button">
-              <BsFillPersonFill className="icon" />
+              <Link href="/app/userParameters">
+                <BsFillPersonFill
+                  className="icon"
+                  style={
+                    currentURL.includes("user") ? { color: "#f77e3f" } : {}
+                  }
+                />
+              </Link>
             </div>
           </div>
         </div>
