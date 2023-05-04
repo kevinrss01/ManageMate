@@ -8,7 +8,7 @@ import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { Formik, Field, Form } from "formik";
-import * as Yup from "yup";
+import { verificationRegisterSchema } from "./yupShema";
 
 export default function RegistrationPage() {
   const [emailValid, setEmailValid] = useState(false);
@@ -18,35 +18,6 @@ export default function RegistrationPage() {
     setDisplayInvalidInputsErrorMessage,
   ] = useState(false);
   const [next, setNext] = useState(false);
-
-  const SignupSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .min(3, "Le prénom doit contenir au moins 3 caractères")
-      .max(50, "Le prénom doit contenir au maximum 50 caractères")
-      .matches(
-        /^[a-zA-ZÀ-ÿ\s-]+$/,
-        "Le prénom ne doit contenir que des lettres"
-      )
-      .required("Prénom requis"),
-    lastName: Yup.string()
-      .min(3, "Le nom doit contenir au moins 3 caractères")
-      .max(50, "Le nom doit contenir au maximum 50 caractères")
-      .matches(/^[a-zA-ZÀ-ÿ\s-]+$/, "Le nom ne doit contenir que des lettres")
-      .required("Nom requis"),
-    email: Yup.string().email("Email invalide").required("Email requis"),
-    password: Yup.string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-      .max(100, "Le mot de passe doit contenir au maximum 100 caractères")
-      .matches(
-        /[A-Z]/,
-        "Le mot de passe doit contenir au moins une majuscule et un caractère spécial"
-      )
-      .matches(
-        /[^A-Za-z0-9]/,
-        "Le mot de passe doit contenir au moins un caractère spécial et une majuscule"
-      )
-      .required("Mot de passe requis"),
-  });
 
   const onSubmit = (data: {
     email: string;
@@ -58,6 +29,8 @@ export default function RegistrationPage() {
     if (!data || !email || !password || !firstName || !lastName) {
       throw new Error("No data or invalid data");
     }
+
+    console.log(data);
   };
 
   const initialValues = {
@@ -120,7 +93,7 @@ export default function RegistrationPage() {
                 <Formik
                   initialValues={initialValues}
                   onSubmit={onSubmit}
-                  validationSchema={SignupSchema}
+                  validationSchema={verificationRegisterSchema}
                 >
                   {({ errors, touched }) => (
                     <Form
@@ -186,7 +159,9 @@ export default function RegistrationPage() {
                       ) : (
                         <>
                           {errors.firstName && touched.firstName ? (
-                            <div>{errors.firstName}</div>
+                            <div style={{ color: "red" }}>
+                              {errors.firstName}
+                            </div>
                           ) : null}
                           <Field
                             type="text"
@@ -196,7 +171,9 @@ export default function RegistrationPage() {
                             name="firstName"
                           />
                           {errors.lastName && touched.lastName ? (
-                            <div>{errors.lastName}</div>
+                            <div style={{ color: "red" }}>
+                              {errors.lastName}
+                            </div>
                           ) : null}
                           <Field
                             type="text"

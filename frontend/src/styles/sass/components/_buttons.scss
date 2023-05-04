@@ -1,9 +1,37 @@
-#button{
+#button {
   transition: color 0.2s ease-out, background-color 0.2s ease-out;
   cursor: pointer;
 }
 
-#button:hover{
+#button:hover {
   color: $secondary-color;
   background-color: black;
+}
+
+.button-upgrade {
+  width: 60%;
+  height: 50px;
+  font-size: 14px;
+  color: white;
+  background-color: #3f363f;
+  @include flex-centre;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in;
+
+  &:hover {
+    background-color: $orange;
+  }
+}
+
+.update-button {
+  width: 150px;
+  background-color: $black-color;
+  color: white;
+  @include flex-centre;
+  height: 40px;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: $orange;
+  }
 }

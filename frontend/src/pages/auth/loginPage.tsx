@@ -7,33 +7,15 @@ import {
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Formik, Field, Form } from "formik";
-import * as Yup from "yup";
+import { verificationLoginSchema } from "./yupShema";
 
 export default function RegistrationPage() {
-  const SignupSchema = Yup.object().shape({
-    email: Yup.string()
-      .email("Email invalide")
-      .required("Email requis")
-      .matches(/[.]/, "Email invalide"),
-    password: Yup.string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-      .max(100, "Le mot de passe doit contenir au maximum 100 caractères")
-      .matches(
-        /[A-Z]/,
-        "Le mot de passe doit contenir au moins une majuscule et un caractère spécial"
-      )
-      .matches(
-        /[^A-Za-z0-9]/,
-        "Le mot de passe doit contenir au moins un caractère spécial et une majuscule"
-      )
-      .required("Mot de passe requis"),
-  });
-
   const onSubmit = (data: { email: string; password: string }) => {
     const { email, password } = data;
     if (!data || !email || !password) {
       throw new Error("No data or invalid data");
     }
+    console.log(data);
   };
 
   const initialValues = {
@@ -59,7 +41,7 @@ export default function RegistrationPage() {
                 <Formik
                   initialValues={initialValues}
                   onSubmit={onSubmit}
-                  validationSchema={SignupSchema}
+                  validationSchema={verificationLoginSchema}
                 >
                   {({ errors, touched, isValid }) => (
                     <Form
@@ -73,8 +55,9 @@ export default function RegistrationPage() {
                       }}
                     >
                       {errors.email && touched.email ? (
-                        <div>{errors.email}</div>
+                        <div style={{ color: "red" }}>{errors.email}</div>
                       ) : null}
+
                       <Field
                         type="text"
                         className="firstInput"
@@ -83,7 +66,7 @@ export default function RegistrationPage() {
                         name="email"
                       />
                       {errors.password && touched.password ? (
-                        <div>{errors.password}</div>
+                        <div style={{ color: "red" }}>{errors.password}</div>
                       ) : null}
                       <Field
                         className="firstInput"

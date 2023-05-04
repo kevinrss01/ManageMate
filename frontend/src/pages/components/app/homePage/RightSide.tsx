@@ -270,7 +270,12 @@ export default function RightSide() {
                 alt="Image of a rocket"
               />
               <h3>Besoin de plus d'espace ?</h3>
-              <div>
+              <div
+                className="button-upgrade"
+                onClick={() => {
+                  //
+                }}
+              >
                 Augmenter
                 <br /> Maintenant
               </div>

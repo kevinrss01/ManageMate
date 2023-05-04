@@ -22,7 +22,13 @@ export default function FifthPart() {
                 <div className="textContainer">
                   <h2>Contactez-nous</h2>
                   <h4>ADRESSE : </h4>
-                  <span>35 boulevard de TypeScript, 75087 Paris</span>
+                  <span>
+                    Manage Mate,
+                    <br />
+                    35 boulevard de TypeScript,
+                    <br />
+                    75087 Paris
+                  </span>
                   <h4>CONTACT : </h4>
                   <span>
                     06.07.08.09.10

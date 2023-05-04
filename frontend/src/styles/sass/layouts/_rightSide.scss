@@ -194,21 +194,6 @@
           text-align: center;
           margin: 10px;
         }
-
-        div {
-          width: 60%;
-          height: 50px;
-          font-size: 14px;
-          color: white;
-          background-color: #3f363f;
-          @include flex-centre;
-          cursor: pointer;
-          transition: background-color 0.3s ease-in;
-
-          &:hover {
-            background-color: $orange;
-          }
-        }
       }
     }
   }
