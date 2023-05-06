@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Params from "../components/app/Params";
+import Params from "../components/app/userPage/Params";
+import Invoices from "@/pages/components/app/userPage/Invoices";
 
 import Navbar from "@/pages/components/app/Navbar";
 export default function UserParameters() {
@@ -34,7 +35,7 @@ export default function UserParameters() {
           <Params />
         ) : (
           <>
-            <div className="invoices-container"></div>
+            <Invoices />
           </>
         )}
       </main>

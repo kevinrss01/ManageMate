@@ -7,7 +7,7 @@ import {
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Formik, Field, Form } from "formik";
-import { verificationLoginSchema } from "./yupShema";
+import { verificationLoginSchema } from "../../utils/yupShema";
 
 export default function RegistrationPage() {
   const onSubmit = (data: { email: string; password: string }) => {

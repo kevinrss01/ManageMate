@@ -8,7 +8,7 @@ import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { Formik, Field, Form } from "formik";
-import { verificationRegisterSchema } from "./yupShema";
+import { verificationRegisterSchema } from "../../utils/yupShema";
 
 export default function RegistrationPage() {
   const [emailValid, setEmailValid] = useState(false);

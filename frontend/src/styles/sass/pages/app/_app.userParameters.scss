@@ -1,3 +1,5 @@
+
+
 .userParametersContainer {
   .mainUserParametersContainer {
     margin-left: 80px;
@@ -18,6 +20,7 @@
         width: 260px;
         cursor: pointer;
         @include flex-centre;
+        transition: background-color 0.2s ease-in-out;
 
         &:active {
           scale: 0.9;
@@ -28,13 +31,18 @@
         background-color: $orange;
         border: 2px solid black;
       }
+
+
     }
 
     .params-container {
-      height: 500px;
+      height: 100%;
       width: 95%;
       background-color: antiquewhite;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 50px;
 
       .update-container {
         width: 70%;
@@ -69,7 +77,7 @@
                 flex-direction: column;
 
                 label {
-                  font-weight: bold;
+                  opacity: 60%;
                 }
 
                 input {
@@ -81,6 +89,10 @@
                   margin: 10px;
                 }
               }
+            }
+
+            .input-container-password {
+              flex-direction: column;
             }
           }
         }
@@ -109,8 +121,6 @@
           .rocketImage {
             height: 200px;
             width: 200px;
-            //animation: shake 0.8s;
-            //animation-iteration-count: infinite;
           }
 
           h3 {

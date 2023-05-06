@@ -13,6 +13,7 @@ const lastNameVerif = Yup.string()
   .required("Nom requis");
 
 const emailVerif = Yup.string()
+  .min(5, "L'email doit contenir au moins 5 caractères")
   .email("Email invalide")
   .required("Email requis")
   .matches(/[.]/, "Email invalide");
@@ -45,4 +46,13 @@ export const verificationRegisterSchema = Yup.object().shape({
 export const verificationUpdateInfoSchema = Yup.object().shape({
   firstName: firstNameVerif,
   lastName: lastNameVerif,
+});
+
+export const verificationUpdatePasswordSchema = Yup.object().shape({
+  oldPassword: passwordVerif,
+  newPassword: passwordVerif,
+  newPasswordConfirmation: passwordVerif,
+});
+export const verificationUpdateEmailSchema = Yup.object().shape({
+  newEmail: emailVerif,
 });

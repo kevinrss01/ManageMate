@@ -19,3 +19,34 @@ export interface StorageState {
   usedStorage: number;
   files: File[];
 }
+
+export interface UpdatePasswordDataType {
+  oldPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}
+export interface UpdateDataType {
+  firstName?: string;
+  lastName?: string;
+  newEmail?: string;
+  oldPassword?: string;
+  newPassword?: string;
+  newPasswordConfirmation?: string;
+}
+
+export interface Invoices {
+  id: string;
+  billAddress: {
+    firstName: string;
+    lastName: string;
+    compagny: string;
+    address: string;
+    postalCode: string;
+    city: string;
+    country: string;
+  };
+  totalAmount: number;
+  totalStorage: string;
+  paymentMethod: string;
+  paymentDate: string;
+}

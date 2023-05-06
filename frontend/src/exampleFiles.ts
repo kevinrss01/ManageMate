@@ -1,4 +1,4 @@
-import { File } from "@/interfaces/Interfaces";
+import { File, Invoices } from "@/interfaces/Interfaces";
 export const files: File[] = [
   {
     id: "1",
@@ -69,5 +69,40 @@ export const files: File[] = [
     type: "mp4",
     size: 1700000,
     dateAdded: "2017-05-05",
+  },
+];
+
+export const invoicesExample: Invoices[] = [
+  {
+    id: "1",
+    billAddress: {
+      firstName: "John",
+      lastName: "Doe",
+      compagny: "Doe & Co",
+      address: "1 avenue des champs élysées",
+      postalCode: "75015",
+      city: "Paris",
+      country: "France",
+    },
+    totalAmount: 20,
+    totalStorage: "20go",
+    paymentMethod: "CB",
+    paymentDate: "2021-05-05",
+  },
+  {
+    id: "2",
+    billAddress: {
+      firstName: "John",
+      lastName: "Doe",
+      compagny: "Doe & Co",
+      address: "1 avenue des champs élysées",
+      postalCode: "75015",
+      city: "Paris",
+      country: "France",
+    },
+    totalAmount: 20,
+    totalStorage: "20go",
+    paymentMethod: "CB",
+    paymentDate: "2020-05-05",
   },
 ];

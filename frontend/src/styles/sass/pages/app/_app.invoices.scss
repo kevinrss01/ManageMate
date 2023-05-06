@@ -1,0 +1,91 @@
+.invoices-container{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  .invoices-list-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid grey;
+    height: 650px;
+    width: 620px;
+    padding: 10px;
+    margin-left: 30px;
+
+    h2{
+      margin-bottom: 20px;
+    }
+
+    .invoices-list-item{
+      @include flex-centre;
+      flex-direction: column;
+      width: 90%;
+
+
+      p{
+        margin-top: 20px;
+        font-weight: bold;
+      };
+
+      .clicked{
+        background-color: $orange !important;
+        border: 2px solid black;
+      }
+
+      .invoice-container{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 18px;
+        padding: 8px 15px 8px 15px;
+        margin: 5px;
+        height: 40px;
+        color: white;
+        background-color: $black-color;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+
+
+        .icon-container{
+          @include flex-centre;
+
+          .icon{
+            font-size: 25px;
+            margin-left: 15px;
+            cursor: pointer;
+
+            &:hover{
+              color: $orange;
+            }
+          }
+        }
+      }
+      }
+    }
+
+  .invoices{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+     .pdf-viewer {
+       height: 100%;
+       width: 600Px;
+       margin-left: 30px;
+     }
+
+    .text-container{
+      height: 100%;
+      width: 600Px;
+      margin-left: 30px;
+      @include flex-centre;
+
+      p{
+        font-weight: bold;
+        font-size: 18px;
+      }
+    }
+  }
+  }

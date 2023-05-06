@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, CSSProperties, useState } from "react";
 import Navbar from "@/pages/components/app/Navbar";
 import Welcome from "@/pages/components/app/homePage/Welcome";
 import RightSide from "@/pages/components/app/homePage/RightSide";
@@ -6,7 +6,9 @@ import Main from "@/pages/components/app/homePage/Main";
 import { useDispatch } from "react-redux";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { files } from "@/exampleFiles";
-import { File } from "@/interfaces/Interfaces";
+import { File, UserState } from "@/interfaces/Interfaces";
+import toastMessage from "@/utils/toast";
+import { PulseLoader } from "react-spinners";
 
 export const formatFileSize = (sizeInKb: number): string => {
   if (sizeInKb < 1024) {
@@ -22,50 +24,79 @@ export const formatFileSize = (sizeInKb: number): string => {
   return `${sizeInGb.toFixed(1)} Go`;
 };
 
-export default function Homepage() {
-  //Redux
-  const dispatch = useDispatch();
+export const fetchUserData = async (): Promise<UserState> => {
+  try {
+    //FETCH DATA FROM DB AND RETURN THEM
 
-  const fetchFiles = async (): Promise<File[]> => {
-    //FETCH Files from DB and return them
-
-    return files;
-  };
-
-  useEffect(() => {
-    //FETCH DATA WITH AXIOS
-    //THEN DISPATCH THE DATA TO THE REDUX STORE
-    const data = {
+    return {
       firstName: "Kevin",
       lastName: "Rousseau",
       email: "kevin.rousseau3@gmail.com",
       totalUserStorage: 20971520,
     };
-
-    dispatch(
-      update({
-        ...data,
-      })
+  } catch (error: any) {
+    toastMessage(
+      "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
+      "error"
     );
+    console.error("Something went wrong went fetching user data: ", error);
+    throw new Error("Something went wrong went fetching user data: ", error);
+  }
+};
 
+export const fetchFiles = async (): Promise<File[]> => {
+  try {
+    //FETCH Files from DB and return them
+    return files;
+  } catch (error: any) {
+    toastMessage(
+      "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
+      "error"
+    );
+    console.error("Something went wrong went fetching user data: ", error);
+    throw new Error("Something went wrong went fetching user data: ", error);
+  }
+};
+
+export const createStorageUsage = async (userData: UserState) => {
+  const userFiles = await fetchFiles();
+  const sizeUsed = userFiles.reduce(
+    (accumulator, file) => accumulator + file.size,
+    0
+  );
+  const availableStorage = userData.totalUserStorage - sizeUsed;
+
+  return {
+    availableStorage: availableStorage,
+    usedStorage: sizeUsed,
+    files: userFiles,
+  };
+};
+
+export default function Homepage() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  //Redux
+  const dispatch = useDispatch();
+
+  useEffect(() => {
     const fetchData = async () => {
-      const userFiles = await fetchFiles();
-
-      console.log(userFiles);
-      const sizeUsed = userFiles.reduce(
-        (accumulator, file) => accumulator + file.size,
-        0
-      );
-
-      const availableStorage = data.totalUserStorage - sizeUsed;
+      setIsLoading(true);
+      const userData = await fetchUserData();
+      const userStorage = await createStorageUsage(userData);
 
       dispatch(
-        updateStorage({
-          availableStorage: availableStorage,
-          usedStorage: sizeUsed,
-          files: userFiles,
+        update({
+          ...userData,
         })
       );
+      dispatch(
+        updateStorage({
+          ...userStorage,
+        })
+      );
+
+      setIsLoading(false);
     };
 
     fetchData();
@@ -75,6 +106,14 @@ export default function Homepage() {
     <div className="homePageContainer">
       <Navbar />
       <main className="mainPageContainer">
+        {isLoading && (
+          <PulseLoader
+            color="#F87F3F"
+            size={100}
+            style={{ position: "absolute", left: "30%", top: "40%" }}
+          />
+        )}
+
         <Welcome />
         <Main />
       </main>
