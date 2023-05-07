@@ -52,8 +52,7 @@ export default function Params() {
           throw new Error("Passwords don't match");
         }
 
-        //return toastMessage('Le nouveau mot de passe doit être différent de l'ancien.', "error")
-        //Call axios
+        //Appel axios pour update le mot de passe
         return toastMessage("Mot de passe mis à jour avec succès !", "success");
       }
 
@@ -61,11 +60,14 @@ export default function Params() {
         if (data.newEmail === userData.email) {
           return toastMessage("Les valeurs doivent être différentes.", "error");
         }
-        //Call axios
+
+        //TO DO : Appel axios pour update l'email
+        //TO DO : Update le store redux
         return toastMessage("Email mis à jour avec succès !", "success");
       }
 
-      //Call axios
+      //TO DO : Appel axios pour update l'email
+      //TO DO : Update le store redux
       if (
         data.firstName === userData.firstName ||
         data.lastName === userData.lastName
