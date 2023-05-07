@@ -6,13 +6,10 @@ import Image from "next/image";
 import logo from "../../../../public/images/ManageMate.png";
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  let currentURL = "";
-
-  if (typeof window !== "undefined") {
-    currentURL = window.location.href;
-  }
+  const pathname = usePathname();
 
   return (
     <>
@@ -30,7 +27,7 @@ export default function Navbar() {
                 <AiFillHome
                   className="icon"
                   style={
-                    currentURL.includes("homepage") ? { color: "#f77e3f" } : {}
+                    pathname.includes("homepage") ? { color: "#f77e3f" } : {}
                   }
                 ></AiFillHome>
               </Link>
@@ -40,9 +37,7 @@ export default function Navbar() {
               <Link href="/app/files">
                 <RiFoldersLine
                   className="icon"
-                  style={
-                    currentURL.includes("files") ? { color: "#f77e3f" } : {}
-                  }
+                  style={pathname.includes("files") ? { color: "#f77e3f" } : {}}
                 />
               </Link>
             </div>
@@ -50,9 +45,7 @@ export default function Navbar() {
               <Link href="/app/userParameters">
                 <BsFillPersonFill
                   className="icon"
-                  style={
-                    currentURL.includes("user") ? { color: "#f77e3f" } : {}
-                  }
+                  style={pathname.includes("user") ? { color: "#f77e3f" } : {}}
                 />
               </Link>
             </div>
