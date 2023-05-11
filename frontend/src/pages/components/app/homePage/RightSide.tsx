@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import { selectStorage, selectUser } from "../../../../../slices/userSlice";
-import { formatFileSize } from "@/pages/app/homepage";
-import { File } from "@/interfaces/Interfaces";
+import { formatFileSizeFromKb } from "@/utils/fileUtils";
 import { AiFillFileText } from "react-icons/ai";
 import React from "react";
 import { RiFoldersFill } from "react-icons/ri";
@@ -9,6 +8,15 @@ import { MdLocalMovies } from "react-icons/md";
 import { AiOutlinePicture } from "react-icons/ai";
 import Image from "next/image";
 import rocket from "../../../../../public/images/rocket.png";
+import Link from "next/link";
+import {
+  getNumberOfFilesByType,
+  getPercentageAndSizeByFileType,
+} from "@/utils/fileUtils";
+import {
+  PercentageAndSizeByFileType,
+  NumberOfFilesByType,
+} from "@/interfaces/Interfaces";
 
 export default function RightSide() {
   //Redux
@@ -16,8 +24,10 @@ export default function RightSide() {
   const storageData = useSelector(selectStorage);
   const userFiles = storageData.files;
   const usedStorage = storageData.usedStorage;
-  const totalSpace = formatFileSize(userData.totalUserStorage);
-  const availableSpace = formatFileSize(storageData.availableStorage);
+
+  //Functions
+  const totalSpace = formatFileSizeFromKb(userData.totalUserStorage);
+  const availableSpace = formatFileSizeFromKb(storageData.availableStorage);
   const totalPercentageUsed = (): number => {
     const totalPercentageUsed = (
       (usedStorage * 100) /
@@ -27,94 +37,68 @@ export default function RightSide() {
     return parseFloat(totalPercentageUsed);
   };
 
-  const getPercentageByFileType = (files: File[]) => {
-    let totalSize = {
-      pdf: 0,
-      jpeg: 0,
-      png: 0,
-      mp4: 0,
-      word: 0,
-      mov: 0,
-    };
-    files.forEach((file: File) => {
-      totalSize[file.type] += file.size;
-    });
+  const fileTypeDetail: PercentageAndSizeByFileType =
+    getPercentageAndSizeByFileType(userFiles, userData);
+  const numberOfFilesByType: NumberOfFilesByType =
+    getNumberOfFilesByType(userFiles);
 
-    return {
-      documents: {
-        percentage: (
-          (totalSize.pdf * 100) / userData.totalUserStorage +
-          (totalSize.word * 100) / userData.totalUserStorage
-        ).toFixed(2),
-        size: formatFileSize(totalSize.pdf + totalSize.word),
-      },
-      images: {
-        percentage: (
-          (totalSize.jpeg * 100) / userData.totalUserStorage +
-          (totalSize.png * 100) / userData.totalUserStorage
-        ).toFixed(2),
-        size: formatFileSize(totalSize.jpeg + totalSize.png),
-      },
-      videos: {
-        percentage: ((totalSize.mov * 100) / userData.totalUserStorage).toFixed(
-          2
-        ),
-        size: formatFileSize(totalSize.mov),
-      },
-      others: {
-        percentage: ((totalSize.mp4 * 100) / userData.totalUserStorage).toFixed(
-          2
-        ),
-        size: formatFileSize(totalSize.mp4),
-      },
-    };
-  };
+  interface FileType {
+    displayName: string;
+    name: string;
+    color: string;
+    colorWithOpacity: string;
+    usagePercentage: string;
+    icon: React.ReactNode;
+  }
 
-  const getNumberOfFilesByType = (files: File[]) => {
-    const totalFiles = {
-      pdf: 0,
-      jpeg: 0,
-      png: 0,
-      word: 0,
-      mov: 0,
-      mp4: 0,
-    };
-
-    files.forEach((file: File) => {
-      totalFiles[file.type] += 1;
-    });
-
-    const { pdf, jpeg, png, word, mov, mp4 } = totalFiles;
-    return {
-      documents: pdf + word,
-      images: jpeg + png,
-      videos: mov,
-      others: mp4,
-    };
-  };
-
-  const fileTypeDetail = getPercentageByFileType(userFiles);
-  const numberOfFilesByType = getNumberOfFilesByType(userFiles);
-
-  const groupTypeColor = {
-    documents: "#247b32",
-    images: "#7a22ea",
-    others: "#f87f3f",
-    videos: "#3f363f",
-  };
+  const fileTypes: FileType[] = [
+    {
+      displayName: "Documents",
+      name: "documents",
+      color: "#247b32",
+      colorWithOpacity: "rgb(36,123,50, 0.15)",
+      usagePercentage: fileTypeDetail.documents.percentage,
+      icon: <AiFillFileText style={{ color: "#247b32" }} />,
+    },
+    {
+      displayName: "Videos",
+      name: "videos",
+      color: "#3f363f",
+      colorWithOpacity: "rgb(63,54,63, 0.15)",
+      usagePercentage: fileTypeDetail.videos.percentage,
+      icon: <MdLocalMovies style={{ color: "#3f363f" }} />,
+    },
+    {
+      displayName: "Images",
+      name: "images",
+      color: "#7a22ea",
+      colorWithOpacity: "rgb(122,34,234, 0.15)",
+      usagePercentage: fileTypeDetail.images.percentage,
+      icon: <AiOutlinePicture style={{ color: "#7a22ea" }} />,
+    },
+    {
+      displayName: "Autres",
+      name: "others",
+      color: "#f87f3f",
+      colorWithOpacity: "rgb(248,127,63, 0.15)",
+      usagePercentage: fileTypeDetail.others.percentage,
+      icon: <RiFoldersFill style={{ color: "#f87f3f" }} />,
+    },
+  ];
 
   return (
     <>
       <div className="rightSideContainer">
         <div className="infoUserContainer">
-          <div
-            className="nameAndEmailContainer"
-            onClick={() => {
-              //GO to profile page
-            }}
-          >
-            <h3>{userData.firstName + " " + userData.lastName}</h3>
-            <p>{userData.email}</p>
+          <div className="nameAndEmailContainer">
+            <Link href="/app/userParameters" style={{ all: "unset" }}>
+              <h3>
+                {(userData.firstName ? userData.firstName : "Introuvable") +
+                  " " +
+                  (userData.lastName ? userData.lastName : "introuvable")}
+              </h3>
+              <p>{userData.email}</p>
+            </Link>
           </div>
         </div>
         <div className="storageUsageContainer">
@@ -123,46 +107,22 @@ export default function RightSide() {
           </div>
           <div className="infoUsageContainer">
             <div className="colorUsage">
-              <div
-                className="fileTypePercentage"
-                style={{
-                  height: "100%",
-                  width: `${fileTypeDetail.documents.percentage}%`,
-                  backgroundColor: groupTypeColor.documents,
-                }}
-              ></div>
-              <div
-                className="fileTypePercentage"
-                style={{
-                  height: "100%",
-                  width: `${fileTypeDetail.videos.percentage}%`,
-                  backgroundColor: groupTypeColor.videos,
-                }}
-              ></div>
-              <div
-                className="fileTypePercentage"
-                style={{
-                  height: "100%",
-                  width: `${fileTypeDetail.images.percentage}%`,
-                  backgroundColor: groupTypeColor.images,
-                }}
-              ></div>
-              <div
-                className="fileTypePercentage"
-                style={{
-                  height: "100%",
-                  width: `${fileTypeDetail.others.percentage}%`,
-                  backgroundColor: groupTypeColor.others,
-                }}
-              ></div>
+              {fileTypes.map((fileType, index) => {
+                return (
+                  <div
+                    className="fileTypePercentage"
+                    key={index}
+                    style={{
+                      height: "100%",
+                      width: `${fileType.usagePercentage}%`,
+                      backgroundColor: fileType.color,
+                    }}
+                  ></div>
+                );
+              })}
               {totalPercentageUsed() < 50 && (
                 <>
-                  <span>
-                    {((usedStorage * 100) / userData.totalUserStorage).toFixed(
-                      2
-                    )}
-                    % UTILISÉ
-                  </span>
+                  <span>{totalPercentageUsed()}% UTILISÉ</span>
                 </>
               )}
             </div>
@@ -180,88 +140,34 @@ export default function RightSide() {
               </div>
             </div>
             <div className="detailUsage">
-              <div className="fileTypeUsage">
-                <div
-                  className="icon"
-                  style={{
-                    backgroundColor: "rgb(36,123,50, 0.15)",
-                  }}
-                >
-                  <AiFillFileText style={{ color: groupTypeColor.documents }} />
-                </div>
-                <div className="typeAndSizeContainer">
-                  <div className="type">
-                    <span className="title">Documents</span>
-                    <span className="filesNumber">
-                      {numberOfFilesByType.documents}{" "}
-                      {numberOfFilesByType.documents > 1
-                        ? "fichiers"
-                        : "fichier"}
-                    </span>
+              {fileTypes.map((fileType, index) => {
+                return (
+                  <div className="fileTypeUsage" key={index}>
+                    <div
+                      className="icon"
+                      style={{
+                        backgroundColor: fileType.colorWithOpacity,
+                      }}
+                    >
+                      {fileType.icon}
+                    </div>
+                    <div className="typeAndSizeContainer">
+                      <div className="type">
+                        <span className="title">{fileType.displayName}</span>
+                        <span className="filesNumber">
+                          {numberOfFilesByType[fileType.name]}{" "}
+                          {numberOfFilesByType[fileType.name] > 1
+                            ? "fichiers"
+                            : "fichier"}
+                        </span>
+                      </div>
+                      <div className="size">
+                        {fileTypeDetail[fileType.name].size}
+                      </div>
+                    </div>
                   </div>
-                  <div className="size">{fileTypeDetail.documents.size}</div>
-                </div>
-              </div>
-              <div className="fileTypeUsage">
-                <div
-                  className="icon"
-                  style={{
-                    backgroundColor: "rgba(63, 54, 63, 0.15)",
-                  }}
-                >
-                  <MdLocalMovies style={{ color: groupTypeColor.videos }} />
-                </div>
-                <div className="typeAndSizeContainer">
-                  <div className="type">
-                    <span className="title">Vidéos</span>
-                    <span className="filesNumber">
-                      {numberOfFilesByType.videos} {""}
-                      {numberOfFilesByType.videos > 1 ? "fichiers" : "fichier"}
-                    </span>
-                  </div>
-                  <div className="size">{fileTypeDetail.videos.size}</div>
-                </div>
-              </div>
-              <div className="fileTypeUsage">
-                <div
-                  className="icon"
-                  style={{
-                    backgroundColor: "rgba(122, 34, 234, 0.15)",
-                  }}
-                >
-                  <AiOutlinePicture style={{ color: groupTypeColor.images }} />
-                </div>
-                <div className="typeAndSizeContainer">
-                  <div className="type">
-                    <span className="title">Images</span>
-                    <span className="filesNumber">
-                      {numberOfFilesByType.images} {""}
-                      {numberOfFilesByType.images > 1 ? "fichiers" : "fichier"}
-                    </span>
-                  </div>
-                  <div className="size">{fileTypeDetail.images.size}</div>
-                </div>
-              </div>
-              <div className="fileTypeUsage">
-                <div
-                  className="icon"
-                  style={{
-                    backgroundColor: "rgba(248, 127, 63, 0.15)",
-                  }}
-                >
-                  <RiFoldersFill style={{ color: groupTypeColor.others }} />
-                </div>
-                <div className="typeAndSizeContainer">
-                  <div className="type">
-                    <span className="title">Autres</span>
-                    <span className="filesNumber">
-                      {numberOfFilesByType.others} {""}
-                      {numberOfFilesByType.others > 1 ? "fichiers" : "fichier"}
-                    </span>
-                  </div>
-                  <div className="size">{fileTypeDetail.others.size}</div>
-                </div>
-              </div>
+                );
+              })}
             </div>
             <div className="upgradeSpace">
               <Image

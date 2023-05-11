@@ -5,11 +5,51 @@ import { BsFillPersonFill } from "react-icons/bs";
 import Image from "next/image";
 import logo from "../../../../public/images/ManageMate.png";
 import Link from "next/link";
-import React from "react";
-import { usePathname } from "next/navigation";
+import React, { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
+  //const [isLoading, setIsLoading] = useState<boolean>(false);
+  //const [isClicked, setIsClicked] = useState<string>("");
+
+  const Router = useRouter();
+
+  const hoverColor = {
+    color: "#f77e3f",
+  };
+  const links = [
+    {
+      name: "Homepage",
+      path: "/app/homepage",
+      icon: (
+        <AiFillHome
+          className="icon"
+          style={pathname.includes("homepage") ? hoverColor : {}}
+        />
+      ),
+    },
+    {
+      name: "Files",
+      path: "/app/files",
+      icon: (
+        <RiFoldersLine
+          className="icon"
+          style={pathname.includes("files") ? hoverColor : {}}
+        />
+      ),
+    },
+    {
+      name: "Parameters",
+      path: "/app/userParameters",
+      icon: (
+        <BsFillPersonFill
+          className="icon"
+          style={pathname.includes("user") ? hoverColor : {}}
+        />
+      ),
+    },
+  ];
 
   return (
     <>
@@ -22,33 +62,13 @@ export default function Navbar() {
             <div className="buttonAdd">
               <BsPlus className="icon" />
             </div>
-            <div className="button">
-              <Link href="/app/homepage">
-                <AiFillHome
-                  className="icon"
-                  style={
-                    pathname.includes("homepage") ? { color: "#f77e3f" } : {}
-                  }
-                ></AiFillHome>
-              </Link>
-            </div>
-
-            <div className="button">
-              <Link href="/app/files">
-                <RiFoldersLine
-                  className="icon"
-                  style={pathname.includes("files") ? { color: "#f77e3f" } : {}}
-                />
-              </Link>
-            </div>
-            <div className="button">
-              <Link href="/app/userParameters">
-                <BsFillPersonFill
-                  className="icon"
-                  style={pathname.includes("user") ? { color: "#f77e3f" } : {}}
-                />
-              </Link>
-            </div>
+            {links.map((link, key) => {
+              return (
+                <div className="button" key={key}>
+                  <Link href={link.path}>{link.icon}</Link>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

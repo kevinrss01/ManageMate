@@ -1,11 +1,16 @@
-@mixin flex-centre{
+@mixin flex-centre {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-@mixin flex-column-centre{
+@mixin flex-column-centre {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+@mixin main-container {
+  margin-left: 80px;
+  padding: 15px;
+  width: 90%;
 }

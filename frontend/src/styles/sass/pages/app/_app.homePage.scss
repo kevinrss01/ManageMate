@@ -5,9 +5,7 @@
 }
 
 .mainPageContainer {
-  margin-left: 80px;
-  padding: 15px;
-  width: 90%;
+  @include main-container;
 
   .welcomeContainer {
     background-color: $grey-container;
@@ -100,24 +98,23 @@
           cursor: pointer;
         }
 
-        .containerDelete{
+        .containerDelete {
           display: flex;
           align-items: center;
           justify-content: center;
 
-
-          .iconValid{
+          .iconValid {
             font-size: 19px;
 
-            &:hover{
+            &:hover {
               font-size: 25px;
             }
           }
 
-          .iconNotValid{
+          .iconNotValid {
             font-size: 17px;
 
-            &:hover{
+            &:hover {
               font-size: 22px;
             }
           }

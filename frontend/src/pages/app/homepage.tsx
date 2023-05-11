@@ -10,20 +10,6 @@ import { File, UserState } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { PulseLoader } from "react-spinners";
 
-export const formatFileSize = (sizeInKb: number): string => {
-  if (sizeInKb < 1024) {
-    return `${sizeInKb} ko`;
-  }
-
-  const sizeInMb = sizeInKb / 1024;
-  if (sizeInMb < 1024) {
-    return `${sizeInMb.toFixed(1)} Mo`;
-  }
-
-  const sizeInGb = sizeInMb / 1024;
-  return `${sizeInGb.toFixed(1)} Go`;
-};
-
 export const fetchUserData = async (): Promise<UserState> => {
   try {
     //FETCH DATA FROM DB AND RETURN THEM
@@ -36,7 +22,7 @@ export const fetchUserData = async (): Promise<UserState> => {
     };
   } catch (error: any) {
     toastMessage(
-      "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
+      "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
       "error"
     );
     console.error("Something went wrong went fetching user data: ", error);
@@ -50,7 +36,7 @@ export const fetchFiles = async (): Promise<File[]> => {
     return files;
   } catch (error: any) {
     toastMessage(
-      "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
+      "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
       "error"
     );
     console.error("Something went wrong went fetching user data: ", error);
@@ -59,18 +45,30 @@ export const fetchFiles = async (): Promise<File[]> => {
 };
 
 export const createStorageUsage = async (userData: UserState) => {
-  const userFiles = await fetchFiles();
-  const sizeUsed = userFiles.reduce(
-    (accumulator, file) => accumulator + file.size,
-    0
-  );
-  const availableStorage = userData.totalUserStorage - sizeUsed;
+  try {
+    const userFiles = await fetchFiles();
+    const sizeUsed = userFiles.reduce(
+      (accumulator, file) => accumulator + file.size,
+      0
+    );
+    const availableStorage = userData.totalUserStorage - sizeUsed;
 
-  return {
-    availableStorage: availableStorage,
-    usedStorage: sizeUsed,
-    files: userFiles,
-  };
+    return {
+      availableStorage: availableStorage,
+      usedStorage: sizeUsed,
+      files: userFiles,
+    };
+  } catch (error: any) {
+    toastMessage(
+      "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
+      "error"
+    );
+    console.error("Something went wrong when creating storage usage: ", error);
+    throw new Error(
+      "Something went wrong when creating storage usage: ",
+      error
+    );
+  }
 };
 
 export default function Homepage() {
@@ -113,7 +111,6 @@ export default function Homepage() {
             style={{ position: "absolute", left: "30%", top: "40%" }}
           />
         )}
-
         <Welcome />
         <Main />
       </main>

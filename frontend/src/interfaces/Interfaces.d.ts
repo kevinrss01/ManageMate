@@ -6,6 +6,34 @@ export interface File {
   dateAdded: string;
 }
 
+export interface PercentageAndSizeByFileType {
+  [key: string]: { percentage: string; size: string };
+  documents: {
+    percentage: string;
+    size: string;
+  };
+  images: {
+    percentage: string;
+    size: string;
+  };
+  videos: {
+    percentage: string;
+    size: string;
+  };
+  others: {
+    percentage: string;
+    size: string;
+  };
+}
+
+export interface NumberOfFilesByType {
+  [key: string]: number;
+  documents: number;
+  images: number;
+  videos: number;
+  others: number;
+}
+
 // REDUX
 export interface UserState {
   firstName: string;

@@ -6,7 +6,7 @@ import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { selectStorage } from "../../../../../slices/userSlice";
 import { useSelector } from "react-redux";
-import { formatFileSize } from "@/pages/app/homepage";
+import { getTimeSinceAdd, formatFileSizeFromKb } from "@/utils/fileUtils";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -25,36 +25,6 @@ const iconsType: Record<string, string> = {
   word: "Fichier Word",
   mov: "Fichier vidéo",
 };
-
-export function getTimeSinceAdd(dateString: string): string {
-  const date = new Date(dateString);
-  if (date.toString() === "Invalid Date") {
-    return "Inconnu";
-  }
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  const units = [
-    { name: "an", seconds: 60 * 60 * 24 * 365 },
-    { name: "mois", seconds: 60 * 60 * 24 * 30 },
-    { name: "semaine", seconds: 60 * 60 * 24 * 7 },
-    { name: "jour", seconds: 60 * 60 * 24 },
-    { name: "heure", seconds: 60 * 60 },
-    { name: "minute", seconds: 60 },
-  ];
-
-  for (const unit of units) {
-    const count = Math.floor(seconds / unit.seconds);
-    if (count >= 1) {
-      if (unit.name == "mois") {
-        return `${count} ${unit.name}`;
-      }
-      const plural = count > 1 ? "s" : "";
-      return `${count} ${unit.name}${plural}`;
-    }
-  }
-  return "moins d'une minute";
-}
 
 export default function Main() {
   const [showTrash, setShowTrash] = useState(true);
@@ -119,7 +89,7 @@ export default function Main() {
                           Il y a {getTimeSinceAdd(file.dateAdded)}
                         </span>
                         <span className="size">
-                          {formatFileSize(file.size)}
+                          {formatFileSizeFromKb(file.size)}
                         </span>
                       </div>
                       {showTrash ? (

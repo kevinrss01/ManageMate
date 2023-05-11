@@ -1,0 +1,7 @@
+.files-pages-container {
+  display: flex;
+
+  .files-pages-main {
+    @include main-container;
+  }
+}
