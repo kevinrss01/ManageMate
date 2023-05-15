@@ -1,7 +1,101 @@
 .files-pages-container {
+  background-color: white;
   display: flex;
 
   .files-pages-main {
     @include main-container;
+
+    .searchContainer {
+      display: flex;
+      align-items: center;
+      padding-left: 20px;
+      background-color: $grey-container;
+      width: 95%;
+      height: 80px;
+      border: lightgray 1px solid;
+
+      .input-container {
+        display: flex;
+        width: 60%;
+
+        .searchIcon {
+          padding: 10px;
+          border: lightgray 1px solid;
+          height: 30px;
+          width: 30px;
+          font-size: 10px;
+          border-right: none;
+          color: grey;
+          background-color: #ebe9e8;
+        }
+
+        input {
+          all: unset;
+          width: 80%;
+          height: 30px;
+          padding: 10px;
+          border: lightgray 1px solid;
+          border-left: none;
+          background-color: #ebe9e8;
+          font-size: 20px;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .files-container {
+      h2 {
+        margin: 20px 0;
+      }
+
+      .filters-container {
+        .open-filters-container {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+
+          .icon {
+            @include flex-centre;
+            font-size: 20px;
+            margin-left: 10px;
+            rotate: 90deg;
+          }
+        }
+
+        .filters {
+          display: flex;
+          margin-bottom: 20px;
+          display: flex;
+
+          .filter-container {
+            width: 250px;
+
+            .filter {
+              margin-right: 5%;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+
+      .files {
+        display: flex;
+        flex-wrap: wrap;
+
+        .file {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          height: 200px;
+          width: 200px;
+          border: lightgray 1px solid;
+          margin: 0 5% 5% 0;
+          gap: 10px;
+        }
+      }
+    }
   }
 }

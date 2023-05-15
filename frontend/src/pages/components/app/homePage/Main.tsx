@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { FcVideoFile, FcImageFile } from "react-icons/fc";
-import { AiFillFileText } from "react-icons/ai";
-import { MdAudioFile } from "react-icons/md";
 import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { selectStorage } from "../../../../../slices/userSlice";
 import { useSelector } from "react-redux";
 import { getTimeSinceAdd, formatFileSizeFromKb } from "@/utils/fileUtils";
+import { FcVideoFile, FcImageFile } from "react-icons/fc";
+import { AiFillFileText, AiOutlineFile } from "react-icons/ai";
+import { MdAudioFile } from "react-icons/md";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -15,6 +15,7 @@ const icons: Record<string, React.ReactNode> = {
   mp4: <MdAudioFile style={{ color: "purple" }} />,
   word: <AiFillFileText />,
   mov: <FcVideoFile />,
+  others: <AiOutlineFile />,
 };
 
 const iconsType: Record<string, string> = {
@@ -34,11 +35,15 @@ export default function Main() {
   const userFiles = storageData.files;
 
   const getIcon = (typeOfIcon: string) => {
-    return icons[typeOfIcon];
+    return icons[typeOfIcon] === undefined
+      ? icons["others"]
+      : icons[typeOfIcon];
   };
 
   const getIconText = (typeOfIcon: string) => {
-    return iconsType[typeOfIcon];
+    return iconsType[typeOfIcon] === undefined
+      ? "inconnu"
+      : iconsType[typeOfIcon];
   };
 
   return (

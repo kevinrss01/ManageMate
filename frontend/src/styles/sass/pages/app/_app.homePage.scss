@@ -27,36 +27,6 @@
         font-size: 22px;
       }
     }
-
-    .searchContainer {
-      @include flex-centre;
-      background-color: $grey-container;
-      width: 50%;
-      height: 100%;
-      border-left: none;
-
-      .searchIcon {
-        padding: 10px;
-        border: lightgray 1px solid;
-        height: 30px;
-        width: 30px;
-        font-size: 10px;
-        border-right: none;
-        color: grey;
-        background-color: #ebe9e8;
-      }
-
-      input {
-        all: unset;
-        width: 80%;
-        height: 30px;
-        padding: 10px;
-        border: lightgray 1px solid;
-        border-left: none;
-        background-color: #ebe9e8;
-        font-size: 20px;
-      }
-    }
   }
 
   .mainContainer {

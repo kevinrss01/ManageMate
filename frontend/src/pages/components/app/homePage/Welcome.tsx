@@ -5,16 +5,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectUser } from "../../../../../slices/userSlice";
 
 export default function Welcome() {
-  const [searchValue, setSearchValue] = useState("");
-
   //Redux
   const userData = useSelector(selectUser);
-
-  const searchFiles = () => {
-    if (searchValue) {
-      //console.log(searchValue);
-    }
-  };
 
   return (
     <>
@@ -24,23 +16,6 @@ export default function Welcome() {
             Bienvenue {userData.firstName + " " + userData.lastName} !
             <FcApproval style={{ marginLeft: "5px" }} />
           </h2>
-        </div>
-        <div className="searchContainer">
-          <SlMagnifier className="searchIcon" />
-          <input
-            type="text"
-            placeholder="Rechercher quelque chose ici"
-            onChange={(e) => {
-              setSearchValue(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (searchValue) {
-                  searchFiles();
-                }
-              }
-            }}
-          />
         </div>
       </div>
     </>
