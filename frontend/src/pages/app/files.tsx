@@ -19,7 +19,7 @@ export default function Files() {
   const [isOpenFilters, setIsOpenFilters] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
   const [isFilterType, setIsFilterType] = useState<string>("none");
-  const [isFilterOpen, setIsFilterOpen] = useState<string>("none");
+  const [typeOfFilterOpen, setTypeOfFilterOpen] = useState<string>("none");
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
@@ -81,20 +81,30 @@ export default function Files() {
     {
       type: "date",
       underFilterType: [
-        //Ajouter tous les types de filtres
+        {
+          displayName: "Croissant",
+        },
+        {
+          displayName: "Décroissant",
+        },
       ],
     },
     {
       type: "poids",
       underFilterType: [
-        //Ajouter tous les types de filtres
+        {
+          displayName: "Croissant",
+        },
+        {
+          displayName: "Décroissant",
+        },
       ],
     },
     {
       type: "type de fichier",
-      underFilterType: [
-        //Ajouter tous les types de filtres
-      ],
+      underFilterType: () => {
+        // returner tous les types de fichier que la personne a upload
+      },
     },
   ];
 
@@ -136,8 +146,12 @@ export default function Files() {
                     key={index}
                     className="filter-container"
                     onClick={() => {
-                      setIsOpenFilters(!isOpenFilters);
-                      setIsFilterOpen(filter.type);
+                      if (isOpenFilters && typeOfFilterOpen !== filter.type) {
+                        setTypeOfFilterOpen(filter.type);
+                      } else {
+                        setTypeOfFilterOpen(filter.type);
+                        setIsOpenFilters(!isOpenFilters);
+                      }
                     }}
                   >
                     <div className="filter">
@@ -146,16 +160,15 @@ export default function Files() {
                         className="icon"
                         style={{
                           rotate:
-                            isOpenFilters && isFilterOpen === filter.type
+                            isOpenFilters && typeOfFilterOpen === filter.type
                               ? "90deg"
                               : "",
                         }}
                       />
                     </div>
-                    {isOpenFilters && isFilterOpen === filter.type && (
+                    {isOpenFilters && typeOfFilterOpen === filter.type && (
                       <div className="under-filter-type">
-                        {/* Maper sur tous les sous-type de filtre */}
-                        <span>Hello</span>
+                        {/* Maper sur tous les sous-type de filtre, (on est déjà en train de mapper sur typeFilter donc on devrait mapper sur underFilterType) */}
                       </div>
                     )}
                   </div>
