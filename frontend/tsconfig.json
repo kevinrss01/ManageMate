@@ -15,10 +15,16 @@
     "jsx": "preserve",
     "incremental": true,
     "noImplicitAny": true,
+    "pretty": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "checkJs": true,
+    "strictPropertyInitialization": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "extends": "@tsconfig/next/tsconfig.json",
   "exclude": ["node_modules"]
 }

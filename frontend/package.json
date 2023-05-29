@@ -37,6 +37,7 @@
     "yup": "^1.0.2"
   },
   "devDependencies": {
+    "@tsconfig/next": "^1.0.5",
     "@types/react-pdf": "^6.2.0"
   }
 }
