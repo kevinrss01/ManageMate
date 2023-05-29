@@ -9,104 +9,121 @@ import { selectUser } from "../../../slices/userSlice";
 import { SlMagnifier } from "react-icons/sl";
 import { IoIosArrowForward } from "react-icons/io";
 import { File } from "@/interfaces/Interfaces";
+import { typeFilter } from "../../utils/fileUtils";
+import { useDebouncedEffect } from "@react-hookz/web";
+import NetflixLoader from "../components/loaders/FilesPageLoader";
+import FilesContainer from "../components/app/filesPage/FilesContainer";
 
 interface Filter {
-  [key: string]: (files: File[]) => File[];
+  [key: string]: (files: File[], extension?: string) => void;
 }
 
 export default function Files() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [isOpenFilters, setIsOpenFilters] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [isFilterType, setIsFilterType] = useState<string>("none");
+  const [filteredFiles, setFilteredFiles] = useState<File[]>([]);
   const [typeOfFilterOpen, setTypeOfFilterOpen] = useState<string>("none");
+  const [activeFilter, setActiveFilter] = useState<string>("none");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
 
-  const searchFiles = () => {
-    if (searchValue) {
-      //console.log(searchValue);
+  const fetchData = async () => {
+    if (data.firstName === "") {
+      const userData = await fetchUserData();
+      const userStorage = await createStorageUsage(userData);
+
+      dispatch(
+        update({
+          ...userData,
+        })
+      );
+      dispatch(
+        updateStorage({
+          ...userStorage,
+        })
+      );
     }
+
+    const files = await fetchFiles();
+    setFiles(files);
+    setFilteredFiles(files);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (data.firstName === "") {
-        console.log("yes");
-        const userData = await fetchUserData();
-        const userStorage = await createStorageUsage(userData);
-
-        dispatch(
-          update({
-            ...userData,
-          })
-        );
-        dispatch(
-          updateStorage({
-            ...userStorage,
-          })
-        );
-      }
-
-      const files = await fetchFiles();
-      setFiles(files);
-    };
-
     fetchData();
+    setIsLoading(false);
   }, [files]);
 
+  const searchFiles = (value: string) => {
+    if (value) {
+      const filterFiles = [...files].filter((file) => {
+        return file.name
+          .toLocaleLowerCase()
+          .includes(value.toLocaleLowerCase());
+      });
+      setFilteredFiles(filterFiles);
+    } else {
+      fetchData();
+      setFilteredFiles(files);
+    }
+  };
+
+  useDebouncedEffect(
+    () => {
+      searchFiles(searchValue);
+    },
+    [searchValue],
+    200
+  );
+
   const typeFilterMap: Filter = {
-    date: (files: File[]) => {
-      return files.sort((a, b) => {
+    dateGrowing: (files: File[]) => {
+      const filterFiles = [...files].sort((a, b) => {
         const dateA = new Date(a.dateAdded);
         const dateB = new Date(b.dateAdded);
         return dateB.getTime() - dateA.getTime();
       });
+      setFilteredFiles(filterFiles);
     },
-    // weight: (files: File[]) => {
-
-    // },
-    // type: (files: File[]) => {},
-    // name: (files: File[]) => {},
+    dateDecreasing: (files: File[]) => {
+      const filterFiles = [...files].sort((a, b) => {
+        const dateA = new Date(a.dateAdded);
+        const dateB = new Date(b.dateAdded);
+        return dateA.getTime() - dateB.getTime();
+      });
+      setFilteredFiles(filterFiles);
+    },
+    sizeGrowing: (files: File[]) => {
+      const filterFiles = [...files].sort((a, b) => {
+        return b.size - a.size;
+      });
+      setFilteredFiles(filterFiles);
+    },
+    sizeDecreasing: (files: File[]) => {
+      const filterFiles = [...files].sort((a, b) => {
+        return a.size - b.size;
+      });
+      setFilteredFiles(filterFiles);
+    },
+    filesType: (files: File[], extension: string | undefined) => {
+      if (!extension) return;
+      const filterFiles = [...files].filter((file) => {
+        return file.type === extension;
+      });
+      setFilteredFiles(filterFiles);
+    },
   };
 
-  useEffect(() => {
-    if (isFilterType !== "none") {
-      typeFilterMap[isFilterType];
+  const handleFilterType = (filterType: string, extensionFile?: string) => {
+    if (extensionFile) {
+      typeFilterMap["filesType"](files, extensionFile);
+    } else {
+      typeFilterMap[filterType](files);
     }
-  }, [isFilterType]);
-
-  const typeFilter = [
-    {
-      type: "date",
-      underFilterType: [
-        {
-          displayName: "Croissant",
-        },
-        {
-          displayName: "Décroissant",
-        },
-      ],
-    },
-    {
-      type: "poids",
-      underFilterType: [
-        {
-          displayName: "Croissant",
-        },
-        {
-          displayName: "Décroissant",
-        },
-      ],
-    },
-    {
-      type: "type de fichier",
-      underFilterType: () => {
-        // returner tous les types de fichier que la personne a upload
-      },
-    },
-  ];
+  };
 
   return (
     <div className="files-pages-container">
@@ -117,77 +134,98 @@ export default function Files() {
             <SlMagnifier className="searchIcon" />
             <input
               type="text"
-              placeholder="Rechercher un fichier par nom"
+              placeholder="Rechercher un fichier par son nom"
               onChange={(e) => {
                 setSearchValue(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (searchValue) {
-                    searchFiles();
-                  }
-                }
               }}
             />
           </div>
         </div>
         <div className="files-container">
           <h2>Tous vos fichiers</h2>
-          <div className="filters-container">
-            <div className="open-filters-container">
-              <h3>Filtrer mes fichiers</h3>
-              <IoIosArrowForward className="icon" />
-            </div>
-
-            <div className="filters">
-              {typeFilter.map((filter, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="filter-container"
-                    onClick={() => {
-                      if (isOpenFilters && typeOfFilterOpen !== filter.type) {
-                        setTypeOfFilterOpen(filter.type);
-                      } else {
-                        setTypeOfFilterOpen(filter.type);
-                        setIsOpenFilters(!isOpenFilters);
-                      }
-                    }}
-                  >
-                    <div className="filter">
-                      <span>Filtrer par {filter.type}</span>
-                      <IoIosArrowForward
-                        className="icon"
-                        style={{
-                          rotate:
-                            isOpenFilters && typeOfFilterOpen === filter.type
-                              ? "90deg"
-                              : "",
-                        }}
-                      />
-                    </div>
-                    {isOpenFilters && typeOfFilterOpen === filter.type && (
-                      <div className="under-filter-type">
-                        {/* Maper sur tous les sous-type de filtre, (on est déjà en train de mapper sur typeFilter donc on devrait mapper sur underFilterType) */}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          <div className="files">
-            {files.map((file) => {
-              return (
-                <div className="file" key={file.id}>
-                  <span>{file.name}</span>
-                  <span>{file.type}</span>
-                  <span>{file.size}</span>
-                  <span>{file.dateAdded}</span>
+          {isLoading ? (
+            <>
+              <NetflixLoader />
+            </>
+          ) : (
+            <>
+              <div className="filters-container">
+                <div className="open-filters-container">
+                  <h3>Filtrer mes fichiers</h3>
+                  <IoIosArrowForward className="icon" />
                 </div>
-              );
-            })}
-          </div>
+
+                <div className="filters">
+                  {typeFilter.map((filter, index) => {
+                    return (
+                      <div key={index} className="filter-container">
+                        <div
+                          className="filter"
+                          onClick={() => {
+                            if (
+                              isOpenFilters &&
+                              typeOfFilterOpen !== filter.type
+                            ) {
+                              setTypeOfFilterOpen(filter.type);
+                            } else {
+                              setTypeOfFilterOpen(filter.type);
+                              setIsOpenFilters(!isOpenFilters);
+                            }
+                          }}
+                        >
+                          <span>Filtrer par {filter.type}</span>
+                          <IoIosArrowForward
+                            className="icon"
+                            style={{
+                              rotate:
+                                isOpenFilters &&
+                                typeOfFilterOpen === filter.type
+                                  ? "90deg"
+                                  : "",
+                            }}
+                          />
+                        </div>
+                        {isOpenFilters && typeOfFilterOpen === filter.type && (
+                          <div className="under-filter-type-container">
+                            {filter.underFilterType.map(
+                              (underFilter, index: number) => {
+                                return (
+                                  <div
+                                    key={index}
+                                    className="under-filter-type"
+                                    style={{
+                                      backgroundColor:
+                                        activeFilter === underFilter.displayName
+                                          ? "#F87F3F"
+                                          : "",
+                                      pointerEvents:
+                                        activeFilter === underFilter.displayName
+                                          ? "none"
+                                          : "auto",
+                                    }}
+                                    onClick={() => {
+                                      setActiveFilter(underFilter.displayName);
+                                      handleFilterType(
+                                        underFilter.function,
+                                        underFilter.extension
+                                      );
+                                    }}
+                                  >
+                                    {underFilter.displayName}
+                                  </div>
+                                );
+                              }
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <FilesContainer filteredFiles={filteredFiles} />
+            </>
+          )}
         </div>
       </main>
       <RightSide />

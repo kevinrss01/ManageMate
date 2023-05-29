@@ -1,3 +1,4 @@
+import { TypeFilter } from "@/interfaces/FilesPage";
 import {
   UserState,
   File,
@@ -117,3 +118,102 @@ export function getTimeSinceAdd(dateString: string): string {
   }
   return "moins d'une minute";
 }
+
+export const typeFilter: TypeFilter[] = [
+  {
+    type: "date",
+    underFilterType: [
+      {
+        displayName: "Du plus récent au plus ancien",
+        function: "dateGrowing",
+      },
+      {
+        displayName: "Du plus ancien au plus récent",
+        function: "dateDecreasing",
+      },
+    ],
+  },
+  {
+    type: "poids",
+    underFilterType: [
+      {
+        displayName: "Poids Croissant",
+        function: "sizeGrowing",
+      },
+      {
+        displayName: "Poids Décroissant",
+        function: "sizeDecreasing",
+      },
+    ],
+  },
+  {
+    type: "type de fichier",
+    underFilterType: [
+      {
+        displayName: "Text (txt)",
+        extension: "txt",
+        function: "filesType",
+      },
+      {
+        displayName: "Image JPG",
+        extension: "jpg",
+        function: "filesType",
+      },
+      {
+        displayName: "Image JPEG",
+        extension: "jpeg",
+        function: "filesType",
+      },
+      {
+        displayName: "Image PNG",
+        extension: "png",
+        function: "filesType",
+      },
+      {
+        displayName: "Document PDF",
+        extension: "pdf",
+        function: "filesType",
+      },
+      {
+        displayName: "Document word (docx)",
+        extension: "docx",
+        function: "filesType",
+      },
+      {
+        displayName: "Spreadsheet",
+        extension: "xlsx",
+        function: "filesType",
+      },
+      {
+        displayName: "Audio (mp3)",
+        extension: "mp3",
+        function: "filesType",
+      },
+      {
+        displayName: "Video (mp4)",
+        extension: "mp4",
+        function: "filesType",
+      },
+      {
+        displayName: "Webpage",
+        extension: "html",
+        function: "filesType",
+      },
+      {
+        displayName: "JavaScript",
+        extension: "js",
+        function: "filesType",
+      },
+      {
+        displayName: "CSS",
+        extension: "css",
+        function: "filesType",
+      },
+      {
+        displayName: "MOV",
+        extension: "mov",
+        function: "filesType",
+      },
+    ],
+  },
+];

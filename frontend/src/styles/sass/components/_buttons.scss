@@ -35,3 +35,15 @@
     background-color: $orange;
   }
 }
+
+.delete-button {
+  background-color: $black-color;
+  color: white;
+  padding: 8px;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+
+  &:hover {
+    background-color: rgb(217, 0, 0);
+  }
+}
