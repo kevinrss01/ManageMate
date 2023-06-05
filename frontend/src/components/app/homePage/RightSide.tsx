@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectStorage, selectUser } from "../../../../../slices/userSlice";
+import { selectStorage, selectUser } from "../../../../slices/userSlice";
 import { formatFileSizeFromKb } from "@/utils/fileUtils";
 import { AiFillFileText } from "react-icons/ai";
 import React from "react";
@@ -7,7 +7,7 @@ import { RiFoldersFill } from "react-icons/ri";
 import { MdLocalMovies } from "react-icons/md";
 import { AiOutlinePicture } from "react-icons/ai";
 import Image from "next/image";
-import rocket from "../../../../../public/images/rocket.png";
+import rocket from "../../../../public/images/rocket.png";
 import Link from "next/link";
 import {
   getNumberOfFilesByType,

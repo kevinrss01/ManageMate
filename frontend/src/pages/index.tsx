@@ -1,9 +1,9 @@
 import Head from "next/head";
-import FirstPart from "@/pages/components/index/index.FirstPart";
+import FirstPart from "@/components/index/index.FirstPart";
 // @ts-ignore
-import SecondPart from "@/pages/components/index/index.SecondPart";
-import ThirdPart from "@/pages/components/index/index.ThirdPart";
-import FifthPart from "@/pages/components/index/index.FifthPart";
+import SecondPart from "@/components/index/index.SecondPart";
+import ThirdPart from "@/components/index/index.ThirdPart";
+import FifthPart from "@/components/index/index.FifthPart";
 import Link from "next/link";
 
 export default function Home() {

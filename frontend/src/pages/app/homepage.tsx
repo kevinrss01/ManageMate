@@ -1,8 +1,8 @@
-import React, { useEffect, CSSProperties, useState } from "react";
-import Navbar from "@/pages/components/app/Navbar";
-import Welcome from "@/pages/components/app/homePage/Welcome";
-import RightSide from "@/pages/components/app/homePage/RightSide";
-import Main from "@/pages/components/app/homePage/Main";
+import React, { useEffect, useState } from "react";
+import Navbar from "@/components/app/Navbar";
+import Welcome from "@/components/app/homePage/Welcome";
+import RightSide from "@/components/app/homePage/RightSide";
+import Main from "@/components/app/homePage/Main";
 import { useDispatch } from "react-redux";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { files } from "@/exampleFiles";

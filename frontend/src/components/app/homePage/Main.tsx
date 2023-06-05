@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
-import { selectStorage } from "../../../../../slices/userSlice";
+import { selectStorage } from "../../../../slices/userSlice";
 import { useSelector } from "react-redux";
 import { getTimeSinceAdd, formatFileSizeFromKb } from "@/utils/fileUtils";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";

@@ -3,9 +3,9 @@ import { AiFillHome } from "react-icons/ai";
 import { RiFoldersLine } from "react-icons/ri";
 import { BsFillPersonFill } from "react-icons/bs";
 import Image from "next/image";
-import logo from "../../../../public/images/ManageMate.png";
+import logo from "../../../public/images/MAnageMate.png";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {

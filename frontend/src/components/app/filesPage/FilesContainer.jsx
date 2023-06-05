@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import {
   formatFileSizeFromKb,
   getTimeSinceAdd,
-} from "../../../../utils/fileUtils";
+} from "../../../utils/fileUtils";
 
 export default function FilesContainer({ filteredFiles }) {
   return (

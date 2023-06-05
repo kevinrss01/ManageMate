@@ -1,5 +1,5 @@
-import Navbar from "../components/app/Navbar";
-import RightSide from "../components/app/homePage/RightSide";
+import Navbar from "@/components/app/Navbar";
+import RightSide from "@/components/app/homePage/RightSide";
 import { fetchUserData, fetchFiles, createStorageUsage } from "./homepage";
 import { useEffect, useState } from "react";
 import { update, updateStorage } from "../../../slices/userSlice";
@@ -11,8 +11,8 @@ import { IoIosArrowForward } from "react-icons/io";
 import { File } from "@/interfaces/Interfaces";
 import { typeFilter } from "../../utils/fileUtils";
 import { useDebouncedEffect } from "@react-hookz/web";
-import NetflixLoader from "../components/loaders/FilesPageLoader";
-import FilesContainer from "../components/app/filesPage/FilesContainer";
+import NetflixLoader from "@/components/loaders/FilesPageLoader";
+import FilesContainer from "@/components/app/filesPage/FilesContainer";
 
 interface Filter {
   [key: string]: (files: File[], extension?: string) => void;

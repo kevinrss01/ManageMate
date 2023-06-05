@@ -1,5 +1,5 @@
 import Image from "next/image";
-import rocket from "../../../../../public/images/rocket.png";
+import rocket from "../../../../public/images/rocket.png";
 import { Formik, Form, Field } from "formik";
 import {
   verificationUpdateEmailSchema,
@@ -7,7 +7,7 @@ import {
   verificationUpdatePasswordSchema,
 } from "@/utils/yupShema";
 import { useSelector } from "react-redux";
-import { selectUser } from "../../../../../slices/userSlice";
+import { selectUser } from "../../../../slices/userSlice";
 import { useEffect, useState } from "react";
 import {
   UpdateDataType,
