@@ -1,14 +1,16 @@
 import React, { useState } from "react";
-import {
-  AiFillFacebook,
-  AiOutlineGoogle,
-  AiOutlineTwitter,
-} from "react-icons/ai";
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { RiArrowGoBackFill } from "react-icons/ri";
 import { Formik, Field, Form } from "formik";
-import { verificationRegisterSchema } from "../../utils/yupShema";
+import { verificationRegisterSchema } from "@/utils/yupShema";
+import { useRouter } from "next/navigation";
+import { RegisterMethods } from "@/components/auth/RegisterMethods";
+import AuthAPI from "@/services/AuthAPI";
+import { AxiosResponse } from "axios";
+import { toast } from "react-toastify";
+import toastMessage from "@/utils/toast";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function RegistrationPage() {
   const [emailValid, setEmailValid] = useState(false);
@@ -18,6 +20,9 @@ export default function RegistrationPage() {
     setDisplayInvalidInputsErrorMessage,
   ] = useState(false);
   const [next, setNext] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const onSubmit = (data: {
     email: string;
@@ -30,7 +35,30 @@ export default function RegistrationPage() {
       throw new Error("No data or invalid data");
     }
 
-    console.log(data);
+    sessionStorage.setItem("registerData", JSON.stringify(data));
+
+    router.push("/auth/paymentPage");
+  };
+
+  const handleEmailVerification = async (email: string) => {
+    try {
+      setLoading(true);
+      const response: AxiosResponse<any, any> =
+        await AuthAPI.verifyIfEmailExists(email);
+
+      if (response.data.exists) {
+        toastMessage("Cet email est déjà utilisé.", "error");
+        return;
+      }
+
+      setNext(true);
+    } catch (error) {
+      console.error(error);
+      toastMessage("Une erreur est survenue. Veuillez réessayer.", "error");
+    } finally {
+      setLoading(false);
+      setDisplayInvalidInputsErrorMessage(false);
+    }
   };
 
   const initialValues = {
@@ -49,7 +77,9 @@ export default function RegistrationPage() {
     if (errors[field] && touched[field]) {
       setFieldValid(false);
       return (
-        <p style={{ width: "90%", textAlign: "center", margin: 0 }}>
+        <p
+          style={{ width: "90%", textAlign: "center", margin: 3, color: "red" }}
+        >
           {errors[field]}
         </p>
       );
@@ -95,7 +125,7 @@ export default function RegistrationPage() {
                   onSubmit={onSubmit}
                   validationSchema={verificationRegisterSchema}
                 >
-                  {({ errors, touched }) => (
+                  {({ errors, touched, values }) => (
                     <Form
                       style={{
                         display: "flex",
@@ -104,20 +134,6 @@ export default function RegistrationPage() {
                         flexDirection: "column",
                         height: "100%",
                         width: "100%",
-                      }}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          if (!next) {
-                            event.preventDefault();
-                            // Empêche l'envoi du formulaire
-                            if (emailValid && passwordValid) {
-                              setNext(true);
-                              setDisplayInvalidInputsErrorMessage(false);
-                            } else {
-                              setDisplayInvalidInputsErrorMessage(true);
-                            }
-                          }
-                        }
                       }}
                     >
                       {!next ? (
@@ -145,15 +161,26 @@ export default function RegistrationPage() {
                           <div
                             onClick={() => {
                               if (emailValid && passwordValid) {
-                                setNext(true);
-                                setDisplayInvalidInputsErrorMessage(false);
+                                handleEmailVerification(values.email);
                               } else {
                                 setDisplayInvalidInputsErrorMessage(true);
                               }
                             }}
                             className="nextButton"
                           >
-                            <span>SUIVANT</span>
+                            {loading ? (
+                              <>
+                                <RotatingLines
+                                  strokeColor="grey"
+                                  strokeWidth="5"
+                                  animationDuration="0.75"
+                                  width="25"
+                                  visible={true}
+                                />
+                              </>
+                            ) : (
+                              <span>SUIVANT</span>
+                            )}
                           </div>
                         </>
                       ) : (
@@ -198,43 +225,7 @@ export default function RegistrationPage() {
                   continuer
                 </span>
               )}
-              <div className="divider">
-                <hr className="solid"></hr>
-                <span>Ou avec</span>
-                <hr className="solid"></hr>
-              </div>
-              <div className="containerLoginWith">
-                <div className="loginWith">
-                  <div className="containerLogo colorFb1">
-                    <AiFillFacebook className="iconSocialMedia" />
-                  </div>
-                  <div className="containerText colorFb2">
-                    Inscription avec Facebook
-                  </div>
-                </div>
-
-                <div className="loginWith">
-                  <div className="containerLogo colorTwitter1">
-                    <AiOutlineTwitter className="iconSocialMedia" />
-                  </div>
-                  <div className="containerText colorTwitter2">
-                    Inscription avec Twitter
-                  </div>
-                </div>
-
-                <div className="loginWith">
-                  <div className="containerLogo colorGoogle1">
-                    <AiOutlineGoogle className="iconSocialMedia" />
-                  </div>
-                  <div className="containerText colorGoogle2">
-                    Inscription avec Google
-                  </div>
-                </div>
-              </div>
-              <div className="loginContainer">
-                <p>Vous avez déjà un compte ?</p>
-                <Link href="/auth/loginPage">Se connecter</Link>
-              </div>
+              <RegisterMethods />
             </div>
           </div>
         </div>

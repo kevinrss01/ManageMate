@@ -16,10 +16,9 @@
 // PAGES -> Blocs de code qui ne s'applique qu'a une seule page. Les règles spécifiques à une seule page.
 // Par exemple, le style d'une page d'inscription ou de connexion.
 @import "pages/homePage";
-@import "pages/registrationAndLoginPage";
+@import "pages/auth/registrationAndLoginPage";
+@import "pages/auth/paymentPage";
 @import "pages/app/app.homePage";
 @import "pages/app/app.userParameters";
 @import "pages/app/app.invoices";
 @import "pages/app/app.files";
-
-//N'oublie pas que quand tu créer les fichiers tu dois ajouter '_' avant le nom du fichier pour que le fichier soit pris en compte par le compilateur.

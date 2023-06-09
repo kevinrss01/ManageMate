@@ -31,6 +31,30 @@ const passwordVerif = Yup.string()
   )
   .required("Mot de passe requis");
 
+const companyNameVerif = Yup.string()
+  .min(3, "Le nom de l'entreprise doit contenir au moins 3 caractères")
+  .max(50, "Le nom de l'entreprise doit contenir au maximum 50 caractères")
+  .required("Nom de l'entreprise requis");
+
+const addressVerif = Yup.string()
+  .min(3, "L'adresse doit contenir au moins 3 caractères")
+  .max(50, "L'adresse doit contenir au maximum 50 caractères")
+  .required("Adresse requise");
+
+const postalCodeVerif = Yup.number()
+  .min(4, "Le code postal doit contenir au moins 4 chiffres")
+  .required("Code postal requis");
+
+const cityVerif = Yup.string()
+  .min(2, "La ville doit contenir au moins 2 caractères")
+  .max(50, "La ville doit contenir au maximum 50 caractères")
+  .required("Ville requise");
+
+const countryVerif = Yup.string()
+  .min(2, "Le pays doit contenir au moins 2 caractères")
+  .max(50, "Le pays doit contenir au maximum 50 caractères")
+  .required("Pays requis");
+
 export const verificationLoginSchema = Yup.object().shape({
   email: emailVerif,
   password: passwordVerif,
@@ -55,4 +79,14 @@ export const verificationUpdatePasswordSchema = Yup.object().shape({
 });
 export const verificationUpdateEmailSchema = Yup.object().shape({
   newEmail: emailVerif,
+});
+
+export const paymentSchema = Yup.object().shape({
+  firstName: firstNameVerif,
+  lastName: lastNameVerif,
+  company: companyNameVerif,
+  address: addressVerif,
+  postalCode: postalCodeVerif,
+  city: cityVerif,
+  country: countryVerif,
 });

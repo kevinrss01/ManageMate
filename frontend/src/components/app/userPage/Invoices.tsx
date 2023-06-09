@@ -81,7 +81,7 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice }) => {
           <Text>
             {invoice.billAddress.firstName} {invoice.billAddress.lastName}
           </Text>
-          <Text>{invoice.billAddress.compagny}</Text>
+          <Text>{invoice.billAddress.company}</Text>
           <Text>{invoice.billAddress.address}</Text>
           <Text>
             {invoice.billAddress.postalCode} {invoice.billAddress.city}

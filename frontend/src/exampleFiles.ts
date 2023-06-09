@@ -6,6 +6,8 @@ export const files: File[] = [
     type: "pdf",
     size: 2045,
     dateAdded: "2022-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "2",
@@ -13,6 +15,8 @@ export const files: File[] = [
     type: "jpeg",
     size: 55000,
     dateAdded: "2023-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "3",
@@ -20,6 +24,8 @@ export const files: File[] = [
     type: "png",
     size: 57000,
     dateAdded: "2019-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "4",
@@ -27,6 +33,8 @@ export const files: File[] = [
     type: "mp4",
     size: 1700,
     dateAdded: "2017-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "5",
@@ -34,6 +42,8 @@ export const files: File[] = [
     type: "word",
     size: 1200,
     dateAdded: "2018-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "6",
@@ -41,6 +51,8 @@ export const files: File[] = [
     type: "mov",
     size: 1200000,
     dateAdded: "2019-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "7",
@@ -48,6 +60,8 @@ export const files: File[] = [
     type: "word",
     size: 1200,
     dateAdded: "2018-06-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "8",
@@ -55,6 +69,8 @@ export const files: File[] = [
     type: "jpeg",
     size: 80000,
     dateAdded: "2018-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "9",
@@ -62,6 +78,8 @@ export const files: File[] = [
     type: "png",
     size: 280000,
     dateAdded: "2018-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
   {
     id: "10",
@@ -69,6 +87,8 @@ export const files: File[] = [
     type: "mp4",
     size: 1700000,
     dateAdded: "2017-05-05",
+    firebaseUrl:
+      "https://firebasestorage.googleapis.com/v0/b/monstock-2b0f9.appspot.com/o/WhitePaper.pdf?alt=media&token=8b9b5b9e-5b9e-4b7e-8b9b-5b9e4b7e8b9b",
   },
 ];
 
@@ -78,7 +98,7 @@ export const invoicesExample: Invoices[] = [
     billAddress: {
       firstName: "John",
       lastName: "Doe",
-      compagny: "Doe & Co",
+      company: "Doe & Co",
       address: "1 avenue des champs élysées",
       postalCode: "75015",
       city: "Paris",
@@ -94,7 +114,7 @@ export const invoicesExample: Invoices[] = [
     billAddress: {
       firstName: "John",
       lastName: "Doe",
-      compagny: "Doe & Co",
+      company: "Doe & Co",
       address: "1 avenue des champs élysées",
       postalCode: "75015",
       city: "Paris",

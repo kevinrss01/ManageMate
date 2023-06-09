@@ -68,7 +68,7 @@ export interface Invoices {
   billAddress: {
     firstName: string;
     lastName: string;
-    compagny: string;
+    company: string;
     address: string;
     postalCode: string;
     city: string;
@@ -78,4 +78,14 @@ export interface Invoices {
   totalStorage: string;
   paymentMethod: string;
   paymentDate: string;
+}
+
+export interface PaymentFormData {
+  firstName: string;
+  lastName: string;
+  company: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  country: string;
 }

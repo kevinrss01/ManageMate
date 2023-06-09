@@ -9,6 +9,7 @@ import { files } from "@/exampleFiles";
 import { File, UserState } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { PulseLoader } from "react-spinners";
+import { useRouter } from "next/router";
 
 export const fetchUserData = async (): Promise<UserState> => {
   try {
@@ -73,6 +74,15 @@ export const createStorageUsage = async (userData: UserState) => {
 
 export default function Homepage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  const { success } = router.query;
+
+  useEffect(() => {
+    if (success) {
+      toastMessage("Votre compte a été créer avec succès !", "success");
+    }
+  }, [success]);
 
   //Redux
   const dispatch = useDispatch();

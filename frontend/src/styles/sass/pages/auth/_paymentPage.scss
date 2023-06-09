@@ -1,0 +1,29 @@
+.payment-page-container{
+  @include flex-column-centre;
+
+  h1{
+    margin-bottom: 20px;
+  }
+
+  .form-and-summary-container{
+    display: flex;
+
+    .form{
+      @include flex_column-centre;
+      gap: 15px;
+
+      .error-message{
+        color: red;
+        font-size: 15px;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    .summary-container{
+      @include flex-column-centre;
+    }
+  }
+
+
+}
