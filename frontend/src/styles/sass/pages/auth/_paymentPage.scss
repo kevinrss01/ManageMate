@@ -1,18 +1,17 @@
-.payment-page-container{
+.payment-page-container {
   @include flex-column-centre;
 
-  h1{
+  h1 {
     margin-bottom: 20px;
   }
 
-  .form-and-summary-container{
-    display: flex;
+  .form-and-summary-container {
+    @include flex-centre;
+    flex-wrap: wrap;
 
-    .form{
+    .form {
       @include flex_column-centre;
-      gap: 15px;
-
-      .error-message{
+      .error-message {
         color: red;
         font-size: 15px;
         margin: 0;
@@ -20,10 +19,50 @@
       }
     }
 
-    .summary-container{
+    .summary-container {
       @include flex-column-centre;
+
+      padding: 20px;
+
+      .summary {
+        p {
+          text-align: center;
+        }
+      }
     }
   }
 
+  .pay-button-container {
+    section {
+      @include flex-column-centre;
+      button {
+        width: auto;
+        padding: 10px;
+        text-align: center;
+        margin: 20px;
+      }
+      span {
+        text-align: center;
+        color: grey;
+      }
+    }
+  }
 
+  //Facturation form
+  .facturation-form-container {
+    padding: 20px;
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input {
+      @include inputForm;
+    }
+
+    button {
+      margin-top: 18px;
+    }
+  }
 }

@@ -49,7 +49,7 @@ const PaymentForm: FunctionComponent<PaymentFormProps> = ({
   ];
 
   return (
-    <div>
+    <div className="facturation-form-container">
       <h2>Informations de facturation</h2>
       <Formik
         initialValues={{

@@ -147,27 +147,32 @@ export default function PaymentPage() {
         }}
       >
         <div className="form-and-summary-container">
-          <PaymentForm onSubmitFunction={registerFacturationData} />
           <div className="summary-container">
-            <h2>Récapitulatif</h2>
+            <h2>Récapitulatif : </h2>
             <div className="summary">
               <p>
-                Vous allez achetez 20 GO de stockage pour <b>20 euros</b>{" "}
+                Vous allez achetez 20 GO de stockage sur ManageMate pour un
+                total de <b>20 euros</b>.{" "}
               </p>
             </div>
           </div>
+          <PaymentForm onSubmitFunction={registerFacturationData} />
         </div>
-        <form action="/api/checkout_sessions" method="POST">
+        <form
+          action="/api/checkout_sessions"
+          method="POST"
+          className="pay-button-container"
+        >
           <section>
+            <span>
+              Entrer <b>4242 4242 4242 4242</b> comme numéro de carte bancaire{" "}
+              pour pour créer un faux paiement
+            </span>
             <button
               type="submit"
               role="link"
               className="update-button"
               style={{
-                width: "auto",
-                padding: "10px",
-                textAlign: "center",
-                marginTop: "20px",
                 pointerEvents: invoiceDataSaved ? "auto" : "none",
                 opacity: invoiceDataSaved ? "1" : "0.5",
                 cursor: invoiceDataSaved ? "pointer" : "not-allowed",
