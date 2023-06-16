@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AiFillFacebook,
   AiOutlineGoogle,
@@ -8,14 +8,40 @@ import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Formik, Field, Form } from "formik";
 import { verificationLoginSchema } from "../../utils/yupShema";
+import { RotatingLines } from "react-loader-spinner";
+import AuthAPI from "@/services/AuthAPI";
+import toastMessage from "@/utils/toast";
+import { useRouter } from "next/router";
 
 export default function RegistrationPage() {
+  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [
+    displayInvalidCredentialsErrorMessage,
+    setDisplayInvalidCredentialsErrorMessage,
+  ] = useState<Boolean>(false);
+
+  const router = useRouter();
+
   const onSubmit = (data: { email: string; password: string }) => {
+    setIsLoading(true);
     const { email, password } = data;
-    if (!data || !email || !password) {
-      throw new Error("No data or invalid data");
-    }
-    console.log(data);
+    AuthAPI.login(email, password)
+      .then((response) => {
+        router.push("/app/homepage?successLogin=true");
+      })
+      .catch((error) => {
+        console.error(error);
+        if (error?.response?.data?.message.includes("invalid credentials")) {
+          setDisplayInvalidCredentialsErrorMessage(true);
+          setIsLoading(false);
+          return;
+        }
+        toastMessage(
+          "Une erreur est survenue. Veuillez réessayer plus tard.",
+          "error"
+        );
+        setIsLoading(false);
+      });
   };
 
   const initialValues = {
@@ -74,8 +100,35 @@ export default function RegistrationPage() {
                         placeholder="Mot de passe"
                         name="password"
                       />
+                      {displayInvalidCredentialsErrorMessage && (
+                        <>
+                          <span
+                            style={{
+                              color: "red",
+                              textAlign: "center",
+                              marginTop: "10px",
+                            }}
+                          >
+                            Combinaison mot de passe et email invalide
+                          </span>
+                        </>
+                      )}
                       <button className="nextButton" type="submit">
-                        <span>Valider</span>
+                        {isLoading ? (
+                          <>
+                            <RotatingLines
+                              strokeColor="grey"
+                              strokeWidth="5"
+                              animationDuration="0.75"
+                              width="25"
+                              visible={true}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <span>Valider</span>
+                          </>
+                        )}
                       </button>
                     </Form>
                   )}

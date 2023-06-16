@@ -76,13 +76,15 @@ export default function Homepage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
-  const { success } = router.query;
+  const { success, successLogin } = router.query;
 
   useEffect(() => {
     if (success) {
       toastMessage("Votre compte a été créer avec succès !", "success");
+    } else if (successLogin) {
+      toastMessage("Content de vous revoir !", "success");
     }
-  }, [success]);
+  }, [success, successLogin]);
 
   //Redux
   const dispatch = useDispatch();

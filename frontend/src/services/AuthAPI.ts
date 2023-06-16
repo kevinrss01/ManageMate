@@ -10,8 +10,15 @@ class AuthAPI {
   }
 
   static async verifyIfEmailExists(email: string) {
-    console.log("email", email);
     return AxiosCallApi.post(formatSuffix(`verifyEmail`), { email: email });
+  }
+
+  static async login(email: string, password: string) {
+    console.log("email", email);
+    return AxiosCallApi.post(formatSuffix("login"), {
+      email: email,
+      password: password,
+    });
   }
 }
 
