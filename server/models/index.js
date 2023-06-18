@@ -1,48 +1,27 @@
-/*
-'use strict';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+//import userRoutes from './routes/Users.routes.js';
+import authRoutes from "./routes/Auth.routes.js";
+import fileRoutes from "./routes/Files.routes.js";
+import modifRoutes from "./routes/ModifYser"
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+const app = express();
+const port = 4000;
 
-let sequelize;
-if (config.use_env_variable) {
-    sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-    sequelize = new Sequelize(
-        config.database,
-        config.username,
-        config.password,
-        config
-    );
-}
+app.use(express.json());
+app.use(cors());
+dotenv.config({ path: "./config/.env" });
 
-fs.readdirSync(__dirname)
-    .filter((file) => {
-        return (
-            file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.js'
-        );
-    })
-    .forEach((file) => {
-        const model = require(path.join(__dirname, file))(
-            sequelize,
-            Sequelize.DataTypes
-        );
-        db[model.name] = model;
-    });
+//USER ROUTES
+//app.use('/users', userRoutes);
 
-Object.keys(db).forEach((modelName) => {
-    if (db[modelName].associate) {
-        db[modelName].associate(db);
-    }
+//AUTH ROUTES
+app.use("/auth", authRoutes);
+
+//FILE ROUTES
+app.use("/files", fileRoutes);
+
+app.listen(port, () => {
+  console.log(`App listening at http://localhost:${port}`);
 });
-
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-module.exports = db;
-*/
