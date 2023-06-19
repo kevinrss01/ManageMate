@@ -14,7 +14,6 @@ class AuthAPI {
   }
 
   static async login(email: string, password: string) {
-    console.log("email", email);
     return AxiosCallApi.post(formatSuffix("login"), {
       email: email,
       password: password,
