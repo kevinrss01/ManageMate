@@ -1,27 +1,30 @@
-const express = require('express');
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+//import userRoutes from './routes/Users.routes.js';
+import authRoutes from "./routes/Auth.routes.js";
+import fileRoutes from "./routes/Files.routes.js";
+import modifRoutes from "./routes/ModifUser.routes.js";
+
 const app = express();
-const cors = require('cors');
+const port = 4000;
 
 app.use(express.json());
 app.use(cors());
-require('dotenv').config({ path: './config/.env' });
+dotenv.config({ path: "./config/.env" });
 
+//USER ROUTES
+//app.use('/users', userRoutes);
 
-/*
-const db = require('./models');
+//AUTH ROUTES
+app.use("/auth", authRoutes);
 
-////// Routers //////
+//FILE ROUTES
+app.use("/files", fileRoutes);
 
-//USERS|AUTH
-const usersRouter = require('./routes/Users.routes');
-app.use('/auth', usersRouter);
+//UPDATE ROUTES
+app.use("/update", modifRoutes);
 
-//Static Images Folder
-app.use('/Images', express.static('./Images'));
-
-db.sequelize.sync().then(() => {
-    app.listen(3002, () => {
-        console.log('Server running on port 3002');
-    });
+app.listen(port, () => {
+  console.log(`App listening at http://localhost:${port}`);
 });
-*/
