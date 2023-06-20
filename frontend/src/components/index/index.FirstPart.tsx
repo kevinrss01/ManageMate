@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "../../../public/images/ManageMate-logo.png";
+import logo from "../../../public/images/logo-gif.gif";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
