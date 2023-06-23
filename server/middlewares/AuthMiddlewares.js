@@ -34,7 +34,7 @@ export function validateLoginBody(req, res, next) {
   });
 }
 
-  export function validateUpdateAccountBody(req, res, next) {
+  export  function validateUpdateAccountBody(req, res, next) {
     const rules = [
       body("userId").notEmpty().isString(),
       body("email").optional().isEmail().isString(),

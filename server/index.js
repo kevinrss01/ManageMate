@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 //import userRoutes from './routes/Users.routes.js';
 import authRoutes from "./routes/Auth.routes.js";
 import fileRoutes from "./routes/Files.routes.js";
-import modifRoutes from "./routes/ModifUser.routes.js";
+import ModifUser from "./routes/ModifUser.routes.js";
 
 const app = express();
 const port = 4000;
@@ -23,7 +23,7 @@ app.use("/auth", authRoutes);
 app.use("/files", fileRoutes);
 
 //UPDATE ROUTES
-app.use("/update", modifRoutes);
+app.use("/update", ModifUser);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
