@@ -105,8 +105,10 @@ export default function PaymentPage() {
 
     const userDataParse = JSON.parse(userData);
     await AuthAPI.register(userDataParse)
-      .then(() => {
-        router.push("/app/homepage?success=true");
+      .then((res) => {
+        // TODO : Set token in local storage
+        localStorage.setItem("id", res.data.id);
+        router.push(`/app/homepage?success=true`);
       })
       .catch((error) => {
         console.error(error);

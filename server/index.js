@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/Auth.routes.js";
 import fileRoutes from "./routes/Files.routes.js";
 import modifRoutes from "./routes/ModifUser.routes.js";
+import userRoutes from "./routes/Users.routes.js";
 
 const app = express();
 const port = 4000;
@@ -14,7 +15,7 @@ app.use(cors());
 dotenv.config({ path: "./config/.env" });
 
 //USER ROUTES
-//app.use('/users', userRoutes);
+app.use("/users", userRoutes);
 
 //AUTH ROUTES
 app.use("/auth", authRoutes);

@@ -12,23 +12,41 @@ import { useEffect, useState } from "react";
 import {
   UpdateDataType,
   UpdatePasswordDataType,
+  UserState,
 } from "@/interfaces/Interfaces";
 import { fetchUserData } from "@/pages/app/homepage";
 import toastMessage from "@/utils/toast";
+import { useDispatch } from "react-redux";
 
 export default function Params() {
   const data = useSelector(selectUser);
   const [errorPassword, setErrorPassword] = useState<boolean>(false);
-  const [userData, setUserData] = useState(data);
+  const [userData, setUserData] = useState<UserState>(data);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const userDataRedux = useSelector(selectUser);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchUser = async () => {
-      if (userData.firstName === "") {
-        const dataFetched = await fetchUserData();
+      if (userDataRedux.firstName === "") {
+        const id = localStorage.getItem("id");
+        if (!id) {
+          toastMessage(
+            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
+            "error"
+          );
+          return;
+        }
+        const dataFetched = await fetchUserData(id);
         setUserData(dataFetched);
+      } else {
+        setUserData(userDataRedux);
       }
     };
     fetchUser();
+    setIsLoading(false);
   }, []);
 
   const verifyIfPasswordMatch = (data: {
@@ -75,13 +93,12 @@ export default function Params() {
         return toastMessage("Les valeurs doivent être différentes.", "error");
       }
       toastMessage(`Nom et prénom mis à jour avec succès !`, "success");
-      console.log(data);
     } catch (error: any) {
       toastMessage(
         "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
         "error"
       );
-      console.log("Something went wrong: ", error.message);
+      console.error("Something went wrong: ", error.message);
       throw new Error("Something went wrong: ", error);
     }
   };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
-import { selectStorage } from "../../../../slices/userSlice";
+import { selectStorage, selectUser } from "../../../../slices/userSlice";
 import { useSelector } from "react-redux";
 import { getTimeSinceAdd, formatFileSizeFromKb } from "@/utils/fileUtils";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";
@@ -31,8 +31,8 @@ export default function Main() {
   const [showTrash, setShowTrash] = useState(true);
   const [fileID, setFileID] = useState("");
 
-  const storageData = useSelector(selectStorage);
-  const userFiles = storageData.files;
+  const storageData = useSelector(selectUser);
+  const userFiles = storageData.files ? storageData.files : [];
 
   const getIcon = (typeOfIcon: string) => {
     return icons[typeOfIcon] === undefined

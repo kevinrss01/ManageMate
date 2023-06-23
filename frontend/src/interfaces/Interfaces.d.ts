@@ -40,13 +40,16 @@ export interface UserState {
   firstName: string;
   lastName: string;
   email: string;
+  role: string;
   totalUserStorage: number;
+  id: string;
+  files: File[];
+  invoices: Invoices[];
 }
 
 export interface StorageState {
   availableStorage: number;
   usedStorage: number;
-  files: File[];
 }
 
 export interface UpdatePasswordDataType {

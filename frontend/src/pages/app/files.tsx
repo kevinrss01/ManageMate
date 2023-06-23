@@ -1,6 +1,6 @@
 import Navbar from "@/components/app/Navbar";
 import RightSide from "@/components/app/homePage/RightSide";
-import { fetchUserData, fetchFiles, createStorageUsage } from "./homepage";
+import { fetchUserData, createStorageUsage } from "./homepage";
 import { useEffect, useState } from "react";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { useDispatch } from "react-redux";
@@ -13,10 +13,14 @@ import { typeFilter } from "../../utils/fileUtils";
 import { useDebouncedEffect } from "@react-hookz/web";
 import NetflixLoader from "@/components/loaders/FilesPageLoader";
 import FilesContainer from "@/components/app/filesPage/FilesContainer";
+import toastMessage from "@/utils/toast";
 
 interface Filter {
   [key: string]: (files: File[], extension?: string) => void;
 }
+
+// TODO : Permettre de retirer les filtres
+// TODO : Permettre de cumuler les filtres
 
 export default function Files() {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -31,8 +35,18 @@ export default function Files() {
   const data = useSelector(selectUser);
 
   const fetchData = async () => {
+    // If there is no data is redux store, fetch it from the API
     if (data.firstName === "") {
-      const userData = await fetchUserData();
+      console.log("fetch effectué 2");
+      const id = localStorage.getItem("id");
+      if (!id) {
+        toastMessage(
+          "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
+          "error"
+        );
+        return;
+      }
+      const userData = await fetchUserData(id);
       const userStorage = await createStorageUsage(userData);
 
       dispatch(
@@ -40,16 +54,21 @@ export default function Files() {
           ...userData,
         })
       );
-      dispatch(
-        updateStorage({
-          ...userStorage,
-        })
-      );
-    }
+      if (userStorage) {
+        dispatch(
+          updateStorage({
+            ...userStorage,
+          })
+        );
+      }
 
-    const files = await fetchFiles();
-    setFiles(files);
-    setFilteredFiles(files);
+      setFiles(userData.files);
+      setFilteredFiles(userData.files);
+    } else {
+      // If there is data in redux store, use it
+      setFiles(data.files);
+      setFilteredFiles(data.files);
+    }
   };
 
   useEffect(() => {
