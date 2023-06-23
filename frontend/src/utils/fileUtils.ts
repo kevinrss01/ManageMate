@@ -6,18 +6,25 @@ import {
   NumberOfFilesByType,
 } from "@/interfaces/Interfaces";
 
-export const formatFileSizeFromKb = (sizeInKb: number): string => {
+export const formatFileSizeFromBytes = (sizeInBytes: number): string => {
+  //bytes === octets
+
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} B`; // B stands for Bytes
+  }
+
+  const sizeInKb = sizeInBytes / 1024;
   if (sizeInKb < 1024) {
-    return `${sizeInKb} ko`;
+    return `${sizeInKb.toFixed(1)} KB`; // KB stands for Kilobytes
   }
 
   const sizeInMb = sizeInKb / 1024;
   if (sizeInMb < 1024) {
-    return `${sizeInMb.toFixed(1)} Mo`;
+    return `${sizeInMb.toFixed(1)} MB`; // MB stands for Megabytes
   }
 
   const sizeInGb = sizeInMb / 1024;
-  return `${sizeInGb.toFixed(1)} Go`;
+  return `${sizeInGb.toFixed(1)} GB`; // GB stands for Gigabytes
 };
 
 export const getPercentageAndSizeByFileType = (
@@ -42,26 +49,26 @@ export const getPercentageAndSizeByFileType = (
         (totalSize.pdf * 100) / userData.totalUserStorage +
         (totalSize.word * 100) / userData.totalUserStorage
       ).toFixed(2),
-      size: formatFileSizeFromKb(totalSize.pdf + totalSize.word),
+      size: formatFileSizeFromBytes(totalSize.pdf + totalSize.word),
     },
     images: {
       percentage: (
         (totalSize.jpeg * 100) / userData.totalUserStorage +
         (totalSize.png * 100) / userData.totalUserStorage
       ).toFixed(2),
-      size: formatFileSizeFromKb(totalSize.jpeg + totalSize.png),
+      size: formatFileSizeFromBytes(totalSize.jpeg + totalSize.png),
     },
     videos: {
       percentage: ((totalSize.mov * 100) / userData.totalUserStorage).toFixed(
         2
       ),
-      size: formatFileSizeFromKb(totalSize.mov),
+      size: formatFileSizeFromBytes(totalSize.mov),
     },
     others: {
       percentage: ((totalSize.mp4 * 100) / userData.totalUserStorage).toFixed(
         2
       ),
-      size: formatFileSizeFromKb(totalSize.mp4),
+      size: formatFileSizeFromBytes(totalSize.mp4),
     },
   };
 };

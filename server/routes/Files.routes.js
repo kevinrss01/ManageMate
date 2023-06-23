@@ -28,14 +28,18 @@ const addDataInfo = async (userId, dataFromMulter, url) => {
       id: uuidv4(),
       name: originalname,
       size: size,
-      type: mimetype.substring(mimetype.length - 4),
+      type: mimetype.substring(mimetype.length - 4).replace("/", ""),
       dateAdded: new Date().toLocaleDateString("fr-FR"),
       firebaseURL: url,
     };
 
+    console.log(size);
+
     const newFiles = [...userData.files, fileData];
 
     await updateDoc(docRef, { files: newFiles });
+
+    return fileData;
   } catch (error) {
     console.error(error);
   }
@@ -48,9 +52,9 @@ router.post("/addFile", upload.single("file"), async (req, res) => {
     const fileData = req.file;
 
     const url = await uploadFile(file, fileData.originalname);
-    await addDataInfo(userId, fileData, url);
+    const dataInfo = await addDataInfo(userId, fileData, url);
 
-    res.status(200).json({ message: "File added successfully" });
+    res.status(200).json(dataInfo);
   } catch (error) {
     console.error(error);
     res.status(500).json({

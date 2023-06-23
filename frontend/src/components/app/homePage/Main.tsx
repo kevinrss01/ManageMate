@@ -3,7 +3,7 @@ import { BsFillTrashFill, BsCheck } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import { selectStorage, selectUser } from "../../../../slices/userSlice";
 import { useSelector } from "react-redux";
-import { getTimeSinceAdd, formatFileSizeFromKb } from "@/utils/fileUtils";
+import { getTimeSinceAdd, formatFileSizeFromBytes } from "@/utils/fileUtils";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";
 import { AiFillFileText, AiOutlineFile } from "react-icons/ai";
 import { MdAudioFile } from "react-icons/md";
@@ -94,7 +94,7 @@ export default function Main() {
                           Il y a {getTimeSinceAdd(file.dateAdded)}
                         </span>
                         <span className="size">
-                          {formatFileSizeFromKb(file.size)}
+                          {formatFileSizeFromBytes(file.size)}
                         </span>
                       </div>
                       {showTrash ? (

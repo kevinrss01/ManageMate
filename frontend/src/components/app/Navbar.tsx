@@ -5,15 +5,31 @@ import { BsFillPersonFill } from "react-icons/bs";
 import Image from "next/image";
 import logo from "../../../public/images/MAnageMate.png";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import AxiosCallApi from "@/services/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser, update, updateStorage } from "../../../slices/userSlice";
+import { createStorageUsage } from "../../pages/app/homepage";
+import { File } from "@/interfaces/Interfaces";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [userId, setUserId] = useState<string>("");
   //const [isLoading, setIsLoading] = useState<boolean>(false);
   //const [isClicked, setIsClicked] = useState<string>("");
+  const userData = useSelector(selectUser);
+
+  useEffect(() => {
+    const id = localStorage.getItem("id");
+    if (!id) {
+      return;
+    }
+    setUserId(id);
+  }, []);
 
   const Router = useRouter();
+  const dispatch = useDispatch();
 
   const hoverColor = {
     color: "#f77e3f",
@@ -51,6 +67,54 @@ export default function Navbar() {
     },
   ];
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const onFileUploadClick = () => {
+    // déclenche le clic sur l'input
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return console.error("No file found");
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("userId", userId);
+
+    try {
+      const dataInfo: File = await AxiosCallApi.post("files/addFile", formData);
+      alert("File uploaded successfully.");
+
+      const { files, ...rest } = userData;
+
+      const updatedUser = {
+        ...rest,
+        files: [...files, dataInfo],
+      };
+      const userStorage = await createStorageUsage(updatedUser);
+
+      dispatch(
+        update({
+          ...updatedUser,
+        })
+      );
+      if (userStorage) {
+        dispatch(
+          updateStorage({
+            ...userStorage,
+          })
+        );
+      }
+    } catch (error) {
+      console.error("An error occurred while uploading the file.", error);
+      alert("An error occurred while uploading the file.");
+    }
+  };
+
   return (
     <>
       <div className="navbarContainer">
@@ -59,7 +123,18 @@ export default function Navbar() {
             <Image className="img" src={logo} alt={"logo"} />
           </div>
           <div className="buttonContainer">
-            <div className="buttonAdd">
+            <input
+              type="file"
+              style={{ display: "none" }}
+              ref={fileInputRef}
+              onChange={onFileChange}
+            />
+            <div
+              className="buttonAdd"
+              onClick={() => {
+                onFileUploadClick();
+              }}
+            >
               <BsPlus className="icon" />
             </div>
             {links.map((link, key) => {
