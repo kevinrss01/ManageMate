@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  fetchSignInMethodsForEmail,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
@@ -70,6 +71,8 @@ router.post("/verifyEmail", async (req, res) => {
       auth,
       req.body.email
     );
+
+    console.log(signInMethods);
 
     res.json({ exists: signInMethods.length > 0 });
   } catch (error) {
