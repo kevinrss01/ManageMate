@@ -32,7 +32,7 @@ export default function Main() {
   const [fileID, setFileID] = useState("");
 
   const storageData = useSelector(selectUser);
-  const userFiles = storageData.files ? storageData.files : [];
+  const userFiles = storageData.files || [];
 
   const getIcon = (typeOfIcon: string) => {
     return icons[typeOfIcon] === undefined
@@ -53,7 +53,10 @@ export default function Main() {
         <div className="filesContainer">
           {userFiles.length === 0 ? (
             <>
-              <p>Vous n'avez pas encore de fichier.</p>
+              <p>
+                Vous n'avez pas encore de fichier. Ajouter un fichier en
+                cliquant sur le bouton "+"
+              </p>
             </>
           ) : (
             <>

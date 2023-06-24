@@ -46,7 +46,8 @@ export default function RegistrationPage() {
       const response: AxiosResponse<any, any> =
         await AuthAPI.verifyIfEmailExists(email);
 
-      if (response.data.exists) {
+      // @ts-ignore
+      if (response.exists) {
         toastMessage("Cet email est déjà utilisé.", "error");
         return;
       }
@@ -184,7 +185,7 @@ export default function RegistrationPage() {
                           </div>
                         </>
                       ) : (
-                        <>
+                        <div className="second-form-register">
                           {errors.firstName && touched.firstName ? (
                             <div style={{ color: "red" }}>
                               {errors.firstName}
@@ -213,7 +214,7 @@ export default function RegistrationPage() {
                               <span>VALIDER</span>
                             </button>
                           </>
-                        </>
+                        </div>
                       )}
                     </Form>
                   )}
