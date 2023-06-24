@@ -37,7 +37,6 @@ export default function Files() {
   const fetchData = async () => {
     // If there is no data is redux store, fetch it from the API
     if (data.firstName === "") {
-      console.log("fetch effectué 2");
       const id = localStorage.getItem("id");
       if (!id) {
         toastMessage(

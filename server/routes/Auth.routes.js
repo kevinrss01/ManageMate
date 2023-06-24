@@ -50,7 +50,7 @@ router.post("/login", validateLoginBody, async (req, res) => {
 
     res.status(200).json(userData);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     if (
       error.code === "auth/wrong-password" ||
       error.code === "auth/user-not-found"

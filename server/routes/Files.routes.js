@@ -22,8 +22,6 @@ const addDataInfo = async (userId, dataFromMulter, url) => {
 
     const { originalname, size, mimetype } = dataFromMulter;
 
-    console.log("data : " + dataFromMulter);
-
     const fileData = {
       id: uuidv4(),
       name: originalname,
@@ -32,8 +30,6 @@ const addDataInfo = async (userId, dataFromMulter, url) => {
       dateAdded: new Date().toLocaleDateString("fr-FR"),
       firebaseURL: url,
     };
-
-    console.log(size);
 
     const newFiles = [...userData.files, fileData];
 

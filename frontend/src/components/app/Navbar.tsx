@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUser, update, updateStorage } from "../../../slices/userSlice";
 import { createStorageUsage } from "../../pages/app/homepage";
 import { File } from "@/interfaces/Interfaces";
+import toastMessage from "@/utils/toast";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -76,24 +77,13 @@ export default function Navbar() {
     }
   };
 
-  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return console.error("No file found");
-    const file = event.target.files[0];
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("userId", userId);
-
+  const updateReduxStore = async (file: File) => {
     try {
-      const dataInfo: File = await AxiosCallApi.post("files/addFile", formData);
-      alert("File uploaded successfully.");
-
       const { files, ...rest } = userData;
 
       const updatedUser = {
         ...rest,
-        files: [...files, dataInfo],
+        files: [...files, file],
       };
       const userStorage = await createStorageUsage(updatedUser);
 
@@ -109,6 +99,31 @@ export default function Navbar() {
           })
         );
       }
+    } catch (error) {
+      console.error(
+        "An error occurred while updating the user in redux.",
+        error
+      );
+      toastMessage(
+        "An error occurred while updating the user in redux.",
+        "error"
+      );
+    }
+  };
+
+  const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return console.error("No file found");
+    const file = event.target.files[0];
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("userId", userId);
+
+    try {
+      const dataInfo: File = await AxiosCallApi.post("files/addFile", formData);
+      alert("File uploaded successfully.");
+      updateReduxStore(dataInfo);
     } catch (error) {
       console.error("An error occurred while uploading the file.", error);
       alert("An error occurred while uploading the file.");
