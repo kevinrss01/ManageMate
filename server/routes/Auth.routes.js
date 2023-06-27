@@ -24,7 +24,7 @@ router.post("/register", validateRegisterBody, async (req, res) => {
       firstName: firstName,
       lastName: lastName,
       id: user.user.uid,
-      totalUserStorage: 20971520,
+      totalUserStorage: 21474836480, // 20GO or 20971520 ko or 21474836480 bytes/octets
       files: [],
       invoices: invoices,
       role: "user",

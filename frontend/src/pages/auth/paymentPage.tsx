@@ -8,6 +8,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/router";
 import AuthAPI from "@/services/AuthAPI";
 import { ColorRing } from "react-loader-spinner";
+import Image from "next/image";
 
 loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -107,7 +108,7 @@ export default function PaymentPage() {
     await AuthAPI.register(userDataParse)
       .then((res) => {
         // TODO : Set token in local storage
-        localStorage.setItem("id", res.data.id);
+        localStorage.setItem("id", res.id);
         router.push(`/app/homepage?success=true`);
       })
       .catch((error) => {

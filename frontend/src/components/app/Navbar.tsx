@@ -13,11 +13,12 @@ import { selectUser, update, updateStorage } from "../../../slices/userSlice";
 import { createStorageUsage } from "../../pages/app/homepage";
 import { File } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
+import { ClipLoader } from "react-spinners";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [userId, setUserId] = useState<string>("");
-  //const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   //const [isClicked, setIsClicked] = useState<string>("");
   const userData = useSelector(selectUser);
 
@@ -112,21 +113,34 @@ export default function Navbar() {
   };
 
   const onFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return console.error("No file found");
-    const file = event.target.files[0];
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("userId", userId);
+    setIsLoading(true);
 
     try {
+      if (!event.target.files) return console.error("No file found");
+      const file = event.target.files[0];
+      if (file.size > 104857600) {
+        toastMessage(
+          "La taille du fichier est trop grande, la limite est de 100MB",
+          "error"
+        );
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append("file", file);
+      formData.append("userId", userId);
       const dataInfo: File = await AxiosCallApi.post("files/addFile", formData);
-      alert("File uploaded successfully.");
+      toastMessage("Fichier importé avec succès", "success");
       updateReduxStore(dataInfo);
     } catch (error) {
       console.error("An error occurred while uploading the file.", error);
-      alert("An error occurred while uploading the file.");
+      toastMessage(
+        "Une erreur est survenue lors de l'import du fichier",
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -150,7 +164,11 @@ export default function Navbar() {
                 onFileUploadClick();
               }}
             >
-              <BsPlus className="icon" />
+              {isLoading ? (
+                <ClipLoader color="#F87F3F" size={30} />
+              ) : (
+                <BsPlus className="icon" />
+              )}
             </div>
             {links.map((link, key) => {
               return (

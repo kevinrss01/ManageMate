@@ -27,6 +27,7 @@ export default function RegistrationPage() {
     const { email, password } = data;
     AuthAPI.login(email, password)
       .then((response) => {
+        localStorage.setItem("id", response.id);
         router.push("/app/homepage?successLogin=true");
       })
       .catch((error) => {

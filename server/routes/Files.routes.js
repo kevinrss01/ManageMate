@@ -1,33 +1,46 @@
 import express from "express";
 import { db, storage } from "../config/firebase.js";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  deleteObject,
+} from "firebase/storage";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
+import { validateAddFileBody } from "../middlewares/FilesMiddlewares.js";
 
 const router = express.Router();
 const upload = multer();
 
 const uploadFile = async (file, originalname) => {
-  const storageRef = ref(storage, originalname);
+  const newFileId = uuidv4();
+  const filePath = `${newFileId}`;
+  const storageRef = ref(storage, filePath);
   await uploadBytes(storageRef, file);
-  return await getDownloadURL(storageRef);
+  const url = await getDownloadURL(storageRef);
+
+  return {
+    url: url,
+    fileId: filePath,
+  };
 };
 
-const addDataInfo = async (userId, dataFromMulter, url) => {
+const addDataInfoDoc = async (userId, dataFromMulter, storageInfo) => {
   try {
+    const { originalname, size, mimetype } = dataFromMulter;
+    const { fileId, url } = storageInfo;
     const docRef = await doc(db, "users", userId);
     const snapshot = await getDoc(docRef);
     const userData = snapshot.data();
 
-    const { originalname, size, mimetype } = dataFromMulter;
-
     const fileData = {
-      id: uuidv4(),
       name: originalname,
+      fileId: fileId,
       size: size,
       type: mimetype.substring(mimetype.length - 4).replace("/", ""),
-      dateAdded: new Date().toLocaleDateString("fr-FR"),
+      dateAdded: new Date(),
       firebaseURL: url,
     };
 
@@ -41,20 +54,67 @@ const addDataInfo = async (userId, dataFromMulter, url) => {
   }
 };
 
-router.post("/addFile", upload.single("file"), async (req, res) => {
+router.post(
+  "/addFile",
+  upload.single("file"),
+  validateAddFileBody,
+  async (req, res) => {
+    try {
+      const { userId } = req.body;
+      const file = req.file.buffer;
+      const fileData = req.file;
+
+      const storageInfoFirebase = await uploadFile(file, fileData.originalname);
+      const dataInfo = await addDataInfoDoc(
+        userId,
+        fileData,
+        storageInfoFirebase
+      );
+
+      res.status(200).json(dataInfo);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: `Error while adding file : ${error.code ? error.code : error}`,
+      });
+    }
+  }
+);
+
+router.delete("/deleteFile", async (req, res) => {
   try {
-    const { userId } = req.body;
-    const file = req.file.buffer;
-    const fileData = req.file;
+    const { userId, fileId } = req.body;
 
-    const url = await uploadFile(file, fileData.originalname);
-    const dataInfo = await addDataInfo(userId, fileData, url);
+    const userRef = doc(db, "users", userId);
+    const userDoc = await getDoc(userRef);
 
-    res.status(200).json(dataInfo);
+    if (!userDoc.exists()) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const userFiles = userDoc.data().files;
+    const fileToRemove = userFiles.find((file) => file.fileId === fileId);
+
+    if (!fileToRemove) {
+      res.status(404).json({ message: "File not found" });
+      return;
+    }
+
+    // Delete file from Firebase Storage
+    const fileRef = ref(storage, fileToRemove.fileId);
+    await deleteObject(fileRef);
+
+    // Delete file from Firestore
+    await updateDoc(userRef, {
+      files: arrayRemove(fileToRemove),
+    });
+
+    res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: `Error while adding file : ${error.code ? error.code : error}`,
+      message: `Error while deleting file : ${error.code ? error.code : error}`,
     });
   }
 });

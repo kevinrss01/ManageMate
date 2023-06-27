@@ -5,8 +5,15 @@ import { selectStorage, selectUser } from "../../../../slices/userSlice";
 import { useSelector } from "react-redux";
 import { getTimeSinceAdd, formatFileSizeFromBytes } from "@/utils/fileUtils";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";
-import { AiFillFileText, AiOutlineFile } from "react-icons/ai";
-import { MdAudioFile } from "react-icons/md";
+import {
+  AiFillFileText,
+  AiOutlineFile,
+  AiOutlineDownload,
+} from "react-icons/ai";
+import { MdAudioFile, MdJavascript } from "react-icons/md";
+import { BsFiletypeJson, BsFiletypeHtml, BsFiletypeCss } from "react-icons/bs";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -15,16 +22,47 @@ const icons: Record<string, React.ReactNode> = {
   mp4: <MdAudioFile style={{ color: "purple" }} />,
   word: <AiFillFileText />,
   mov: <FcVideoFile />,
+  json: <BsFiletypeJson />,
+  html: <BsFiletypeHtml />,
+  css: <BsFiletypeCss />,
+  js: <MdJavascript />,
+  txt: <AiFillFileText />,
+  svg: <FcImageFile style={{ color: "#00b3c3" }} />,
+  docx: <AiFillFileText style={{ color: "skyblue" }} />,
   others: <AiOutlineFile />,
 };
 
 const iconsType: Record<string, string> = {
   pdf: "Fichier document",
   jpeg: "Fichier image",
+  jpg: "Fichier image",
   png: "Fichier image",
-  mp4: "Fichier audio",
-  word: "Fichier Word",
+  gif: "Fichier image",
+  svg: "Fichier image",
+  mp4: "Fichier vidéo",
   mov: "Fichier vidéo",
+  avi: "Fichier vidéo",
+  flv: "Fichier vidéo",
+  mkv: "Fichier vidéo",
+  doc: "Fichier Word",
+  docx: "Fichier Word",
+  txt: "Fichier texte",
+  csv: "Fichier CSV",
+  xls: "Fichier Excel",
+  xlsx: "Fichier Excel",
+  ppt: "Fichier PowerPoint",
+  pptx: "Fichier PowerPoint",
+  mp3: "Fichier audio",
+  wav: "Fichier audio",
+  ogg: "Fichier audio",
+  zip: "Fichier compressé",
+  rar: "Fichier compressé",
+  html: "Fichier HTML",
+  css: "Fichier CSS",
+  js: "Fichier JavaScript",
+  ts: "Fichier TypeScript",
+  json: "Fichier JSON",
+  lain: "Fichier texte",
 };
 
 export default function Main() {
@@ -34,16 +72,25 @@ export default function Main() {
   const storageData = useSelector(selectUser);
   const userFiles = storageData.files || [];
 
-  const getIcon = (typeOfIcon: string) => {
-    return icons[typeOfIcon] === undefined
-      ? icons["others"]
-      : icons[typeOfIcon];
+  const router = useRouter();
+
+  const getIcon = (fileName: string, fileTypeByMulter: string) => {
+    let typeOfIcon = fileName.split(".").pop();
+    typeOfIcon = typeOfIcon || fileName;
+
+    const iconType = typeOfIcon === fileName ? fileTypeByMulter : typeOfIcon;
+    return icons[iconType] || icons["others"];
   };
 
-  const getIconText = (typeOfIcon: string) => {
-    return iconsType[typeOfIcon] === undefined
-      ? "inconnu"
-      : iconsType[typeOfIcon];
+  const getIconText = (fileName: string, fileTypeByMulter: string) => {
+    let typeOfIcon = fileName.split(".").pop();
+    typeOfIcon = typeOfIcon || fileName;
+    const iconType = typeOfIcon === fileName ? fileTypeByMulter : typeOfIcon;
+    return iconsType[iconType] || "Type de fichier inconnu";
+  };
+
+  const handleDeleteFile = async () => {
+    //
   };
 
   return (
@@ -81,14 +128,17 @@ export default function Main() {
                       style={userFiles.length < 4 ? {} : {}}
                     >
                       <div className="containerInfoAndIcon">
-                        <div className="fileIcon">{getIcon(file.type)}</div>
+                        <div className="fileIcon">
+                          {getIcon(file.name, file.type)}
+                        </div>
                         <div className="fileInfos">
                           <div className="titleContainer">
                             <h3>{file.name}</h3>
-                            <h3>.{file.type}</h3>
                           </div>
                           <div className="type">
-                            <p>{getIconText(file.type)}</p>
+                            <p>{`${getIconText(file.name, file.type)} (${
+                              file.type
+                            })`}</p>
                           </div>
                         </div>
                       </div>
@@ -100,48 +150,18 @@ export default function Main() {
                           {formatFileSizeFromBytes(file.size)}
                         </span>
                       </div>
-                      {showTrash ? (
-                        <>
-                          <BsFillTrashFill
-                            className="moreIcon"
-                            onClick={() => {
-                              setFileID(file.id);
-                              setShowTrash(false);
-                            }}
-                          />
-                        </>
-                      ) : (
-                        <>
-                          {fileID === file.id ? (
-                            <div className="containerDelete">
-                              <span>Supprimer ?</span>
-                              <BsCheck
-                                className="iconValid"
-                                style={{ color: "green" }}
-                                onClick={() => {
-                                  // delete file
-                                  setShowTrash(true);
-                                }}
-                              />
-                              <RxCross2
-                                className="iconNotValid"
-                                style={{ color: "red" }}
-                                onClick={() => {
-                                  setShowTrash(true);
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <BsFillTrashFill
-                              className="moreIcon"
-                              onClick={() => {
-                                setFileID(file.id);
-                                setShowTrash(false);
-                              }}
-                            />
-                          )}
-                        </>
-                      )}
+
+                      <div>
+                        <BsFillTrashFill
+                          className="deleteIcon"
+                          onClick={() => {
+                            handleDeleteFile();
+                          }}
+                        />
+                        <Link href={file.firebaseURL}>
+                          <AiOutlineDownload className="download-icon" />
+                        </Link>
+                      </div>
                     </div>
                   );
                 })}

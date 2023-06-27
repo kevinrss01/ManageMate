@@ -4,7 +4,7 @@ export interface File {
   type: "pdf" | "jpeg" | "png" | "mp4" | "word" | "mov";
   size: number;
   dateAdded: string;
-  firebaseUrl: string;
+  firebaseURL: string;
 }
 
 export interface PercentageAndSizeByFileType {

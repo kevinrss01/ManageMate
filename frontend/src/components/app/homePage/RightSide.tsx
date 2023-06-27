@@ -27,7 +27,14 @@ export default function RightSide() {
 
   //Functions
   const totalSpace = formatFileSizeFromBytes(userData.totalUserStorage);
-  const availableSpace = formatFileSizeFromBytes(storageData.availableStorage);
+  let availableSpace = formatFileSizeFromBytes(storageData.availableStorage);
+  if (
+    userData.totalUserStorage !== storageData.availableStorage &&
+    totalSpace === availableSpace
+  ) {
+    availableSpace = "19.9 Go";
+  }
+
   const totalPercentageUsed = (): number => {
     const totalPercentageUsed = (
       (usedStorage * 100) /

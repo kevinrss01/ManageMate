@@ -20,8 +20,12 @@ export const createStorageUsage = async (userData: UserState) => {
       return;
     }
     let sizeUsed = 0;
+    console.log;
     if (userData.files.length > 0) {
-      userData.files.reduce((accumulator, file) => accumulator + file.size, 0);
+      sizeUsed = userData.files.reduce(
+        (accumulator, file) => accumulator + file.size,
+        0
+      );
     }
 
     const availableStorage = userData.totalUserStorage - sizeUsed;
@@ -81,10 +85,7 @@ export default function Homepage() {
         const id = localStorage.getItem("id");
         setIsLoading(true);
         if (!id) {
-          toastMessage(
-            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
-            "error"
-          );
+          router.push("/auth/loginPage");
           return;
         }
         const userData = await fetchUserData(id);

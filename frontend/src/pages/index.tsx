@@ -10,7 +10,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Next APP</title>
+        <title>Manage Mate</title>
+        <meta property="og:title" content="Manage Mate" key="title" />
+        <link rel="icon" href="/images/ManageMate-logo-solo.png" />
       </Head>
       <main className="mainHomePage">
         <Link href="/auth/loginPage" className="logInButton" id="button">
