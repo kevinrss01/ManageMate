@@ -14,13 +14,12 @@ import UsersAPI from "@/services/UsersAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/userSlice";
 
-export const createStorageUsage = async (userData: UserState) => {
+export const createStorageUsage = (userData: UserState) => {
   try {
     if (!userData) {
       return;
     }
     let sizeUsed = 0;
-    console.log;
     if (userData.files.length > 0) {
       sizeUsed = userData.files.reduce(
         (accumulator, file) => accumulator + file.size,
@@ -89,7 +88,7 @@ export default function Homepage() {
           return;
         }
         const userData = await fetchUserData(id);
-        const userStorage = await createStorageUsage(userData);
+        const userStorage = createStorageUsage(userData);
 
         dispatch(
           update({

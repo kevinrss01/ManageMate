@@ -78,15 +78,33 @@ export default function Navbar() {
     }
   };
 
+  const convertDateISOToObject = (date: string) => {
+    const dateObject = new Date(date);
+
+    const seconds = Math.floor(dateObject.getTime() / 1000);
+    const nanoseconds = (dateObject.getTime() % 1000) * 1000000;
+
+    return {
+      seconds: seconds,
+      nanoseconds: nanoseconds,
+    };
+  };
+
   const updateReduxStore = async (file: File) => {
     try {
+      if (typeof file.dateAdded === "string") {
+        const { dateAdded, ...restFile } = file;
+        const convertedDate = convertDateISOToObject(dateAdded);
+        file = { ...restFile, dateAdded: convertedDate };
+      }
+
       const { files, ...rest } = userData;
 
       const updatedUser = {
         ...rest,
         files: [...files, file],
       };
-      const userStorage = await createStorageUsage(updatedUser);
+      const userStorage = createStorageUsage(updatedUser);
 
       dispatch(
         update({
@@ -104,10 +122,6 @@ export default function Navbar() {
       console.error(
         "An error occurred while updating the user in redux.",
         error
-      );
-      toastMessage(
-        "An error occurred while updating the user in redux.",
-        "error"
       );
     }
   };

@@ -10,6 +10,9 @@ import {
   validateRegisterBody,
   validateLoginBody,
 } from "../middlewares/AuthMiddlewares.js";
+import jsonwebtoken from "jsonwebtoken";
+
+const { sign, decode, verify } = jsonwebtoken;
 
 const router = express.Router();
 
@@ -30,7 +33,17 @@ router.post("/register", validateRegisterBody, async (req, res) => {
       role: "user",
     });
 
-    res.status(200).json({ id: user.user.uid });
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in .env file");
+    }
+
+    const accessToken = sign(
+      { userId: user.user.uid, role: "user" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7 days" }
+    );
+
+    res.status(200).json({ id: user.user.uid, accessToken: accessToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -44,11 +57,21 @@ router.post("/login", validateLoginBody, async (req, res) => {
     const { email, password } = req.body;
     const user = await signInWithEmailAndPassword(auth, email, password);
 
-    const docRef = await doc(userCollection, user.user.uid);
+    const docRef = doc(userCollection, user.user.uid);
     const snapshot = await getDoc(docRef);
     const userData = snapshot.data();
 
-    res.status(200).json(userData);
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in .env file");
+    }
+
+    const accessToken = sign(
+      { userId: userData.id, role: userData.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7 days" }
+    );
+
+    res.status(200).json({ id: userData.id, accessToken: accessToken });
   } catch (error) {
     console.error(error);
     if (

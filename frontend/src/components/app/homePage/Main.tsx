@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { BsFillTrashFill, BsCheck } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
-import { selectStorage, selectUser } from "../../../../slices/userSlice";
-import { useSelector } from "react-redux";
+import {
+  selectUser,
+  update,
+  updateStorage,
+} from "../../../../slices/userSlice";
+import { useSelector, useDispatch } from "react-redux";
 import { getTimeSinceAdd, formatFileSizeFromBytes } from "@/utils/fileUtils";
 import { FcVideoFile, FcImageFile } from "react-icons/fc";
 import {
@@ -12,8 +15,11 @@ import {
 } from "react-icons/ai";
 import { MdAudioFile, MdJavascript } from "react-icons/md";
 import { BsFiletypeJson, BsFiletypeHtml, BsFiletypeCss } from "react-icons/bs";
-import { useRouter } from "next/router";
-import Link from "next/link";
+import { File } from "@/interfaces/Interfaces";
+import { ClipLoader } from "react-spinners";
+import FilesAPI from "@/services/FilesAPI";
+import toastMessage from "@/utils/toast";
+import { createStorageUsage } from "../../../pages/app/homepage";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -66,13 +72,45 @@ const iconsType: Record<string, string> = {
 };
 
 export default function Main() {
-  const [showTrash, setShowTrash] = useState(true);
   const [fileID, setFileID] = useState("");
+  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
 
-  const storageData = useSelector(selectUser);
-  const userFiles = storageData.files || [];
+  const userState = useSelector(selectUser);
+  const [userFiles, setUserFiles] = useState(userState.files.slice(0, 5));
+  const dispatch = useDispatch();
 
-  const router = useRouter();
+  useEffect(() => {
+    setUserFiles(
+      [...userState.files]
+        .sort((a, b) => {
+          let dateA;
+          let dateB;
+          if (
+            typeof a.dateAdded === "string" &&
+            typeof b.dateAdded === "string"
+          ) {
+            dateA = new Date(a.dateAdded);
+            dateB = new Date(b.dateAdded);
+          }
+          if (
+            typeof a.dateAdded === "object" &&
+            typeof b.dateAdded === "object"
+          ) {
+            dateA = new Date(
+              a.dateAdded.seconds * 1000 + a.dateAdded.nanoseconds / 1000000
+            );
+            dateB = new Date(
+              b.dateAdded.seconds * 1000 + b.dateAdded.nanoseconds / 1000000
+            );
+          }
+          if (!dateA || !dateB) {
+            return 0;
+          }
+          return dateB.getTime() - dateA.getTime();
+        })
+        .slice(0, 5)
+    );
+  }, [userState.files]);
 
   const getIcon = (fileName: string, fileTypeByMulter: string) => {
     let typeOfIcon = fileName.split(".").pop();
@@ -89,8 +127,52 @@ export default function Main() {
     return iconsType[iconType] || "Type de fichier inconnu";
   };
 
-  const handleDeleteFile = async () => {
-    //
+  const updateUserStateInRedux = async (fileIdDeleted: string) => {
+    const newFiles = userState.files.filter(
+      (file) => file.fileId !== fileIdDeleted
+    );
+    const { files, ...rest } = userState;
+
+    const updatedUser = {
+      ...rest,
+      files: newFiles,
+    };
+
+    const userStorage = createStorageUsage(updatedUser);
+
+    dispatch(
+      update({
+        ...updatedUser,
+      })
+    );
+    if (userStorage) {
+      dispatch(
+        updateStorage({
+          ...userStorage,
+        })
+      );
+    }
+  };
+
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    try {
+      setIsLoadingDelete(true);
+      const userId = localStorage.getItem("id");
+      if (!userId) {
+        throw new Error("No user id found");
+      }
+
+      await FilesAPI.deleteFile(userId, fileId);
+      updateUserStateInRedux(fileId);
+      toastMessage(`Fichier "${fileName}" supprimé avec succès`, "success");
+    } catch (error) {
+      toastMessage(
+        "Une erreur est survenue lors de la suppression du fichier",
+        "error"
+      );
+    } finally {
+      setIsLoadingDelete(false);
+    }
   };
 
   return (
@@ -113,58 +195,65 @@ export default function Main() {
                 <h3>Taille</h3>
               </div>
 
-              {[...userFiles]
-                .sort((a, b) => {
-                  const dateA = new Date(a.dateAdded);
-                  const dateB = new Date(b.dateAdded);
-                  return dateB.getTime() - dateA.getTime();
-                })
-                .slice(0, 5)
-                .map((file) => {
-                  return (
-                    <div
-                      className="file"
-                      key={file.id}
-                      style={userFiles.length < 4 ? {} : {}}
-                    >
-                      <div className="containerInfoAndIcon">
-                        <div className="fileIcon">
-                          {getIcon(file.name, file.type)}
-                        </div>
-                        <div className="fileInfos">
-                          <div className="titleContainer">
-                            <h3>{file.name}</h3>
-                          </div>
-                          <div className="type">
-                            <p>{`${getIconText(file.name, file.type)} (${
-                              file.type
-                            })`}</p>
-                          </div>
-                        </div>
+              {[...userFiles].map((file) => {
+                return (
+                  <div
+                    className="file"
+                    key={file.fileId}
+                    style={userFiles.length < 4 ? {} : {}}
+                  >
+                    <div className="containerInfoAndIcon">
+                      <div className="fileIcon">
+                        {getIcon(file.name, file.type)}
                       </div>
-                      <div className="spanContainer">
-                        <span className="dateAdded">
-                          Il y a {getTimeSinceAdd(file.dateAdded)}
-                        </span>
-                        <span className="size">
-                          {formatFileSizeFromBytes(file.size)}
-                        </span>
-                      </div>
-
-                      <div>
-                        <BsFillTrashFill
-                          className="deleteIcon"
-                          onClick={() => {
-                            handleDeleteFile();
-                          }}
-                        />
-                        <Link href={file.firebaseURL}>
-                          <AiOutlineDownload className="download-icon" />
-                        </Link>
+                      <div className="fileInfos">
+                        <div className="titleContainer">
+                          <h3>{file.name}</h3>
+                        </div>
+                        <div className="type">
+                          <p>{`${getIconText(file.name, file.type)} (${
+                            file.type
+                          })`}</p>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
+                    <div className="spanContainer">
+                      <span className="dateAdded">
+                        Il y a {getTimeSinceAdd(file.dateAdded)}
+                      </span>
+                      <span className="size">
+                        {formatFileSizeFromBytes(file.size)}
+                      </span>
+                    </div>
+
+                    <div>
+                      {isLoadingDelete && fileID === file.fileId ? (
+                        <>
+                          <ClipLoader color="#F87F3F" size={20} />
+                        </>
+                      ) : (
+                        <>
+                          <BsFillTrashFill
+                            className="deleteIcon"
+                            onClick={() => {
+                              setFileID(file.fileId);
+                              handleDeleteFile(file.fileId, file.name);
+                            }}
+                          />
+                        </>
+                      )}
+
+                      <a
+                        href={file.firebaseURL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <AiOutlineDownload className="download-icon" />
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
             </>
           )}
         </div>

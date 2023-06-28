@@ -1,9 +1,9 @@
 export interface File {
-  id: string;
+  fileId: string;
   name: string;
-  type: "pdf" | "jpeg" | "png" | "mp4" | "word" | "mov";
+  type: string;
   size: number;
-  dateAdded: string;
+  dateAdded: string | { seconds: number; nanoseconds: number };
   firebaseURL: string;
 }
 

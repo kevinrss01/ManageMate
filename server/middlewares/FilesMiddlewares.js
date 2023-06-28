@@ -1,3 +1,5 @@
+import { param, validationResult } from "express-validator";
+
 export function validateAddFileBody(req, res, next) {
   const { userId } = req.body;
   console.log(req.body);
@@ -13,4 +15,20 @@ export function validateAddFileBody(req, res, next) {
   }
 
   next();
+}
+
+export function validateDeleteFileBody(req, res, next) {
+  const rules = [
+    param("userId").notEmpty().isString(),
+    param("fileId").notEmpty().isString(),
+  ];
+
+  Promise.all(rules.map((validation) => validation.run(req))).then(() => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.errors[0] });
+    }
+
+    next();
+  });
 }

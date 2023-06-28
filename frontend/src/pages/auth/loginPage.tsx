@@ -27,12 +27,14 @@ export default function RegistrationPage() {
     const { email, password } = data;
     AuthAPI.login(email, password)
       .then((response) => {
+        console.log(response);
         localStorage.setItem("id", response.id);
+        localStorage.setItem("token", response.accessToken);
         router.push("/app/homepage?successLogin=true");
       })
       .catch((error) => {
         console.error(error);
-        if (error?.response?.data?.message.includes("invalid credentials")) {
+        if (error?.response?.data?.message?.includes("invalid credentials")) {
           setDisplayInvalidCredentialsErrorMessage(true);
           setIsLoading(false);
           return;
