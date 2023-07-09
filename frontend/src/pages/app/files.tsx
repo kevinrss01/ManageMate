@@ -9,7 +9,7 @@ import { selectUser } from "../../../slices/userSlice";
 import { SlMagnifier } from "react-icons/sl";
 import { IoIosArrowForward } from "react-icons/io";
 import { File } from "@/interfaces/Interfaces";
-import { typeFilter } from "../../utils/fileUtils";
+import { typeFilter } from "@/utils/fileUtils";
 import { useDebouncedEffect } from "@react-hookz/web";
 import NetflixLoader from "@/components/loaders/FilesPageLoader";
 import FilesContainer from "@/components/app/filesPage/FilesContainer";
@@ -71,6 +71,7 @@ export default function Files() {
   };
 
   useEffect(() => {
+    // TODO : Add access token verification
     fetchData();
     setIsLoading(false);
   }, [files]);

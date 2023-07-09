@@ -22,6 +22,7 @@
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
     "formik": "^2.2.9",
+    "jsonwebtoken": "^9.0.1",
     "lodash.debounce": "^4.0.8",
     "next": "13.3.0",
     "prettier": "^2.8.4",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@tsconfig/next": "^1.0.5",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/react-pdf": "^6.2.0"
   }
 }

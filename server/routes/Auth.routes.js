@@ -34,7 +34,7 @@ router.post("/register", validateRegisterBody, async (req, res) => {
     });
 
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined in .env file");
+      throw new Error("JWT_SECRET is not defined in .env.local file");
     }
 
     const accessToken = sign(
@@ -62,7 +62,7 @@ router.post("/login", validateLoginBody, async (req, res) => {
     const userData = snapshot.data();
 
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined in .env file");
+      throw new Error("JWT_SECRET is not defined in .env.local file");
     }
 
     const accessToken = sign(
@@ -100,6 +100,27 @@ router.post("/verifyEmail", async (req, res) => {
     console.error(error);
     res.status(500).json({
       error: "An error occured while verifying email",
+    });
+  }
+});
+
+router.get("/verifyToken", (req, res) => {
+  try {
+    const authHeaderToken = req.headers.authorization;
+
+    console.log(authHeaderToken);
+
+    if (!authHeaderToken) {
+      return res.status(401).json({ message: "No authorization header sent" });
+    }
+
+    verify(authHeaderToken, process.env.JWT_SECRET);
+
+    res.status(200).json({ message: "Valid token" });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({
+      error: "Invalid access token",
     });
   }
 });

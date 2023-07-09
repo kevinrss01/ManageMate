@@ -1,5 +1,5 @@
 import PaymentForm from "@/components/auth/PaymentForm";
-import { PaymentFormData, Invoices } from "@/interfaces/Interfaces";
+import { PaymentFormData } from "@/interfaces/Interfaces";
 import { RegisterDataType } from "@/interfaces/auth/AuthType";
 import { v4 as uuidv4 } from "uuid";
 import toastMessage from "@/utils/toast";
@@ -8,7 +8,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/router";
 import AuthAPI from "@/services/AuthAPI";
 import { ColorRing } from "react-loader-spinner";
-import Image from "next/image";
 
 loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -74,6 +73,13 @@ export default function PaymentPage() {
 
   const router = useRouter();
   const { canceled, success } = router.query;
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/app/homepage");
+    }
+  }, []);
 
   useEffect(() => {
     if (canceled) {

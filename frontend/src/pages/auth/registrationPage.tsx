@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { RiArrowGoBackFill } from "react-icons/ri";
@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { RegisterMethods } from "@/components/auth/RegisterMethods";
 import AuthAPI from "@/services/AuthAPI";
 import { AxiosResponse } from "axios";
-import { toast } from "react-toastify";
 import toastMessage from "@/utils/toast";
 import { RotatingLines } from "react-loader-spinner";
 
@@ -23,6 +22,13 @@ export default function RegistrationPage() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/app/homepage");
+    }
+  }, []);
 
   const onSubmit = (data: {
     email: string;

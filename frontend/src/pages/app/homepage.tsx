@@ -5,14 +5,14 @@ import RightSide from "@/components/app/homePage/RightSide";
 import Main from "@/components/app/homePage/Main";
 import { useDispatch } from "react-redux";
 import { update, updateStorage } from "../../../slices/userSlice";
-import { files } from "@/exampleFiles";
-import { File, UserState } from "@/interfaces/Interfaces";
+import { UserState } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { PulseLoader } from "react-spinners";
 import { useRouter } from "next/router";
 import UsersAPI from "@/services/UsersAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/userSlice";
+import authAPI from "@/services/AuthAPI";
 
 export const createStorageUsage = (userData: UserState) => {
   try {
@@ -48,8 +48,7 @@ export const createStorageUsage = (userData: UserState) => {
 
 export const fetchUserData = async (id: string): Promise<UserState> => {
   try {
-    const userData = await UsersAPI.getAllData(id);
-    return userData;
+    return await UsersAPI.getAllData(id);
   } catch (error: any) {
     toastMessage(
       "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
@@ -71,7 +70,7 @@ export default function Homepage() {
     if (success) {
       toastMessage("Votre compte a été créer avec succès !", "success");
     } else if (successLogin) {
-      toastMessage("Content de vous revoir !", "success");
+      //toastMessage("Content de vous revoir !", "success");
     }
   }, [success, successLogin]);
 
@@ -80,38 +79,78 @@ export default function Homepage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (router.isReady) {
-        const id = localStorage.getItem("id");
-        setIsLoading(true);
-        if (!id) {
-          router.push("/auth/loginPage");
-          return;
-        }
-        const userData = await fetchUserData(id);
-        const userStorage = createStorageUsage(userData);
+      try {
+        if (router.isReady) {
+          const id = localStorage.getItem("id");
+          if (!id) {
+            console.log("No id found");
+            await router.push("/auth/loginPage");
+            return;
+          }
+          const userData = await fetchUserData(id);
+          const userStorage = createStorageUsage(userData);
 
-        dispatch(
-          update({
-            ...userData,
-          })
-        );
-        if (userStorage) {
           dispatch(
-            updateStorage({
-              ...userStorage,
+            update({
+              ...userData,
             })
           );
+          if (userStorage) {
+            dispatch(
+              updateStorage({
+                ...userStorage,
+              })
+            );
+          }
+
+          setIsLoading(false);
+        }
+      } catch (error) {
+        toastMessage(
+          "Une erreur est survenue lors de la récupération de vos données",
+          "error"
+        );
+        console.error(error);
+      }
+    };
+
+    const verifyUserAccessToken = async () => {
+      setIsLoading(true);
+      try {
+        const accessToken = localStorage.getItem("token");
+        if (!accessToken) {
+          console.log("No token found");
+          await router.push("/auth/loginPage");
+          return;
         }
 
+        await authAPI.verifyToken(accessToken);
+
+        // If we already have the user data in redux, we don't need to fetch it again
+        if (userDataRedux.firstName) {
+          return;
+        }
+
+        await fetchData();
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          localStorage.removeItem("token");
+          toastMessage(
+            "Votre session a expiré, veuillez vous reconnecter.",
+            "error"
+          );
+          await router.push("/auth/loginPage");
+        } else {
+          toastMessage("Une erreur est survenue.", "error");
+          console.error(error);
+          await router.push("/auth/loginPage");
+        }
+      } finally {
         setIsLoading(false);
       }
     };
 
-    if (userDataRedux.firstName) {
-      return;
-    }
-
-    fetchData();
+    verifyUserAccessToken();
   }, [dispatch, router.isReady]);
 
   return (
