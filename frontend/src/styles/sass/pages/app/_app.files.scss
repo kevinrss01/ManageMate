@@ -45,7 +45,6 @@
 
     .files-container {
       display: flex;
-
       justify-content: center;
       flex-direction: column;
 
@@ -55,7 +54,6 @@
 
       .filters-container {
         .open-filters-container {
-          cursor: pointer;
           display: flex;
           align-items: center;
           margin-bottom: 20px;
@@ -71,7 +69,7 @@
         .filters {
           display: flex;
           margin-bottom: 20px;
-          display: flex;
+          align-items: center;
 
           .filter-container {
             width: 250px;
@@ -112,7 +110,7 @@
           flex-direction: column;
           height: 200px;
           width: 200px;
-          margin: 0 5% 5% 0;
+          margin: 0 4% 4% 0;
           gap: 10px;
           box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 

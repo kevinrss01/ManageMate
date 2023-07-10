@@ -65,6 +65,10 @@ export const fetchUserData = async (
 
 export default function Homepage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [idAndUserToken, setIdAndUserToken] = useState<{
+    id: string;
+    accessToken: string;
+  }>({ id: "", accessToken: "" });
   const router = useRouter();
   const userDataRedux = useSelector(selectUser);
 
@@ -93,19 +97,20 @@ export default function Homepage() {
 
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
+    const id = localStorage.getItem("id");
+    if (!id) {
+      handleErrors("No id found");
+      return;
+    }
+    if (!accessToken) {
+      handleErrors("No token found");
+      return;
+    }
+    setIdAndUserToken({ id: id, accessToken: accessToken });
 
     const fetchData = async () => {
       try {
         if (router.isReady) {
-          const id = localStorage.getItem("id");
-          if (!id) {
-            handleErrors("No id found");
-            return;
-          }
-          if (!accessToken) {
-            handleErrors("No token found");
-            return;
-          }
           const userData = await fetchUserData(id, accessToken);
           const userStorage = createStorageUsage(userData);
 
@@ -183,7 +188,10 @@ export default function Homepage() {
           <Navbar />
           <main className="mainPageContainer">
             <Welcome />
-            <Main />
+            <Main
+              userId={idAndUserToken.id}
+              userAccessToken={idAndUserToken.accessToken}
+            />
           </main>
           <RightSide />
         </>

@@ -20,6 +20,7 @@ import { ClipLoader } from "react-spinners";
 import FilesAPI from "@/services/FilesAPI";
 import toastMessage from "@/utils/toast";
 import { createStorageUsage } from "../../../pages/app/homepage";
+import { iconsType } from "@/utils/fileUtils";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -38,40 +39,10 @@ const icons: Record<string, React.ReactNode> = {
   others: <AiOutlineFile />,
 };
 
-const iconsType: Record<string, string> = {
-  pdf: "Fichier document",
-  jpeg: "Fichier image",
-  jpg: "Fichier image",
-  png: "Fichier image",
-  gif: "Fichier image",
-  svg: "Fichier image",
-  mp4: "Fichier vidéo",
-  mov: "Fichier vidéo",
-  avi: "Fichier vidéo",
-  flv: "Fichier vidéo",
-  mkv: "Fichier vidéo",
-  doc: "Fichier Word",
-  docx: "Fichier Word",
-  txt: "Fichier texte",
-  csv: "Fichier CSV",
-  xls: "Fichier Excel",
-  xlsx: "Fichier Excel",
-  ppt: "Fichier PowerPoint",
-  pptx: "Fichier PowerPoint",
-  mp3: "Fichier audio",
-  wav: "Fichier audio",
-  ogg: "Fichier audio",
-  zip: "Fichier compressé",
-  rar: "Fichier compressé",
-  html: "Fichier HTML",
-  css: "Fichier CSS",
-  js: "Fichier JavaScript",
-  ts: "Fichier TypeScript",
-  json: "Fichier JSON",
-  lain: "Fichier texte",
-};
-
-export default function Main() {
+const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
+  userId,
+  userAccessToken,
+}) => {
   const [fileID, setFileID] = useState("");
   const [isLoadingDelete, setIsLoadingDelete] = useState(false);
 
@@ -157,12 +128,7 @@ export default function Main() {
   const handleDeleteFile = async (fileId: string, fileName: string) => {
     try {
       setIsLoadingDelete(true);
-      const userId = localStorage.getItem("id");
-      if (!userId) {
-        throw new Error("No user id found");
-      }
-
-      await FilesAPI.deleteFile(userId, fileId);
+      await FilesAPI.deleteFile(userId, fileId, userAccessToken);
       updateUserStateInRedux(fileId);
       toastMessage(`Fichier "${fileName}" supprimé avec succès`, "success");
     } catch (error) {
@@ -260,4 +226,6 @@ export default function Main() {
       </div>
     </>
   );
-}
+};
+
+export default Main;

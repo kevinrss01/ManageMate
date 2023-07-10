@@ -1,7 +1,7 @@
 import Navbar from "@/components/app/Navbar";
 import RightSide from "@/components/app/homePage/RightSide";
 import { fetchUserData, createStorageUsage } from "./homepage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -21,34 +21,35 @@ interface Filter {
 }
 
 // TODO : Permettre de retirer les filtres
-// TODO : Permettre de cumuler les filtres
 
 export default function Files() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [isOpenFilters, setIsOpenFilters] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<File[]>([]);
+  const [filteredFiles, setFilteredFiles] = useState<File[]>();
   const [typeOfFilterOpen, setTypeOfFilterOpen] = useState<string>("none");
   const [activeFilter, setActiveFilter] = useState<string>("none");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
+  const [userId, setUserId] = useState<string>("");
+  const [userAccessToken, setUserAccessToken] = useState<string>("");
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
 
-  const handleErrors = (
-    consoleErrorMessage: string | unknown,
-    message?: string
-  ) => {
-    console.error(consoleErrorMessage);
-    localStorage.removeItem("token");
-    message ? toastMessage(message, "error") : null;
-    router.push("/auth/loginPage");
-  };
+  const handleErrors = useCallback(
+    (consoleErrorMessage: string | unknown, message?: string) => () => {
+      console.error(consoleErrorMessage);
+      localStorage.removeItem("token");
+      message ? toastMessage(message, "error") : null;
+      router.push("/auth/loginPage");
+    },
+    [router]
+  );
 
-  const fetchData = async () => {
-    // If there is no data is redux store, fetch it from the API
-    if (data.firstName === "") {
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
       const id = localStorage.getItem("id");
       const token = localStorage.getItem("token");
 
@@ -59,35 +60,46 @@ export default function Files() {
         );
         return;
       }
-      const userData = await fetchUserData(id, token);
-      const userStorage = createStorageUsage(userData);
 
-      dispatch(
-        update({
-          ...userData,
-        })
-      );
-      if (userStorage) {
+      setUserId(id);
+      setUserAccessToken(token);
+
+      // If there is no data is redux store, fetch it from the API
+      if (data.firstName === "") {
+        const userData = await fetchUserData(id, token);
+        const userStorage = createStorageUsage(userData);
+
         dispatch(
-          updateStorage({
-            ...userStorage,
+          update({
+            ...userData,
           })
         );
-      }
+        if (userStorage) {
+          dispatch(
+            updateStorage({
+              ...userStorage,
+            })
+          );
+        }
 
-      setFiles(userData.files);
-      setFilteredFiles(userData.files);
-    } else {
-      // If there is data in redux store, use it
-      setFiles(data.files);
-      setFilteredFiles(data.files);
-    }
-  };
+        setFiles(userData.files);
+        setFilteredFiles(userData.files);
+      } else {
+        //console.log(data.files);
+        // If there is data in redux store, use it
+        setFiles([...data.files]);
+        setFilteredFiles([...data.files]);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, data.files]);
 
   useEffect(() => {
-    fetchData();
-    setIsLoading(false);
-  }, [files]);
+    if (Array.isArray(filteredFiles)) {
+      setIsLoading(false);
+    }
+  }, [filteredFiles]);
 
   const searchFiles = (value: string) => {
     if (value) {
@@ -98,8 +110,7 @@ export default function Files() {
       });
       setFilteredFiles(filterFiles);
     } else {
-      fetchData();
-      setFilteredFiles(files);
+      setFilteredFiles(data.files);
     }
   };
 
@@ -180,6 +191,12 @@ export default function Files() {
     } else {
       typeFilterMap[filterType](files);
     }
+  };
+
+  const handleDeleteFilter = () => {
+    setActiveFilter("none");
+    setIsOpenFilters(false);
+    setFilteredFiles(data.files);
   };
 
   return (
@@ -278,9 +295,25 @@ export default function Files() {
                       </div>
                     );
                   })}
+                  <button
+                    className="delete-filter-button delete-button"
+                    onClick={() => {
+                      handleDeleteFilter();
+                    }}
+                  >
+                    Supprimer le filtre
+                  </button>
                 </div>
               </div>
-              <FilesContainer filteredFiles={filteredFiles} />
+              {filteredFiles !== undefined && (
+                <>
+                  <FilesContainer
+                    filteredFiles={filteredFiles}
+                    userId={userId}
+                    userAccessToken={userAccessToken}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
