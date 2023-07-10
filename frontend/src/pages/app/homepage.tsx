@@ -13,7 +13,6 @@ import UsersAPI from "@/services/UsersAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/userSlice";
 import authAPI from "@/services/AuthAPI";
-import { toast } from "react-toastify";
 
 export const createStorageUsage = (userData: UserState) => {
   try {
@@ -71,6 +70,7 @@ export default function Homepage() {
   }>({ id: "", accessToken: "" });
   const router = useRouter();
   const userDataRedux = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const { success, successLogin } = router.query;
 
@@ -92,18 +92,11 @@ export default function Homepage() {
     }
   }, [success, successLogin]);
 
-  //Redux
-  const dispatch = useDispatch();
-
   useEffect(() => {
     const accessToken = localStorage.getItem("token");
     const id = localStorage.getItem("id");
-    if (!id) {
+    if (!id || !accessToken) {
       handleErrors("No id found");
-      return;
-    }
-    if (!accessToken) {
-      handleErrors("No token found");
       return;
     }
     setIdAndUserToken({ id: id, accessToken: accessToken });

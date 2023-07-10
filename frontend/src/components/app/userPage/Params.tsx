@@ -106,6 +106,7 @@ export default function Params() {
   const isUserDataFetched = !!userData.firstName;
   return (
     <div className="params-container">
+      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="update-container">
         {isUserDataFetched && (
           <div className="personal-info-container">
@@ -151,6 +152,7 @@ export default function Params() {
           </div>
         )}
 
+        {/* //TODO :  Mettre cette div dans un composant */}
         {isUserDataFetched && (
           <div className="email-container">
             <h3>Changer son e-mail</h3>
@@ -187,6 +189,7 @@ export default function Params() {
           </div>
         )}
 
+        {/* //TODO :  Mettre cette div dans un composant */}
         <div className="password-container">
           <h3>Changer son mot de passe</h3>
 
@@ -263,6 +266,7 @@ export default function Params() {
           </Formik>
         </div>
       </div>
+      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="upgrade-container">
         <div className="upgrade-space-params">
           <Image src={rocket} className="rocketImage" alt="Image of a rocket" />

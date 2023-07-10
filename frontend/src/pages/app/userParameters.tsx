@@ -34,6 +34,9 @@ export default function UserParameters() {
     verifyUserAccessToken();
   }, []);
 
+  //TODO: add a loader
+  // TODO : Faire le call API ici et passer la data en props
+
   return (
     <div className="userParametersContainer">
       <Navbar />
