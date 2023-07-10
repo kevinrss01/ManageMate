@@ -14,23 +14,41 @@ import { createStorageUsage } from "../../pages/app/homepage";
 import { File } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { ClipLoader } from "react-spinners";
+import { access } from "fs";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [userId, setUserId] = useState<string>("");
+  const [userAccessToken, setUserAccessToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   //const [isClicked, setIsClicked] = useState<string>("");
   const userData = useSelector(selectUser);
+  const router = useRouter();
+
+  const handleErrors = (
+    consoleErrorMessage: string | unknown,
+    message?: string
+  ) => {
+    console.error(consoleErrorMessage);
+    localStorage.removeItem("token");
+    message ? toastMessage(message, "error") : null;
+    router.push("/auth/loginPage");
+  };
 
   useEffect(() => {
     const id = localStorage.getItem("id");
-    if (!id) {
+    const accessToken = localStorage.getItem("token");
+    if (!id || !accessToken) {
+      handleErrors(
+        `No id found or no token found, (id: ${id}, accessToken: ${accessToken})`,
+        "Une erreur est survenue, veuillez vous reconnecter."
+      );
       return;
     }
     setUserId(id);
+    setUserAccessToken(accessToken);
   }, []);
 
-  const Router = useRouter();
   const dispatch = useDispatch();
 
   const hoverColor = {
@@ -144,7 +162,11 @@ export default function Navbar() {
 
       formData.append("file", file);
       formData.append("userId", userId);
-      const dataInfo: File = await AxiosCallApi.post("files/addFile", formData);
+      const dataInfo: File = await AxiosCallApi.post(
+        "files/addFile",
+        formData,
+        { headers: { Authorization: userAccessToken } }
+      );
       toastMessage("Fichier importé avec succès", "success");
       updateReduxStore(dataInfo);
     } catch (error) {

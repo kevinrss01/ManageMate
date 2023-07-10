@@ -13,6 +13,7 @@ import UsersAPI from "@/services/UsersAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/userSlice";
 import authAPI from "@/services/AuthAPI";
+import { toast } from "react-toastify";
 
 export const createStorageUsage = (userData: UserState) => {
   try {
@@ -46,9 +47,12 @@ export const createStorageUsage = (userData: UserState) => {
   }
 };
 
-export const fetchUserData = async (id: string): Promise<UserState> => {
+export const fetchUserData = async (
+  id: string,
+  accessToken: string
+): Promise<UserState> => {
   try {
-    return await UsersAPI.getAllData(id);
+    return await UsersAPI.getAllData(id, accessToken);
   } catch (error: any) {
     toastMessage(
       "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
@@ -66,6 +70,16 @@ export default function Homepage() {
 
   const { success, successLogin } = router.query;
 
+  const handleErrors = (
+    consoleErrorMessage: string | unknown,
+    message?: string
+  ) => {
+    console.error(consoleErrorMessage);
+    localStorage.removeItem("token");
+    message ? toastMessage(message, "error") : null;
+    router.push("/auth/loginPage");
+  };
+
   useEffect(() => {
     if (success) {
       toastMessage("Votre compte a été créer avec succès !", "success");
@@ -78,16 +92,21 @@ export default function Homepage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const accessToken = localStorage.getItem("token");
+
     const fetchData = async () => {
       try {
         if (router.isReady) {
           const id = localStorage.getItem("id");
           if (!id) {
-            console.log("No id found");
-            await router.push("/auth/loginPage");
+            handleErrors("No id found");
             return;
           }
-          const userData = await fetchUserData(id);
+          if (!accessToken) {
+            handleErrors("No token found");
+            return;
+          }
+          const userData = await fetchUserData(id, accessToken);
           const userStorage = createStorageUsage(userData);
 
           dispatch(
@@ -106,21 +125,18 @@ export default function Homepage() {
           setIsLoading(false);
         }
       } catch (error) {
-        toastMessage(
-          "Une erreur est survenue lors de la récupération de vos données",
-          "error"
+        handleErrors(
+          error,
+          "Une erreur est survenue lors de la récupération de vos données"
         );
-        console.error(error);
       }
     };
 
     const verifyUserAccessToken = async () => {
       setIsLoading(true);
       try {
-        const accessToken = localStorage.getItem("token");
         if (!accessToken) {
-          console.log("No token found");
-          await router.push("/auth/loginPage");
+          handleErrors("No token found");
           return;
         }
 
@@ -134,16 +150,15 @@ export default function Homepage() {
         await fetchData();
       } catch (error: any) {
         if (error?.response?.status === 401) {
-          localStorage.removeItem("token");
-          toastMessage(
-            "Votre session a expiré, veuillez vous reconnecter.",
-            "error"
+          handleErrors(
+            "Token expired",
+            "Votre session a expiré, veuillez vous reconnecter."
           );
-          await router.push("/auth/loginPage");
         } else {
-          toastMessage("Une erreur est survenue.", "error");
-          console.error(error);
-          await router.push("/auth/loginPage");
+          handleErrors(
+            error,
+            "Une erreur est survenue, veuillez vous reconnecter."
+          );
         }
       } finally {
         setIsLoading(false);

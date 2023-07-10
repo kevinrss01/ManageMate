@@ -4,11 +4,14 @@ const baseURLBackend = "http://localhost:4000";
 const formatUrl = (url: string) => `${baseURLBackend}/${url}`;
 const defaultHeaders = { headers: {} };
 
+interface Headers {
+  headers: { [key: string]: string | number | undefined };
+}
+
 // TODO : update data and token type
 
 class AxiosCallApi {
-  static async get<T>(url: string, headers?: any): Promise<T> {
-    console.log(headers);
+  static async get<T>(url: string, headers?: Headers): Promise<T> {
     const response = await axios.get<T>(
       formatUrl(url),
       headers ? headers : defaultHeaders
@@ -16,13 +19,20 @@ class AxiosCallApi {
     return response.data;
   }
 
-  static async post<T>(url: string, data: T) {
-    const response = await axios.post(formatUrl(url), data, defaultHeaders);
+  static async post<T>(url: string, data: T, headers?: Headers) {
+    const response = await axios.post(
+      formatUrl(url),
+      data,
+      headers ? headers : defaultHeaders
+    );
     return response.data;
   }
 
-  static async delete(url: string) {
-    const response = await axios.delete(formatUrl(url), defaultHeaders);
+  static async delete(url: string, headers?: Headers) {
+    const response = await axios.delete(
+      formatUrl(url),
+      headers ? headers : defaultHeaders
+    );
     return response.data;
   }
 

@@ -1,10 +1,11 @@
 import express from "express";
 import { auth, db } from "../config/firebase.js";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { validateToken } from "../middlewares/AuthMiddlewares.js";
 
 const router = express.Router();
 
-router.get("/all-info/:id", async (req, res) => {
+router.get("/all-info/:id", validateToken, async (req, res) => {
   try {
     const id = req.params.id;
     const docRef = doc(db, "users", id);

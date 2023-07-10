@@ -2,7 +2,6 @@ import { param, validationResult } from "express-validator";
 
 export function validateAddFileBody(req, res, next) {
   const { userId } = req.body;
-  console.log(req.body);
 
   // Manually validate userId
   if (!userId || typeof userId !== "string") {

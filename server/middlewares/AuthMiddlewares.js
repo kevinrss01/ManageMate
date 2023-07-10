@@ -1,4 +1,6 @@
 import { body, validationResult } from "express-validator";
+import { verify } from "jsonwebtoken";
+
 export function validateRegisterBody(req, res, next) {
   const rules = [
     body("email").isEmail().notEmpty().isString(),
@@ -53,3 +55,18 @@ export function validateUpdateAccountBody(req, res, next) {
     next();
   });
 }
+
+export const validateToken = (req, res, next) => {
+  try {
+    const accessToken = req.headers.authorization;
+    if (accessToken) {
+      verify(accessToken, process.env.JWT_SECRET);
+      next();
+    } else {
+      res.status(401).json({ message: "No access token found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Invalid access token" });
+  }
+};

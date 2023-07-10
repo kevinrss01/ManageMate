@@ -14,6 +14,7 @@ import { useDebouncedEffect } from "@react-hookz/web";
 import NetflixLoader from "@/components/loaders/FilesPageLoader";
 import FilesContainer from "@/components/app/filesPage/FilesContainer";
 import toastMessage from "@/utils/toast";
+import { useRouter } from "next/router";
 
 interface Filter {
   [key: string]: (files: File[], extension?: string) => void;
@@ -30,23 +31,36 @@ export default function Files() {
   const [typeOfFilterOpen, setTypeOfFilterOpen] = useState<string>("none");
   const [activeFilter, setActiveFilter] = useState<string>("none");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
+
+  const handleErrors = (
+    consoleErrorMessage: string | unknown,
+    message?: string
+  ) => {
+    console.error(consoleErrorMessage);
+    localStorage.removeItem("token");
+    message ? toastMessage(message, "error") : null;
+    router.push("/auth/loginPage");
+  };
 
   const fetchData = async () => {
     // If there is no data is redux store, fetch it from the API
     if (data.firstName === "") {
       const id = localStorage.getItem("id");
-      if (!id) {
-        toastMessage(
-          "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
-          "error"
+      const token = localStorage.getItem("token");
+
+      if (!id || !token) {
+        handleErrors(
+          `No id found or no token found, (id: ${id}, accessToken: ${token})`,
+          "Une erreur est survenue, veuillez vous reconnecter."
         );
         return;
       }
-      const userData = await fetchUserData(id);
-      const userStorage = await createStorageUsage(userData);
+      const userData = await fetchUserData(id, token);
+      const userStorage = createStorageUsage(userData);
 
       dispatch(
         update({
@@ -71,7 +85,6 @@ export default function Files() {
   };
 
   useEffect(() => {
-    // TODO : Add access token verification
     fetchData();
     setIsLoading(false);
   }, [files]);
@@ -100,17 +113,42 @@ export default function Files() {
 
   const typeFilterMap: Filter = {
     dateGrowing: (files: File[]) => {
-      const filterFiles = [...files].sort((a, b) => {
-        const dateA = new Date(a.dateAdded);
-        const dateB = new Date(b.dateAdded);
+      const filterFiles = [...files].sort((fileA, fileB) => {
+        if (!fileA || !fileB) {
+          console.error("No file found in the array");
+          toastMessage(
+            "Une erreur est survenue, veuillez réessayer plus tard.",
+            "error"
+          );
+          return 0;
+        }
+        const dateA = new Date(
+          typeof fileA.dateAdded === "string"
+            ? fileA.dateAdded
+            : fileA.dateAdded.seconds * 1000
+        );
+        const dateB = new Date(
+          typeof fileB.dateAdded === "string"
+            ? fileB.dateAdded
+            : fileB.dateAdded.seconds * 1000
+        );
+
         return dateB.getTime() - dateA.getTime();
       });
       setFilteredFiles(filterFiles);
     },
     dateDecreasing: (files: File[]) => {
-      const filterFiles = [...files].sort((a, b) => {
-        const dateA = new Date(a.dateAdded);
-        const dateB = new Date(b.dateAdded);
+      const filterFiles = [...files].sort((fileA, fileB) => {
+        const dateA = new Date(
+          typeof fileA.dateAdded === "string"
+            ? fileA.dateAdded
+            : fileA.dateAdded.seconds * 1000
+        );
+        const dateB = new Date(
+          typeof fileB.dateAdded === "string"
+            ? fileB.dateAdded
+            : fileB.dateAdded.seconds * 1000
+        );
         return dateA.getTime() - dateB.getTime();
       });
       setFilteredFiles(filterFiles);

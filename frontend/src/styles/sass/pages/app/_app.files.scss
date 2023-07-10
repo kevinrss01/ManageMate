@@ -127,6 +127,9 @@
             .name {
               font-size: 15px;
               font-weight: 600;
+              overflow: hidden;
+              text-align: center;
+              white-space: nowrap;
               text-overflow: ellipsis;
               color: white;
             }
@@ -138,6 +141,12 @@
             justify-content: space-between;
             height: 100%;
             padding: 10px;
+
+            .icons-container {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
           }
 
           .type-size {
@@ -149,7 +158,7 @@
           }
 
           .date {
-            //
+            /**/
           }
 
           .date-2 {

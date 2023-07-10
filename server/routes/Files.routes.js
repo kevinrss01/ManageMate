@@ -13,6 +13,7 @@ import {
   validateAddFileBody,
   validateDeleteFileBody,
 } from "../middlewares/FilesMiddlewares.js";
+import { validateToken } from "../middlewares/AuthMiddlewares.js";
 
 const router = express.Router();
 const upload = multer();
@@ -64,6 +65,7 @@ const addDataInfoDoc = async (userId, dataFromMulter, storageInfo) => {
 router.post(
   "/addFile",
   upload.single("file"),
+  validateToken,
   validateAddFileBody,
   async (req, res) => {
     try {
@@ -94,6 +96,7 @@ router.post(
 
 router.delete(
   "/deleteFile/:userId/:fileId",
+  validateToken,
   validateDeleteFileBody,
   async (req, res) => {
     try {

@@ -108,8 +108,6 @@ router.get("/verifyToken", (req, res) => {
   try {
     const authHeaderToken = req.headers.authorization;
 
-    console.log(authHeaderToken);
-
     if (!authHeaderToken) {
       return res.status(401).json({ message: "No authorization header sent" });
     }
