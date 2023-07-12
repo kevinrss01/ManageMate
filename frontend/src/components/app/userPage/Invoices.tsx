@@ -10,6 +10,10 @@ import {
   PDFViewer,
   Image,
 } from "@react-pdf/renderer";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../../slices/userSlice";
+import toastMessage from "@/utils/toast";
+import { fetchUserData } from "@/pages/app/homepage";
 
 const styles = StyleSheet.create({
   page: {
@@ -81,7 +85,7 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice }) => {
           <Text>
             {invoice.billAddress.firstName} {invoice.billAddress.lastName}
           </Text>
-          <Text>{invoice.billAddress.compagny}</Text>
+          <Text>{invoice.billAddress.company}</Text>
           <Text>{invoice.billAddress.address}</Text>
           <Text>
             {invoice.billAddress.postalCode} {invoice.billAddress.city}
@@ -120,12 +124,24 @@ export default function Invoices() {
   const [invoices, setInvoices] = useState<Invoices[]>([]);
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const [invoiceId, setInvoiceId] = useState<string>("");
+  const userDataRedux = useSelector(selectUser);
 
   useEffect(() => {
     const getInvoices = async () => {
-      //Fetch with axios
-      const invoicesFetched = invoicesExample as any;
-      setInvoices(invoicesFetched);
+      if (userDataRedux.firstName === "") {
+        const id = localStorage.getItem("id");
+        if (!id) {
+          toastMessage(
+            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
+            "error"
+          );
+          return;
+        }
+        const dataFetched = await fetchUserData(id);
+        setInvoices(dataFetched.invoices);
+      } else {
+        setInvoices(userDataRedux.invoices);
+      }
     };
     getInvoices();
   }, []);

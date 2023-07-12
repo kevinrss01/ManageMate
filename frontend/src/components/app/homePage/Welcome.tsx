@@ -5,13 +5,14 @@ import { selectUser } from "../../../../slices/userSlice";
 export default function Welcome() {
   //Redux
   const userData = useSelector(selectUser);
+  const { firstName, lastName } = userData;
 
   return (
     <>
       <div className="welcomeContainer">
         <div className="welcomeTextContainer">
           <h2>
-            Bienvenue {userData.firstName + " " + userData.lastName} !
+            Bienvenue {firstName + " " + lastName} !
             <FcApproval style={{ marginLeft: "5px" }} />
           </h2>
         </div>

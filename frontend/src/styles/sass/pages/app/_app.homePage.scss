@@ -49,7 +49,7 @@
           margin: 0;
           margin-bottom: 10px;
           font-size: 18px;
-          width: 200px;
+          width: 190px;
         }
       }
 
@@ -69,10 +69,19 @@
           cursor: pointer;
         }
 
-        .containerDelete {
+        .container-del-and-download {
           display: flex;
           align-items: center;
           justify-content: center;
+          height: 100px;
+          background-color: blue;
+          width: 50px;
+
+          .delete {
+            height: 100%;
+            width: 50px;
+            background-color: red;
+          }
 
           .iconValid {
             font-size: 19px;
@@ -102,15 +111,22 @@
           }
         }
 
-        .moreIcon {
+        .deleteIcon,
+        .download-icon {
           font-size: 20px;
-          width: 50px;
+          width: 30px;
           color: grey;
           transition: color 0.2s ease-in-out;
+        }
 
-          &:hover {
-            color: darkred;
-          }
+        .deleteIcon:hover {
+          color: red;
+          cursor: pointer;
+        }
+
+        .download-icon:hover {
+          color: green;
+          cursor: pointer;
         }
 
         .containerInfoAndIcon {

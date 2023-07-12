@@ -12,23 +12,41 @@ import { useEffect, useState } from "react";
 import {
   UpdateDataType,
   UpdatePasswordDataType,
+  UserState,
 } from "@/interfaces/Interfaces";
 import { fetchUserData } from "@/pages/app/homepage";
 import toastMessage from "@/utils/toast";
+import { useDispatch } from "react-redux";
 
 export default function Params() {
   const data = useSelector(selectUser);
   const [errorPassword, setErrorPassword] = useState<boolean>(false);
-  const [userData, setUserData] = useState(data);
+  const [userData, setUserData] = useState<UserState>(data);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const userDataRedux = useSelector(selectUser);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchUser = async () => {
-      if (userData.firstName === "") {
-        const dataFetched = await fetchUserData();
+      if (userDataRedux.firstName === "") {
+        const id = localStorage.getItem("id");
+        if (!id) {
+          toastMessage(
+            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
+            "error"
+          );
+          return;
+        }
+        const dataFetched = await fetchUserData(id);
         setUserData(dataFetched);
+      } else {
+        setUserData(userDataRedux);
       }
     };
     fetchUser();
+    setIsLoading(false);
   }, []);
 
   const verifyIfPasswordMatch = (data: {
@@ -75,13 +93,12 @@ export default function Params() {
         return toastMessage("Les valeurs doivent être différentes.", "error");
       }
       toastMessage(`Nom et prénom mis à jour avec succès !`, "success");
-      console.log(data);
     } catch (error: any) {
       toastMessage(
         "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
         "error"
       );
-      console.log("Something went wrong: ", error.message);
+      console.error("Something went wrong: ", error.message);
       throw new Error("Something went wrong: ", error);
     }
   };
@@ -89,6 +106,7 @@ export default function Params() {
   const isUserDataFetched = !!userData.firstName;
   return (
     <div className="params-container">
+      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="update-container">
         {isUserDataFetched && (
           <div className="personal-info-container">
@@ -134,6 +152,7 @@ export default function Params() {
           </div>
         )}
 
+        {/* //TODO :  Mettre cette div dans un composant */}
         {isUserDataFetched && (
           <div className="email-container">
             <h3>Changer son e-mail</h3>
@@ -170,6 +189,7 @@ export default function Params() {
           </div>
         )}
 
+        {/* //TODO :  Mettre cette div dans un composant */}
         <div className="password-container">
           <h3>Changer son mot de passe</h3>
 
@@ -246,6 +266,7 @@ export default function Params() {
           </Formik>
         </div>
       </div>
+      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="upgrade-container">
         <div className="upgrade-space-params">
           <Image src={rocket} className="rocketImage" alt="Image of a rocket" />

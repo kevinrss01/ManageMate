@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AiFillFacebook,
   AiOutlineGoogle,
@@ -7,7 +7,7 @@ import {
 import Link from "next/link";
 import { IoArrowBackSharp } from "react-icons/io5";
 import { Formik, Field, Form } from "formik";
-import { verificationLoginSchema } from "../../utils/yupShema";
+import { verificationLoginSchema } from "@/utils/yupShema";
 import { RotatingLines } from "react-loader-spinner";
 import AuthAPI from "@/services/AuthAPI";
 import toastMessage from "@/utils/toast";
@@ -22,16 +22,25 @@ export default function RegistrationPage() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/app/homepage");
+    }
+  }, [router]);
+
   const onSubmit = (data: { email: string; password: string }) => {
     setIsLoading(true);
     const { email, password } = data;
     AuthAPI.login(email, password)
       .then((response) => {
+        localStorage.setItem("id", response.id);
+        localStorage.setItem("token", response.accessToken);
         router.push("/app/homepage?successLogin=true");
       })
       .catch((error) => {
         console.error(error);
-        if (error?.response?.data?.message.includes("invalid credentials")) {
+        if (error?.response?.data?.message?.includes("invalid credentials")) {
           setDisplayInvalidCredentialsErrorMessage(true);
           setIsLoading(false);
           return;

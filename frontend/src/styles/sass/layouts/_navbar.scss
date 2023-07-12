@@ -1,31 +1,31 @@
-.navbarContainer{
+.navbarContainer {
   position: fixed;
   width: 80px;
   height: 100%;
   background-color: $black-color;
-  .navbar{
+  .navbar {
     display: flex;
     flex-direction: column;
     height: 100%;
 
-    .logoContainer{
-        @include flex-centre;
-        width: 100%;
-        height: 100px;
-        border-bottom: 1px solid white;
-        padding-top: 10px;
-      .img{
+    .logoContainer {
+      @include flex-centre;
+      width: 100%;
+      height: 100px;
+      border-bottom: 1px solid white;
+      padding-top: 10px;
+      .img {
         width: 50px;
         height: auto;
-
       }
     }
 
-    .buttonContainer{
+    .buttonContainer {
       @include flex_column-centre;
-        width: 100%;
+      width: 100%;
       height: 100%;
-      .buttonAdd{
+      .buttonAdd {
+        @include flex-centre;
         margin-top: 50px;
         height: 40px;
         width: 40px;
@@ -35,33 +35,33 @@
         margin-bottom: 50px;
       }
 
-      .buttonAdd:hover{
+      .buttonAdd:hover {
         background-color: $orange;
 
-        .icon{
+        .icon {
           color: $primary-color;
         }
       }
 
-      .button{
+      .button {
         margin-bottom: 50px;
         height: 40px;
         width: 40px;
         @include flex-centre;
 
-        .icon{
+        .icon {
           color: $icons-color;
           font-size: 30px;
           transition: color 0.2s ease-in-out;
           cursor: pointer;
         }
 
-        .icon:hover{
+        .icon:hover {
           color: $orange;
         }
       }
 
-      .icon{
+      .icon {
         color: $secondary-color;
         font-size: 40px;
         transition: color 0.2s ease-in-out;

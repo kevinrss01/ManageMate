@@ -6,94 +6,170 @@ import {
   NumberOfFilesByType,
 } from "@/interfaces/Interfaces";
 
-export const formatFileSizeFromKb = (sizeInKb: number): string => {
+export const formatFileSizeFromBytes = (sizeInBytes: number): string => {
+  //bytes === octets
+  if (sizeInBytes === 0) {
+    return " ";
+  }
+
+  if (sizeInBytes < 1024) {
+    return `${sizeInBytes} o`; // o stands for octets
+  }
+
+  const sizeInKb = sizeInBytes / 1024;
   if (sizeInKb < 1024) {
-    return `${sizeInKb} ko`;
+    return `${sizeInKb.toFixed(1)} Ko`; // Ko stands for kilooctets
   }
 
   const sizeInMb = sizeInKb / 1024;
   if (sizeInMb < 1024) {
-    return `${sizeInMb.toFixed(1)} Mo`;
+    return `${sizeInMb.toFixed(1)} Mo`; // Mo stands for mégaoctets
   }
 
   const sizeInGb = sizeInMb / 1024;
-  return `${sizeInGb.toFixed(1)} Go`;
+  return `${sizeInGb.toFixed(1)} Go`; // Go stands for gigaoctets
 };
 
 export const getPercentageAndSizeByFileType = (
   files: File[],
   userData: UserState
 ): PercentageAndSizeByFileType => {
-  let totalSize = {
-    pdf: 0,
-    jpeg: 0,
-    png: 0,
-    mp4: 0,
-    word: 0,
-    mov: 0,
-  };
+  const documentTypes = [
+    "pdf",
+    "doc",
+    "docx",
+    "txt",
+    "csv",
+    "xls",
+    "xlsx",
+    "ppt",
+    "pptx",
+    "html",
+    "css",
+    "js",
+    "ts",
+    "json",
+    "lain",
+  ];
+  const imageTypes = ["jpeg", "jpg", "png", "gif", "svg"];
+  const videoTypes = ["mp4", "mov", "avi", "flv", "mkv"];
+  let otherTypes = ["mp3", "wav", "ogg", "zip", "rar"];
+  const allTypes = [
+    ...documentTypes,
+    ...imageTypes,
+    ...videoTypes,
+    ...otherTypes,
+  ];
+
+  const totalSize: Record<string, number> = {};
+
   files.forEach((file: File) => {
-    totalSize[file.type] += file.size;
+    let fileType = file.name.split(".").pop() || file.name;
+    fileType = fileType === file.name ? file.type : fileType;
+
+    totalSize[fileType] = (totalSize[fileType] || 0) + file.size;
+    if (!allTypes.includes(fileType)) {
+      otherTypes.push(fileType);
+    }
   });
+
+  const calculateTotalSize = (types: string[]): number => {
+    return types.reduce((total, type) => total + (totalSize[type] || 0), 0);
+  };
+
+  const calculatePercentage = (size: number): string => {
+    return ((size * 100) / userData.totalUserStorage).toFixed(2);
+  };
 
   return {
     documents: {
-      percentage: (
-        (totalSize.pdf * 100) / userData.totalUserStorage +
-        (totalSize.word * 100) / userData.totalUserStorage
-      ).toFixed(2),
-      size: formatFileSizeFromKb(totalSize.pdf + totalSize.word),
+      percentage: calculatePercentage(calculateTotalSize(documentTypes)),
+      size: formatFileSizeFromBytes(calculateTotalSize(documentTypes)),
     },
     images: {
-      percentage: (
-        (totalSize.jpeg * 100) / userData.totalUserStorage +
-        (totalSize.png * 100) / userData.totalUserStorage
-      ).toFixed(2),
-      size: formatFileSizeFromKb(totalSize.jpeg + totalSize.png),
+      percentage: calculatePercentage(calculateTotalSize(imageTypes)),
+      size: formatFileSizeFromBytes(calculateTotalSize(imageTypes)),
     },
     videos: {
-      percentage: ((totalSize.mov * 100) / userData.totalUserStorage).toFixed(
-        2
-      ),
-      size: formatFileSizeFromKb(totalSize.mov),
+      percentage: calculatePercentage(calculateTotalSize(videoTypes)),
+      size: formatFileSizeFromBytes(calculateTotalSize(videoTypes)),
     },
     others: {
-      percentage: ((totalSize.mp4 * 100) / userData.totalUserStorage).toFixed(
-        2
-      ),
-      size: formatFileSizeFromKb(totalSize.mp4),
+      percentage: calculatePercentage(calculateTotalSize(otherTypes)),
+      size: formatFileSizeFromBytes(calculateTotalSize(otherTypes)),
     },
   };
 };
 
 export const getNumberOfFilesByType = (files: File[]): NumberOfFilesByType => {
-  const totalFiles = {
-    pdf: 0,
-    jpeg: 0,
-    png: 0,
-    word: 0,
-    mov: 0,
-    mp4: 0,
-  };
+  const documentTypes = [
+    "pdf",
+    "doc",
+    "docx",
+    "txt",
+    "csv",
+    "xls",
+    "xlsx",
+    "ppt",
+    "pptx",
+    "html",
+    "css",
+    "js",
+    "ts",
+    "json",
+    "lain",
+  ];
+  const imageTypes = ["jpeg", "jpg", "png", "gif", "svg"];
+  const videoTypes = ["mp4", "mov", "avi", "flv", "mkv"];
+  let otherTypes = ["mp3", "wav", "ogg", "zip", "rar"];
+  const allTypes = [
+    ...documentTypes,
+    ...imageTypes,
+    ...videoTypes,
+    ...otherTypes,
+  ];
+
+  const totalFiles: Record<string, number> = {};
 
   files.forEach((file: File) => {
-    totalFiles[file.type] += 1;
+    let fileType = file.name.split(".").pop() || file.name;
+    fileType = fileType === file.name ? file.type : fileType;
+
+    totalFiles[fileType] = (totalFiles[fileType] || 0) + 1;
+    if (!allTypes.includes(fileType)) {
+      otherTypes.push(fileType);
+    }
   });
 
-  const { pdf, jpeg, png, word, mov, mp4 } = totalFiles;
+  const calculateTotal = (types: string[]): number => {
+    return types.reduce((total, type) => total + (totalFiles[type] || 0), 0);
+  };
+
   return {
-    documents: pdf + word,
-    images: jpeg + png,
-    videos: mov,
-    others: mp4,
+    documents: calculateTotal(documentTypes),
+    images: calculateTotal(imageTypes),
+    videos: calculateTotal(videoTypes),
+    others: calculateTotal(otherTypes),
   };
 };
 
-export function getTimeSinceAdd(dateString: string): string {
-  const date = new Date(dateString);
+export function getTimeSinceAdd(
+  dateInput: string | { seconds: number; nanoseconds: number }
+): string {
+  let date: Date;
+
+  if (typeof dateInput === "string") {
+    date = new Date(dateInput);
+  } else {
+    // If the input is an object with 'seconds' and 'nanoseconds',
+    // convert it to a JavaScript Date object
+    date = new Date(dateInput.seconds * 1000 + dateInput.nanoseconds / 1000000);
+  }
+
   if (date.toString() === "Invalid Date") {
     return "Inconnu";
   }
+
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -109,9 +185,6 @@ export function getTimeSinceAdd(dateString: string): string {
   for (const unit of units) {
     const count = Math.floor(seconds / unit.seconds);
     if (count >= 1) {
-      if (unit.name == "mois") {
-        return `${count} ${unit.name}`;
-      }
       const plural = count > 1 ? "s" : "";
       return `${count} ${unit.name}${plural}`;
     }
@@ -217,3 +290,36 @@ export const typeFilter: TypeFilter[] = [
     ],
   },
 ];
+
+export const iconsType: Record<string, string> = {
+  pdf: "Fichier document",
+  jpeg: "Fichier image",
+  jpg: "Fichier image",
+  png: "Fichier image",
+  gif: "Fichier image",
+  svg: "Fichier image",
+  mp4: "Fichier vidéo",
+  mov: "Fichier vidéo",
+  avi: "Fichier vidéo",
+  flv: "Fichier vidéo",
+  mkv: "Fichier vidéo",
+  doc: "Fichier Word",
+  docx: "Fichier Word",
+  txt: "Fichier texte",
+  csv: "Fichier CSV",
+  xls: "Fichier Excel",
+  xlsx: "Fichier Excel",
+  ppt: "Fichier PowerPoint",
+  pptx: "Fichier PowerPoint",
+  mp3: "Fichier audio",
+  wav: "Fichier audio",
+  ogg: "Fichier audio",
+  zip: "Fichier compressé",
+  rar: "Fichier compressé",
+  html: "Fichier HTML",
+  css: "Fichier CSS",
+  js: "Fichier JavaScript",
+  ts: "Fichier TypeScript",
+  json: "Fichier JSON",
+  lain: "Fichier texte",
+};

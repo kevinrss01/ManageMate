@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import { selectStorage, selectUser } from "../../../../slices/userSlice";
-import { formatFileSizeFromKb } from "@/utils/fileUtils";
+import { formatFileSizeFromBytes } from "@/utils/fileUtils";
 import { AiFillFileText } from "react-icons/ai";
-import React from "react";
+import React, { useEffect } from "react";
 import { RiFoldersFill } from "react-icons/ri";
 import { MdLocalMovies } from "react-icons/md";
 import { AiOutlinePicture } from "react-icons/ai";
@@ -22,12 +22,19 @@ export default function RightSide() {
   //Redux
   const userData = useSelector(selectUser);
   const storageData = useSelector(selectStorage);
-  const userFiles = storageData.files;
+  const userFiles = userData.files ? userData.files : [];
   const usedStorage = storageData.usedStorage;
 
   //Functions
-  const totalSpace = formatFileSizeFromKb(userData.totalUserStorage);
-  const availableSpace = formatFileSizeFromKb(storageData.availableStorage);
+  const totalSpace = formatFileSizeFromBytes(userData.totalUserStorage);
+  let availableSpace = formatFileSizeFromBytes(storageData.availableStorage);
+  if (
+    userData.totalUserStorage !== storageData.availableStorage &&
+    totalSpace === availableSpace
+  ) {
+    availableSpace = "19.9 Go";
+  }
+
   const totalPercentageUsed = (): number => {
     const totalPercentageUsed = (
       (usedStorage * 100) /

@@ -1,7 +1,7 @@
 import Navbar from "@/components/app/Navbar";
 import RightSide from "@/components/app/homePage/RightSide";
-import { fetchUserData, fetchFiles, createStorageUsage } from "./homepage";
-import { useEffect, useState } from "react";
+import { fetchUserData, createStorageUsage } from "./homepage";
+import { useEffect, useState, useCallback } from "react";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -9,53 +9,97 @@ import { selectUser } from "../../../slices/userSlice";
 import { SlMagnifier } from "react-icons/sl";
 import { IoIosArrowForward } from "react-icons/io";
 import { File } from "@/interfaces/Interfaces";
-import { typeFilter } from "../../utils/fileUtils";
+import { typeFilter } from "@/utils/fileUtils";
 import { useDebouncedEffect } from "@react-hookz/web";
 import NetflixLoader from "@/components/loaders/FilesPageLoader";
 import FilesContainer from "@/components/app/filesPage/FilesContainer";
+import toastMessage from "@/utils/toast";
+import { useRouter } from "next/router";
 
 interface Filter {
   [key: string]: (files: File[], extension?: string) => void;
 }
 
+// TODO : Permettre de retirer les filtres
+
 export default function Files() {
   const [searchValue, setSearchValue] = useState<string>("");
   const [isOpenFilters, setIsOpenFilters] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<File[]>([]);
+  const [filteredFiles, setFilteredFiles] = useState<File[]>();
   const [typeOfFilterOpen, setTypeOfFilterOpen] = useState<string>("none");
   const [activeFilter, setActiveFilter] = useState<string>("none");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
+  const [userId, setUserId] = useState<string>("");
+  const [userAccessToken, setUserAccessToken] = useState<string>("");
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
 
-  const fetchData = async () => {
-    if (data.firstName === "") {
-      const userData = await fetchUserData();
-      const userStorage = await createStorageUsage(userData);
-
-      dispatch(
-        update({
-          ...userData,
-        })
-      );
-      dispatch(
-        updateStorage({
-          ...userStorage,
-        })
-      );
-    }
-
-    const files = await fetchFiles();
-    setFiles(files);
-    setFilteredFiles(files);
-  };
+  const handleErrors = useCallback(
+    (consoleErrorMessage: string | unknown, message?: string) => () => {
+      console.error(consoleErrorMessage);
+      localStorage.removeItem("token");
+      message ? toastMessage(message, "error") : null;
+      router.push("/auth/loginPage");
+    },
+    [router]
+  );
 
   useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
+      const id = localStorage.getItem("id");
+      const token = localStorage.getItem("token");
+
+      if (!id || !token) {
+        handleErrors(
+          `No id found or no token found, (id: ${id}, accessToken: ${token})`,
+          "Une erreur est survenue, veuillez vous reconnecter."
+        );
+        return;
+      }
+
+      setUserId(id);
+      setUserAccessToken(token);
+
+      // If there is no data is redux store, fetch it from the API
+      if (data.firstName === "") {
+        const userData = await fetchUserData(id, token);
+        const userStorage = createStorageUsage(userData);
+
+        dispatch(
+          update({
+            ...userData,
+          })
+        );
+        if (userStorage) {
+          dispatch(
+            updateStorage({
+              ...userStorage,
+            })
+          );
+        }
+
+        setFiles(userData.files);
+        setFilteredFiles(userData.files);
+      } else {
+        //console.log(data.files);
+        // If there is data in redux store, use it
+        setFiles([...data.files]);
+        setFilteredFiles([...data.files]);
+      }
+    };
+
     fetchData();
-    setIsLoading(false);
-  }, [files]);
+  }, [dispatch, data.files]);
+
+  useEffect(() => {
+    if (Array.isArray(filteredFiles)) {
+      setIsLoading(false);
+    }
+  }, [filteredFiles]);
 
   const searchFiles = (value: string) => {
     if (value) {
@@ -66,8 +110,7 @@ export default function Files() {
       });
       setFilteredFiles(filterFiles);
     } else {
-      fetchData();
-      setFilteredFiles(files);
+      setFilteredFiles(data.files);
     }
   };
 
@@ -81,17 +124,42 @@ export default function Files() {
 
   const typeFilterMap: Filter = {
     dateGrowing: (files: File[]) => {
-      const filterFiles = [...files].sort((a, b) => {
-        const dateA = new Date(a.dateAdded);
-        const dateB = new Date(b.dateAdded);
+      const filterFiles = [...files].sort((fileA, fileB) => {
+        if (!fileA || !fileB) {
+          console.error("No file found in the array");
+          toastMessage(
+            "Une erreur est survenue, veuillez réessayer plus tard.",
+            "error"
+          );
+          return 0;
+        }
+        const dateA = new Date(
+          typeof fileA.dateAdded === "string"
+            ? fileA.dateAdded
+            : fileA.dateAdded.seconds * 1000
+        );
+        const dateB = new Date(
+          typeof fileB.dateAdded === "string"
+            ? fileB.dateAdded
+            : fileB.dateAdded.seconds * 1000
+        );
+
         return dateB.getTime() - dateA.getTime();
       });
       setFilteredFiles(filterFiles);
     },
     dateDecreasing: (files: File[]) => {
-      const filterFiles = [...files].sort((a, b) => {
-        const dateA = new Date(a.dateAdded);
-        const dateB = new Date(b.dateAdded);
+      const filterFiles = [...files].sort((fileA, fileB) => {
+        const dateA = new Date(
+          typeof fileA.dateAdded === "string"
+            ? fileA.dateAdded
+            : fileA.dateAdded.seconds * 1000
+        );
+        const dateB = new Date(
+          typeof fileB.dateAdded === "string"
+            ? fileB.dateAdded
+            : fileB.dateAdded.seconds * 1000
+        );
         return dateA.getTime() - dateB.getTime();
       });
       setFilteredFiles(filterFiles);
@@ -123,6 +191,12 @@ export default function Files() {
     } else {
       typeFilterMap[filterType](files);
     }
+  };
+
+  const handleDeleteFilter = () => {
+    setActiveFilter("none");
+    setIsOpenFilters(false);
+    setFilteredFiles(data.files);
   };
 
   return (
@@ -221,9 +295,25 @@ export default function Files() {
                       </div>
                     );
                   })}
+                  <button
+                    className="delete-filter-button delete-button"
+                    onClick={() => {
+                      handleDeleteFilter();
+                    }}
+                  >
+                    Supprimer le filtre
+                  </button>
                 </div>
               </div>
-              <FilesContainer filteredFiles={filteredFiles} />
+              {filteredFiles !== undefined && (
+                <>
+                  <FilesContainer
+                    filteredFiles={filteredFiles}
+                    userId={userId}
+                    userAccessToken={userAccessToken}
+                  />
+                </>
+              )}
             </>
           )}
         </div>

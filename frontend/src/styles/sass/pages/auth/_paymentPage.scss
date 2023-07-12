@@ -7,10 +7,11 @@
 
   .form-and-summary-container {
     @include flex-centre;
-    flex-wrap: wrap;
+    flex-direction: column;
 
     .form {
       @include flex_column-centre;
+
       .error-message {
         color: red;
         font-size: 15px;
@@ -21,7 +22,8 @@
 
     .summary-container {
       @include flex-column-centre;
-
+      background-color: $black-color;
+      color: white;
       padding: 20px;
 
       .summary {

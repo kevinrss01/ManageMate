@@ -1,5 +1,5 @@
 import PaymentForm from "@/components/auth/PaymentForm";
-import { PaymentFormData, Invoices } from "@/interfaces/Interfaces";
+import { PaymentFormData } from "@/interfaces/Interfaces";
 import { RegisterDataType } from "@/interfaces/auth/AuthType";
 import { v4 as uuidv4 } from "uuid";
 import toastMessage from "@/utils/toast";
@@ -75,6 +75,13 @@ export default function PaymentPage() {
   const { canceled, success } = router.query;
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/app/homepage");
+    }
+  }, []);
+
+  useEffect(() => {
     if (canceled) {
       toastMessage("Le paiement a été annulé, veuillez réessayer.", "error");
       return;
@@ -105,8 +112,10 @@ export default function PaymentPage() {
 
     const userDataParse = JSON.parse(userData);
     await AuthAPI.register(userDataParse)
-      .then(() => {
-        router.push("/app/homepage?success=true");
+      .then((res) => {
+        // TODO : Set token in local storage
+        localStorage.setItem("id", res.id);
+        router.push(`/app/homepage?success=true`);
       })
       .catch((error) => {
         console.error(error);

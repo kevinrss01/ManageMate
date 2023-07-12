@@ -37,6 +37,7 @@
 }
 
 .delete-button {
+  @include flex-centre;
   background-color: $black-color;
   color: white;
   padding: 8px;
@@ -45,5 +46,18 @@
 
   &:hover {
     background-color: rgb(217, 0, 0);
+  }
+}
+
+.download-button {
+  @include flex-centre;
+  background-color: $black-color;
+  color: white;
+  padding: 8px;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+
+  &:hover {
+    background-color: $orange;
   }
 }

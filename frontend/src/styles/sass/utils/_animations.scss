@@ -80,3 +80,16 @@
     transform: translate(1px, -1px) rotate(-1deg);
   }
 }
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%); /* la carte commence complètement à droite */
+    opacity: 0; /* la carte est entièrement transparente */
+  }
+  100% {
+    transform: translateX(
+      0
+    ); /* la carte se déplace vers sa position d'origine */
+    opacity: 1; /* la carte devient pleinement visible */
+  }
+}

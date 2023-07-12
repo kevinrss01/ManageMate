@@ -10,6 +10,9 @@ import {
   validateRegisterBody,
   validateLoginBody,
 } from "../middlewares/AuthMiddlewares.js";
+import jsonwebtoken from "jsonwebtoken";
+
+const { sign, decode, verify } = jsonwebtoken;
 
 const router = express.Router();
 
@@ -24,14 +27,25 @@ router.post("/register", validateRegisterBody, async (req, res) => {
       firstName: firstName,
       lastName: lastName,
       id: user.user.uid,
-      totalUserStorage: 20971520,
+      totalUserStorage: 21474836480, // 20GO or 20971520 ko or 21474836480 bytes/octets
       files: [],
       invoices: invoices,
+      role: "user",
     });
 
-    res.status(200).json({ message: "User created successfully" });
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in .env.local file");
+    }
+
+    const accessToken = sign(
+      { userId: user.user.uid, role: "user" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7 days" }
+    );
+
+    res.status(200).json({ id: user.user.uid, accessToken: accessToken });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({
       message: `Error while creating user : ${error.code ? error.code : error}`,
     });
@@ -43,13 +57,23 @@ router.post("/login", validateLoginBody, async (req, res) => {
     const { email, password } = req.body;
     const user = await signInWithEmailAndPassword(auth, email, password);
 
-    const docRef = await doc(userCollection, user.user.uid);
+    const docRef = doc(userCollection, user.user.uid);
     const snapshot = await getDoc(docRef);
     const userData = snapshot.data();
 
-    res.status(200).json(userData);
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in .env.local file");
+    }
+
+    const accessToken = sign(
+      { userId: userData.id, role: userData.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7 days" }
+    );
+
+    res.status(200).json({ id: userData.id, accessToken: accessToken });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     if (
       error.code === "auth/wrong-password" ||
       error.code === "auth/user-not-found"
@@ -65,20 +89,36 @@ router.post("/login", validateLoginBody, async (req, res) => {
 });
 
 router.post("/verifyEmail", async (req, res) => {
-  console.log(req.body.email);
   try {
     const signInMethods = await fetchSignInMethodsForEmail(
       auth,
       req.body.email
     );
 
-    console.log(signInMethods);
-
     res.json({ exists: signInMethods.length > 0 });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       error: "An error occured while verifying email",
+    });
+  }
+});
+
+router.get("/verifyToken", (req, res) => {
+  try {
+    const authHeaderToken = req.headers.authorization;
+
+    if (!authHeaderToken) {
+      return res.status(401).json({ message: "No authorization header sent" });
+    }
+
+    verify(authHeaderToken, process.env.JWT_SECRET);
+
+    res.status(200).json({ message: "Valid token" });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({
+      error: "Invalid access token",
     });
   }
 });

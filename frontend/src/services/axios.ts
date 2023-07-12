@@ -2,29 +2,48 @@ import axios from "axios";
 
 const baseURLBackend = "http://localhost:4000";
 const formatUrl = (url: string) => `${baseURLBackend}/${url}`;
-const headers = { headers: {} };
+const defaultHeaders = { headers: {} };
+
+interface Headers {
+  headers: { [key: string]: string | number | undefined };
+}
 
 // TODO : update data and token type
 
 class AxiosCallApi {
-  static get(url: string) {
-    return axios.get(formatUrl(url), headers);
+  static async get<T>(url: string, headers?: Headers): Promise<T> {
+    const response = await axios.get<T>(
+      formatUrl(url),
+      headers ? headers : defaultHeaders
+    );
+    return response.data;
   }
 
-  static post<T>(url: string, data: T) {
-    return axios.post(formatUrl(url), data, headers);
+  static async post<T>(url: string, data: T, headers?: Headers) {
+    const response = await axios.post(
+      formatUrl(url),
+      data,
+      headers ? headers : defaultHeaders
+    );
+    return response.data;
   }
 
-  static delete(url: string) {
-    return axios.delete(formatUrl(url), headers);
+  static async delete(url: string, headers?: Headers) {
+    const response = await axios.delete(
+      formatUrl(url),
+      headers ? headers : defaultHeaders
+    );
+    return response.data;
   }
 
-  static put<T>(url: string, data: T) {
-    return axios.put(formatUrl(url), data, headers);
+  static async put<T>(url: string, data: T) {
+    const response = await axios.put(formatUrl(url), data, defaultHeaders);
+    return response.data;
   }
 
-  static patch<T>(url: string, data: T) {
-    return axios.patch(formatUrl(url), data, headers);
+  static async patch<T>(url: string, data: T) {
+    const response = await axios.patch(formatUrl(url), data, defaultHeaders);
+    return response.data;
   }
 
   static saveToken(token: any) {

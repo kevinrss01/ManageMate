@@ -1,10 +1,10 @@
 export interface File {
-  id: string;
+  fileId: string;
   name: string;
-  type: "pdf" | "jpeg" | "png" | "mp4" | "word" | "mov";
+  type: string;
   size: number;
-  dateAdded: string;
-  firebaseUrl: string;
+  dateAdded: string | { seconds: number; nanoseconds: number };
+  firebaseURL: string;
 }
 
 export interface PercentageAndSizeByFileType {
@@ -40,13 +40,16 @@ export interface UserState {
   firstName: string;
   lastName: string;
   email: string;
+  role: string;
   totalUserStorage: number;
+  id: string;
+  files: File[];
+  invoices: Invoices[];
 }
 
 export interface StorageState {
   availableStorage: number;
   usedStorage: number;
-  files: File[];
 }
 
 export interface UpdatePasswordDataType {

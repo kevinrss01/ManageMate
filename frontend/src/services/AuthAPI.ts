@@ -10,13 +10,24 @@ class AuthAPI {
   }
 
   static async verifyIfEmailExists(email: string) {
-    return AxiosCallApi.post(formatSuffix(`verifyEmail`), { email: email });
+    return AxiosCallApi.post<{ email: string }>(formatSuffix(`verifyEmail`), {
+      email: email,
+    });
   }
 
   static async login(email: string, password: string) {
-    return AxiosCallApi.post(formatSuffix("login"), {
-      email: email,
-      password: password,
+    return AxiosCallApi.post<{ email: string; password: string }>(
+      formatSuffix("login"),
+      {
+        email: email,
+        password: password,
+      }
+    );
+  }
+
+  static async verifyToken(token: string) {
+    return AxiosCallApi.get<{ message: string }>(formatSuffix("verifyToken"), {
+      headers: { authorization: token },
     });
   }
 }

@@ -8,12 +8,15 @@ const initialState: UserState = {
   lastName: "",
   email: "",
   totalUserStorage: 0,
+  id: "",
+  role: "",
+  files: [],
+  invoices: [],
 };
 
 const initialStorage: StorageState = {
   availableStorage: 0,
   usedStorage: 0,
-  files: [],
 };
 
 export const userSlice = createSlice({
@@ -25,6 +28,10 @@ export const userSlice = createSlice({
       state.lastName = action.payload.lastName;
       state.email = action.payload.email;
       state.totalUserStorage = action.payload.totalUserStorage;
+      state.id = action.payload.id;
+      state.role = action.payload.role;
+      state.files = action.payload.files;
+      state.invoices = action.payload.invoices;
     },
     remove: (state) => {
       //
@@ -39,7 +46,6 @@ export const storageSlice = createSlice({
     updateStorage: (state, action: PayloadAction<StorageState>) => {
       state.availableStorage = action.payload.availableStorage;
       state.usedStorage = action.payload.usedStorage;
-      state.files = action.payload.files;
     },
     remove: (state) => {
       //

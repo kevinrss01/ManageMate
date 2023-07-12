@@ -5,59 +5,33 @@ import RightSide from "@/components/app/homePage/RightSide";
 import Main from "@/components/app/homePage/Main";
 import { useDispatch } from "react-redux";
 import { update, updateStorage } from "../../../slices/userSlice";
-import { files } from "@/exampleFiles";
-import { File, UserState } from "@/interfaces/Interfaces";
+import { UserState } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { PulseLoader } from "react-spinners";
 import { useRouter } from "next/router";
+import UsersAPI from "@/services/UsersAPI";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../../slices/userSlice";
+import authAPI from "@/services/AuthAPI";
 
-export const fetchUserData = async (): Promise<UserState> => {
+export const createStorageUsage = (userData: UserState) => {
   try {
-    //FETCH DATA FROM DB AND RETURN THEM
+    if (!userData) {
+      return;
+    }
+    let sizeUsed = 0;
+    if (userData.files.length > 0) {
+      sizeUsed = userData.files.reduce(
+        (accumulator, file) => accumulator + file.size,
+        0
+      );
+    }
 
-    return {
-      firstName: "Kevin",
-      lastName: "Rousseau",
-      email: "kevin.rousseau3@gmail.com",
-      totalUserStorage: 20971520,
-    };
-  } catch (error: any) {
-    toastMessage(
-      "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
-      "error"
-    );
-    console.error("Something went wrong went fetching user data: ", error);
-    throw new Error("Something went wrong went fetching user data: ", error);
-  }
-};
-
-export const fetchFiles = async (): Promise<File[]> => {
-  try {
-    //FETCH Files from DB and return them
-    return files;
-  } catch (error: any) {
-    toastMessage(
-      "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
-      "error"
-    );
-    console.error("Something went wrong went fetching user data: ", error);
-    throw new Error("Something went wrong went fetching user data: ", error);
-  }
-};
-
-export const createStorageUsage = async (userData: UserState) => {
-  try {
-    const userFiles = await fetchFiles();
-    const sizeUsed = userFiles.reduce(
-      (accumulator, file) => accumulator + file.size,
-      0
-    );
     const availableStorage = userData.totalUserStorage - sizeUsed;
 
     return {
       availableStorage: availableStorage,
       usedStorage: sizeUsed,
-      files: userFiles,
     };
   } catch (error: any) {
     toastMessage(
@@ -72,61 +46,149 @@ export const createStorageUsage = async (userData: UserState) => {
   }
 };
 
+export const fetchUserData = async (
+  id: string,
+  accessToken: string
+): Promise<UserState> => {
+  try {
+    return await UsersAPI.getAllData(id, accessToken);
+  } catch (error: any) {
+    toastMessage(
+      "Oups ! Une erreur c'est produite veuillez réessayer plus tard.",
+      "error"
+    );
+    console.error("Something went wrong went fetching user data: ", error);
+    throw new Error("Something went wrong went fetching user data: ", error);
+  }
+};
+
 export default function Homepage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [idAndUserToken, setIdAndUserToken] = useState<{
+    id: string;
+    accessToken: string;
+  }>({ id: "", accessToken: "" });
   const router = useRouter();
+  const userDataRedux = useSelector(selectUser);
+  const dispatch = useDispatch();
 
   const { success, successLogin } = router.query;
+
+  const handleErrors = (
+    consoleErrorMessage: string | unknown,
+    message?: string
+  ) => {
+    console.error(consoleErrorMessage);
+    localStorage.removeItem("token");
+    message ? toastMessage(message, "error") : null;
+    router.push("/auth/loginPage");
+  };
 
   useEffect(() => {
     if (success) {
       toastMessage("Votre compte a été créer avec succès !", "success");
     } else if (successLogin) {
-      toastMessage("Content de vous revoir !", "success");
+      //toastMessage("Content de vous revoir !", "success");
     }
   }, [success, successLogin]);
 
-  //Redux
-  const dispatch = useDispatch();
-
   useEffect(() => {
+    const accessToken = localStorage.getItem("token");
+    const id = localStorage.getItem("id");
+    if (!id || !accessToken) {
+      handleErrors("No id found");
+      return;
+    }
+    setIdAndUserToken({ id: id, accessToken: accessToken });
+
     const fetchData = async () => {
-      setIsLoading(true);
-      const userData = await fetchUserData();
-      const userStorage = await createStorageUsage(userData);
+      try {
+        if (router.isReady) {
+          const userData = await fetchUserData(id, accessToken);
+          const userStorage = createStorageUsage(userData);
 
-      dispatch(
-        update({
-          ...userData,
-        })
-      );
-      dispatch(
-        updateStorage({
-          ...userStorage,
-        })
-      );
+          dispatch(
+            update({
+              ...userData,
+            })
+          );
+          if (userStorage) {
+            dispatch(
+              updateStorage({
+                ...userStorage,
+              })
+            );
+          }
 
-      setIsLoading(false);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        handleErrors(
+          error,
+          "Une erreur est survenue lors de la récupération de vos données"
+        );
+      }
     };
 
-    fetchData();
-  }, [dispatch]);
+    const verifyUserAccessToken = async () => {
+      setIsLoading(true);
+      try {
+        if (!accessToken) {
+          handleErrors("No token found");
+          return;
+        }
+
+        await authAPI.verifyToken(accessToken);
+
+        // If we already have the user data in redux, we don't need to fetch it again
+        if (userDataRedux.firstName) {
+          return;
+        }
+
+        await fetchData();
+      } catch (error: any) {
+        if (error?.response?.status === 401) {
+          handleErrors(
+            "Token expired",
+            "Votre session a expiré, veuillez vous reconnecter."
+          );
+        } else {
+          handleErrors(
+            error,
+            "Une erreur est survenue, veuillez vous reconnecter."
+          );
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    verifyUserAccessToken();
+  }, [dispatch, router.isReady]);
 
   return (
     <div className="homePageContainer">
-      <Navbar />
-      <main className="mainPageContainer">
-        {isLoading && (
+      {isLoading ? (
+        <>
           <PulseLoader
             color="#F87F3F"
             size={100}
             style={{ position: "absolute", left: "30%", top: "40%" }}
           />
-        )}
-        <Welcome />
-        <Main />
-      </main>
-      <RightSide />
+        </>
+      ) : (
+        <>
+          <Navbar />
+          <main className="mainPageContainer">
+            <Welcome />
+            <Main
+              userId={idAndUserToken.id}
+              userAccessToken={idAndUserToken.accessToken}
+            />
+          </main>
+          <RightSide />
+        </>
+      )}
     </div>
   );
 }
