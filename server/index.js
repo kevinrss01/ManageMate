@@ -10,6 +10,7 @@ const port = 4000;
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
+  console.log(req.body);
   next();
 });
 app.use(express.json());

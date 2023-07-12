@@ -49,6 +49,7 @@ export function validateUpdateAccountBody(req, res, next) {
   Promise.all(rules.map((validation) => validation.run(req))).then(() => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error(errors.errors[0]);
       return res.status(400).json({ errors: errors.errors[0] });
     }
 

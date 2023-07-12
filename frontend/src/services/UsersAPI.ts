@@ -6,10 +6,22 @@ const formatSuffix = (suffix: string) => `${PREFIX}/${suffix}`;
 
 class UsersAPI {
   static async getAllData(id: string, accessToken: string): Promise<UserState> {
-    console.log(accessToken);
     return AxiosCallApi.get<UserState>(formatSuffix(`all-info/${id}`), {
       headers: { Authorization: accessToken },
     });
+  }
+
+  static async updateUserNames(
+    id: string,
+    firstName: string,
+    lastName: string,
+    accessToken: string
+  ): Promise<any> {
+    return AxiosCallApi.put(
+      formatSuffix("updateUserNames"),
+      { userId: id, firstName, lastName },
+      { headers: { Authorization: accessToken } }
+    );
   }
 }
 

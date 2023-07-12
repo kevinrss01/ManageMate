@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { selectStorage, selectUser } from "../../../../slices/userSlice";
 import { formatFileSizeFromBytes } from "@/utils/fileUtils";
 import { AiFillFileText } from "react-icons/ai";
-import React, { useEffect } from "react";
+import React from "react";
 import { RiFoldersFill } from "react-icons/ri";
 import { MdLocalMovies } from "react-icons/md";
 import { AiOutlinePicture } from "react-icons/ai";
@@ -98,7 +98,7 @@ export default function RightSide() {
       <div className="rightSideContainer">
         <div className="infoUserContainer">
           <div className="nameAndEmailContainer">
-            <Link href="/app/userParameters" style={{ all: "unset" }}>
+            <Link href="/app/userPage" style={{ all: "unset" }}>
               <h3>
                 {(userData.firstName ? userData.firstName : "Introuvable") +
                   " " +

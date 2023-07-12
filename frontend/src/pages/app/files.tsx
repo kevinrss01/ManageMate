@@ -23,6 +23,7 @@ interface Filter {
 // TODO : Permettre de retirer les filtres
 
 export default function Files() {
+  const [isSearchClicked, setIsSearchClicked] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [isOpenFilters, setIsOpenFilters] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -102,7 +103,8 @@ export default function Files() {
   }, [filteredFiles]);
 
   const searchFiles = (value: string) => {
-    if (value) {
+    if (value && isSearchClicked) {
+      console.log("enter");
       const filterFiles = [...files].filter((file) => {
         return file.name
           .toLocaleLowerCase()
@@ -116,7 +118,9 @@ export default function Files() {
 
   useDebouncedEffect(
     () => {
-      searchFiles(searchValue);
+      if (isSearchClicked) {
+        searchFiles(searchValue);
+      }
     },
     [searchValue],
     200
@@ -211,6 +215,9 @@ export default function Files() {
               placeholder="Rechercher un fichier par son nom"
               onChange={(e) => {
                 setSearchValue(e.target.value);
+              }}
+              onClick={() => {
+                setIsSearchClicked(true);
               }}
             />
           </div>

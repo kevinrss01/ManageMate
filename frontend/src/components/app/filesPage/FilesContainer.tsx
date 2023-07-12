@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { formatFileSizeFromBytes, getTimeSinceAdd } from "@/utils/fileUtils";
 import { File } from "@/interfaces/Interfaces";
 import { BsFillTrashFill, BsFillCloudDownloadFill } from "react-icons/bs";
@@ -41,6 +41,8 @@ const FilesContainer: React.FC<FilesContainerProps> = ({
   const [fileIdDeleted, setFileIdDeleted] = useState<string>("");
   const userState = useSelector(selectUser);
   const dispatch = useDispatch();
+
+  console.log("filteredFiles: ", filteredFiles);
 
   const updateUserStateInRedux = (fileIdDeleted: string) => {
     const newFiles = userState.files.filter(

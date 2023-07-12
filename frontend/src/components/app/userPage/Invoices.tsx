@@ -1,6 +1,5 @@
-import { invoicesExample } from "@/exampleFiles";
-import React, { useEffect, useState } from "react";
-import { Invoices } from "@/interfaces/Interfaces";
+import React, { useState } from "react";
+import { Invoices, UserState } from "@/interfaces/Interfaces";
 import {
   Page,
   Text,
@@ -10,10 +9,6 @@ import {
   PDFViewer,
   Image,
 } from "@react-pdf/renderer";
-import { useSelector } from "react-redux";
-import { selectUser } from "../../../../slices/userSlice";
-import toastMessage from "@/utils/toast";
-import { fetchUserData } from "@/pages/app/homepage";
 
 const styles = StyleSheet.create({
   page: {
@@ -120,31 +115,10 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice }) => {
   );
 };
 
-export default function Invoices() {
-  const [invoices, setInvoices] = useState<Invoices[]>([]);
+const Invoices: React.FC<{ userData: UserState }> = ({ userData }) => {
+  const [invoices, setInvoices] = useState<Invoices[]>(userData.invoices);
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const [invoiceId, setInvoiceId] = useState<string>("");
-  const userDataRedux = useSelector(selectUser);
-
-  useEffect(() => {
-    const getInvoices = async () => {
-      if (userDataRedux.firstName === "") {
-        const id = localStorage.getItem("id");
-        if (!id) {
-          toastMessage(
-            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
-            "error"
-          );
-          return;
-        }
-        const dataFetched = await fetchUserData(id);
-        setInvoices(dataFetched.invoices);
-      } else {
-        setInvoices(userDataRedux.invoices);
-      }
-    };
-    getInvoices();
-  }, []);
 
   const selectedInvoice = invoices.find((invoice) => invoice.id === invoiceId);
 
@@ -201,4 +175,6 @@ export default function Invoices() {
       </div>
     </div>
   );
-}
+};
+
+export default Invoices;

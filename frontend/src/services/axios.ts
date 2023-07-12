@@ -36,9 +36,13 @@ class AxiosCallApi {
     return response.data;
   }
 
-  static async put<T>(url: string, data: T) {
-    const response = await axios.put(formatUrl(url), data, defaultHeaders);
-    return response.data;
+  static async put<T>(url: string, data: T, headers: Headers) {
+    try {
+      const response = await axios.put(formatUrl(url), data, headers);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static async patch<T>(url: string, data: T) {
