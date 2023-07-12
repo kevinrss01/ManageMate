@@ -36,6 +36,7 @@ export default function UserParameters() {
 
   //TODO: add a loader
   // TODO : Faire le call API ici et passer la data en props
+  // Commentaire pour créer la pull request
 
   return (
     <div className="userParametersContainer">
