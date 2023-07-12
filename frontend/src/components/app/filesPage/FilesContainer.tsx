@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  formatFileSizeFromBytes,
-  getTimeSinceAdd,
-} from "../../../utils/fileUtils";
+import { useState } from "react";
+import { formatFileSizeFromBytes, getTimeSinceAdd } from "@/utils/fileUtils";
 import { File } from "@/interfaces/Interfaces";
 import { BsFillTrashFill, BsFillCloudDownloadFill } from "react-icons/bs";
 import FilesAPI from "@/services/FilesAPI";
 import toastMessage from "@/utils/toast";
+import { createStorageUsage } from "@/pages/app/homepage";
+import {
+  selectUser,
+  update,
+  updateStorage,
+} from "../../../../slices/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { ClipLoader } from "react-spinners";
 
 interface FilesContainerProps {
   filteredFiles: File[];
@@ -32,52 +37,53 @@ const FilesContainer: React.FC<FilesContainerProps> = ({
   userId,
   userAccessToken,
 }) => {
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
+  const [fileIdDeleted, setFileIdDeleted] = useState<string>("");
+  const userState = useSelector(selectUser);
+  const dispatch = useDispatch();
 
-  //TODO : Implémenter la suppression de fichier et la visualisation de fichier
+  const updateUserStateInRedux = (fileIdDeleted: string) => {
+    const newFiles = userState.files.filter(
+      (file) => file.fileId !== fileIdDeleted
+    );
+    const { files, ...rest } = userState;
 
-  // const handleDeleteFile = async (fileId: string, fileName: string) => {
-  //   try {
-  //     setIsLoadingDelete(true);
-  //     await FilesAPI.deleteFile(userId, fileId, userAccessToken);
-  //     updateUserStateInRedux(fileId);
-  //     toastMessage(`Fichier "${fileName}" supprimé avec succès`, "success");
-  //   } catch (error) {
-  //     toastMessage(
-  //       "Une erreur est survenue lors de la suppression du fichier",
-  //       "error"
-  //     );
-  //   } finally {
-  //     setIsLoadingDelete(false);
-  //   }
-  // };
+    const updatedUser = {
+      ...rest,
+      files: newFiles,
+    };
 
-  // const updateUserStateInRedux = async (fileIdDeleted: string) => {
-  //   const newFiles = userState.files.filter(
-  //     (file) => file.fileId !== fileIdDeleted
-  //   );
-  //   const { files, ...rest } = userState;
+    const userStorage = createStorageUsage(updatedUser);
 
-  //   const updatedUser = {
-  //     ...rest,
-  //     files: newFiles,
-  //   };
+    dispatch(
+      update({
+        ...updatedUser,
+      })
+    );
+    if (userStorage) {
+      dispatch(
+        updateStorage({
+          ...userStorage,
+        })
+      );
+    }
+  };
 
-  //   const userStorage = createStorageUsage(updatedUser);
-
-  //   dispatch(
-  //     update({
-  //       ...updatedUser,
-  //     })
-  //   );
-  //   if (userStorage) {
-  //     dispatch(
-  //       updateStorage({
-  //         ...userStorage,
-  //       })
-  //     );
-  //   }
-  // };
+  const handleDeleteFile = async (fileId: string, fileName: string) => {
+    try {
+      setIsLoadingDelete(true);
+      await FilesAPI.deleteFile(userId, fileId, userAccessToken);
+      updateUserStateInRedux(fileId);
+      toastMessage(`Fichier "${fileName}" supprimé avec succès`, "success");
+    } catch (error) {
+      toastMessage(
+        "Une erreur est survenue lors de la suppression du fichier",
+        "error"
+      );
+    } finally {
+      setIsLoadingDelete(false);
+    }
+  };
 
   return (
     <div className="files">
@@ -112,12 +118,22 @@ const FilesContainer: React.FC<FilesContainerProps> = ({
                     <button
                       className="noselect delete-button"
                       onClick={() => {
-                        //Delete file
+                        setFileIdDeleted(file.fileId);
+                        handleDeleteFile(file.fileId, file.name);
                       }}
                     >
-                      <BsFillTrashFill />
+                      {isLoadingDelete && fileIdDeleted === file.fileId ? (
+                        <ClipLoader color="#fff" size={18} />
+                      ) : (
+                        <BsFillTrashFill />
+                      )}
                     </button>
-                    <button className="download-button">
+                    <button
+                      className="download-button"
+                      onClick={() => {
+                        window.open(file.firebaseURL, "_blank");
+                      }}
+                    >
                       <BsFillCloudDownloadFill />
                     </button>
                   </div>

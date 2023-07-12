@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { BsFillTrashFill, BsCheck } from "react-icons/bs";
+import React, { useEffect, useState } from "react";
+import { BsFillTrashFill } from "react-icons/bs";
 import {
   selectUser,
   update,
@@ -15,11 +15,10 @@ import {
 } from "react-icons/ai";
 import { MdAudioFile, MdJavascript } from "react-icons/md";
 import { BsFiletypeJson, BsFiletypeHtml, BsFiletypeCss } from "react-icons/bs";
-import { File } from "@/interfaces/Interfaces";
 import { ClipLoader } from "react-spinners";
 import FilesAPI from "@/services/FilesAPI";
 import toastMessage from "@/utils/toast";
-import { createStorageUsage } from "../../../pages/app/homepage";
+import { createStorageUsage } from "@/pages/app/homepage";
 import { iconsType } from "@/utils/fileUtils";
 
 const icons: Record<string, React.ReactNode> = {
