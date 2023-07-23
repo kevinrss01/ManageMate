@@ -80,8 +80,8 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           return toastMessage("Les valeurs doivent être différentes.", "error");
         }
 
-        //TO DO : Appel axios pour update l'email
-        //TO DO : Update le store redux
+        await UsersAPI.updateUserEmail(userData.id, data.newEmail, accessToken);
+        await updateStoreInRedux(data);
         return toastMessage("Email mis à jour avec succès !", "success");
       }
 

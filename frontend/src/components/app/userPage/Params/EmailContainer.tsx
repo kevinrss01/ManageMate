@@ -7,6 +7,7 @@ const EmailContainer: React.FC<ComponentPropsUserPage> = ({
   userData,
   onSubmit,
 }) => {
+  // TODO : Ajouter un input pour le mot de passe afin d'authentifier l'utilisateur avant de modifier son email
   return (
     <div className="email-container">
       <h3>Changer son e-mail</h3>
