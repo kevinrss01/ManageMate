@@ -2,10 +2,13 @@ import { Field, Form, Formik } from "formik";
 import { verificationUpdateInfoSchema } from "@/utils/yupShema";
 import React from "react";
 import { ComponentPropsUserPage } from "@/interfaces/UserPage";
+import { ClipLoader } from "react-spinners";
 
 const InfoContainer: React.FC<ComponentPropsUserPage> = ({
   userData,
   onSubmit,
+  isLoading,
+  typeOfDataFetching,
 }) => {
   return (
     <div className="personal-info-container">
@@ -24,7 +27,11 @@ const InfoContainer: React.FC<ComponentPropsUserPage> = ({
             <div className="input-container">
               <div className="input-label">
                 <label>Votre prénom</label>
-                <Field name="firstName" placeholder="Prénom" />
+                <Field
+                  name="firstName"
+                  placeholder="Prénom"
+                  autoComplete="off"
+                />
                 {errors.firstName && touched.firstName ? (
                   <div style={{ color: "red" }}>{errors.firstName}</div>
                 ) : (
@@ -34,7 +41,7 @@ const InfoContainer: React.FC<ComponentPropsUserPage> = ({
 
               <div className="input-label">
                 <label>Votre nom</label>
-                <Field name="lastName" placeholder="Nom" />
+                <Field name="lastName" placeholder="Nom" autoComplete="off" />
                 {errors.lastName && touched.lastName ? (
                   <div style={{ color: "red" }}>{errors.lastName}</div>
                 ) : (
@@ -43,7 +50,11 @@ const InfoContainer: React.FC<ComponentPropsUserPage> = ({
               </div>
             </div>
             <button className="update-button" type="submit">
-              Modifier
+              {isLoading && typeOfDataFetching === "names" ? (
+                <ClipLoader size={20} color={"#fff"} />
+              ) : (
+                "Modifier"
+              )}
             </button>
           </Form>
         )}

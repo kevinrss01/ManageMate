@@ -19,6 +19,10 @@ export default function UserPage() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    setUserData(userDataFromRedux);
+  }, [userDataFromRedux]);
+
   const handleErrors = (
     consoleErrorMessage: string | unknown,
     message?: string

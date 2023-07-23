@@ -26,6 +26,7 @@ const EmailContainer: React.FC<ComponentPropsUserPage> = ({
                   name="newEmail"
                   placeholder="Mon nouvel email"
                   type="text"
+                  autoComplete="off"
                 />
                 {errors.newEmail && touched.newEmail ? (
                   <div style={{ color: "red" }}>{errors.newEmail}</div>

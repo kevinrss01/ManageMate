@@ -1,6 +1,6 @@
 import Image from "next/image";
 import rocket from "../../../../public/images/rocket.png";
-import React from "react";
+import React, { useState } from "react";
 import {
   UpdateDataType,
   UpdatePasswordDataType,
@@ -15,21 +15,31 @@ import { useDispatch } from "react-redux";
 import { createStorageUsage } from "@/pages/app/homepage";
 import { update, updateStorage } from "../../../../slices/userSlice";
 
+const verifyIfPasswordMatch = (data: {
+  oldPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}): boolean => {
+  return data.newPassword === data.newPasswordConfirmation;
+};
+
 const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
   userData,
   accessToken,
 }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [typeOfDataFetching, setTypeOfDataFetching] = useState<
+    "names" | "password" | "email" | null
+  >(null);
+
   const dispatch = useDispatch();
 
   const updateStoreInRedux = (data: UpdateDataType) => {
-    let updatedUser = { ...userData };
-    console.log(updatedUser);
+    let updatedUser = userData;
 
     Object.keys(data).forEach((key) => {
-      updatedUser[key] = data[key];
+      updatedUser = { ...updatedUser, [key]: data[key] };
     });
-
-    console.log(updatedUser);
 
     const userStorage = createStorageUsage(updatedUser);
 
@@ -45,19 +55,16 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
         })
       );
     }
-  };
 
-  const verifyIfPasswordMatch = (data: {
-    oldPassword: string;
-    newPassword: string;
-    newPasswordConfirmation: string;
-  }): boolean => {
-    return data.newPassword === data.newPasswordConfirmation;
+    userData = updatedUser;
   };
 
   const onSubmit = async (data: UpdateDataType): Promise<void> => {
+    setIsLoading(true);
+
     try {
       if (data.oldPassword) {
+        setTypeOfDataFetching("password");
         if (!verifyIfPasswordMatch(data as UpdatePasswordDataType)) {
           toastMessage("Les mots de passe ne correspondent pas", "error");
           return;
@@ -68,6 +75,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
       }
 
       if (data.newEmail) {
+        setTypeOfDataFetching("email");
         if (data.newEmail === userData.email) {
           return toastMessage("Les valeurs doivent être différentes.", "error");
         }
@@ -78,6 +86,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
       }
 
       if (data.firstName && data.lastName) {
+        setTypeOfDataFetching("names");
         if (
           data.firstName === userData.firstName &&
           data.lastName === userData.lastName
@@ -101,16 +110,33 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
       );
       console.error("Something went wrong: ", error);
       throw new Error("Something went wrong: ", error);
+    } finally {
+      setIsLoading(false);
+      setTypeOfDataFetching(null);
     }
   };
 
   return (
     <div className="params-container">
-      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="update-container">
-        <InfoContainer userData={userData} onSubmit={onSubmit} />
-        <EmailContainer userData={userData} onSubmit={onSubmit} />
-        <PasswordContainer userData={userData} onSubmit={onSubmit} />
+        <InfoContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+        />
+        <EmailContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+        />
+        <PasswordContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+        />
       </div>
 
       <div className="upgrade-container">

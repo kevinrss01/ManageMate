@@ -29,6 +29,7 @@ const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
                   name="oldPassword"
                   placeholder="Ancien mot de passe"
                   type="password"
+                  autoComplete="off"
                 />
                 {errors.oldPassword && touched.oldPassword ? (
                   <div style={{ color: "red" }}>{errors.oldPassword}</div>
@@ -43,6 +44,7 @@ const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
                   name="newPassword"
                   placeholder="Nouveau mot de passe"
                   type="password"
+                  autoComplete="off"
                 />
                 {errors.newPassword && touched.newPassword ? (
                   <div style={{ color: "red" }}>{errors.newPassword}</div>
@@ -57,6 +59,7 @@ const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
                   name="newPasswordConfirmation"
                   placeholder="Confirmation du nouveau mot de passe"
                   type="password"
+                  autoComplete="off"
                 />
                 {errors.newPasswordConfirmation &&
                 touched.newPasswordConfirmation ? (
