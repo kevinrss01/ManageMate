@@ -1,272 +1,213 @@
 import Image from "next/image";
 import rocket from "../../../../public/images/rocket.png";
-import { Formik, Form, Field } from "formik";
-import {
-  verificationUpdateEmailSchema,
-  verificationUpdateInfoSchema,
-  verificationUpdatePasswordSchema,
-} from "@/utils/yupShema";
-import { useSelector } from "react-redux";
-import { selectUser } from "../../../../slices/userSlice";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   UpdateDataType,
   UpdatePasswordDataType,
   UserState,
 } from "@/interfaces/Interfaces";
-import { fetchUserData } from "@/pages/app/homepage";
+import InfoContainer from "@/components/app/userPage/Params/InfoContainer";
+import EmailContainer from "@/components/app/userPage/Params/EmailContainer";
+import PasswordContainer from "@/components/app/userPage/Params/PasswordContainer";
 import toastMessage from "@/utils/toast";
+import UsersAPI from "@/services/UsersAPI";
 import { useDispatch } from "react-redux";
+import { createStorageUsage } from "@/pages/app/homepage";
+import { update, updateStorage } from "../../../../slices/userSlice";
+import AuthAPI from "@/services/AuthAPI";
 
-export default function Params() {
-  const data = useSelector(selectUser);
-  const [errorPassword, setErrorPassword] = useState<boolean>(false);
-  const [userData, setUserData] = useState<UserState>(data);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const userDataRedux = useSelector(selectUser);
+const verifyIfPasswordMatch = (data: {
+  oldPassword: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+}): boolean => {
+  return data.newPassword === data.newPasswordConfirmation;
+};
+
+const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
+  userData,
+  accessToken,
+}) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [typeOfDataFetching, setTypeOfDataFetching] = useState<
+    "names" | "password" | "email" | null
+  >(null);
+  const [isSuccessfullFetch, setIsSuccessfullFetch] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const updateStoreInRedux = (data: UpdateDataType) => {
+    let updatedUser = userData;
+
+    Object.keys(data).forEach((key) => {
+      updatedUser = { ...updatedUser, [key]: data[key] };
+    });
+
+    const userStorage = createStorageUsage(updatedUser);
+
+    dispatch(
+      update({
+        ...updatedUser,
+      })
+    );
+    if (userStorage) {
+      dispatch(
+        updateStorage({
+          ...userStorage,
+        })
+      );
+    }
+
+    userData = updatedUser;
+  };
+
+  const updateNamesInFirebase = async (data: UpdateDataType) => {
+    setTypeOfDataFetching("names");
+    const { firstName, lastName } = data;
+
+    if (firstName === userData.firstName && lastName === userData.lastName) {
+      return toastMessage("Les valeurs doivent être différentes.", "error");
+    }
+
+    if (!firstName || !lastName)
+      return toastMessage("Les valeurs ne peuvent pas être vides.", "error");
+
+    await UsersAPI.updateUserNames(
+      userData.id,
+      firstName,
+      lastName,
+      accessToken
+    );
+    updateStoreInRedux(data);
+    toastMessage(`Nom et/ou prénom mis à jour avec succès !`, "success");
+  };
+
+  const updateEmailInFirebase = async (data: UpdateDataType) => {
+    const { newEmail } = data;
+
+    if (newEmail === userData.email) {
+      return toastMessage("Les valeurs doivent être différentes.", "error");
+    }
+    if (!data.newEmail)
+      return toastMessage("L'email ne peut pas être vide.", "error");
+    await UsersAPI.updateUserEmail(userData.id, data.newEmail, accessToken);
+    updateStoreInRedux({ email: data.newEmail });
+    return toastMessage("Email mis à jour avec succès !", "success");
+  };
+
+  const updatePasswordInFirebase = async (data: UpdateDataType) => {
+    if (!data.newPassword)
+      return toastMessage("Le mot de passe ne peut pas être vide.", "error");
+    await UsersAPI.updateUserPassword(
+      userData.id,
+      data.newPassword,
+      accessToken
+    );
+  };
+
+  const onSubmit = async (data: UpdateDataType): Promise<void> => {
     setIsLoading(true);
-    const fetchUser = async () => {
-      if (userDataRedux.firstName === "") {
-        const id = localStorage.getItem("id");
-        if (!id) {
+
+    try {
+      if (data.oldPassword) {
+        setTypeOfDataFetching("password");
+        if (!verifyIfPasswordMatch(data as UpdatePasswordDataType)) {
+          toastMessage("Les mots de passe ne correspondent pas", "error");
+          return;
+        }
+        if (
+          data.oldPassword === data.newPassword ||
+          data.oldPassword === data.newPasswordConfirmation
+        ) {
           toastMessage(
-            "Oups ! Une erreur c'est produit veuillez réessayer plus tard. (id not found))",
+            "Le nouveau mot de passe doit être différent de l'ancien.",
             "error"
           );
           return;
         }
-        const dataFetched = await fetchUserData(id);
-        setUserData(dataFetched);
-      } else {
-        setUserData(userDataRedux);
-      }
-    };
-    fetchUser();
-    setIsLoading(false);
-  }, []);
-
-  const verifyIfPasswordMatch = (data: {
-    oldPassword: string;
-    newPassword: string;
-    newPasswordConfirmation: string;
-  }): boolean => {
-    if (data.newPassword !== data.newPasswordConfirmation) {
-      setErrorPassword(true);
-      return false;
-    } else {
-      setErrorPassword(false);
-      return true;
-    }
-  };
-
-  const onSubmit = (data: UpdateDataType): void => {
-    try {
-      if (data.oldPassword) {
-        if (!verifyIfPasswordMatch(data as UpdatePasswordDataType)) {
-          throw new Error("Passwords don't match");
-        }
-
-        //Appel axios pour update le mot de passe
-        return toastMessage("Mot de passe mis à jour avec succès !", "success");
+        await AuthAPI.login(userData.email, data.oldPassword)
+          .then(async () => {
+            await updatePasswordInFirebase(data);
+            return toastMessage(
+              "Mot de passe mis à jour avec succès !",
+              "success"
+            );
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+            if (error.toString().includes("401")) {
+              toastMessage("Mot de passe incorrect.", "error");
+              return;
+            }
+            toastMessage(
+              "Une erreur est survenue. Veuillez réessayer plus tard.",
+              "error"
+            );
+          });
       }
 
-      if (data.newEmail) {
-        if (data.newEmail === userData.email) {
-          return toastMessage("Les valeurs doivent être différentes.", "error");
-        }
+      if (data.newEmail && data.password) {
+        setTypeOfDataFetching("email");
+        await AuthAPI.login(userData.email, data.password)
+          .then(async () => {
+            await updateEmailInFirebase(data);
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+            if (error.toString().includes("401")) {
+              toastMessage("Mot de passe incorrect.", "error");
+              return;
+            }
+            toastMessage(
+              "Une erreur est survenue. Veuillez réessayer plus tard.",
+              "error"
+            );
+          });
 
-        //TO DO : Appel axios pour update l'email
-        //TO DO : Update le store redux
-        return toastMessage("Email mis à jour avec succès !", "success");
+        return;
       }
 
-      //TO DO : Appel axios pour update l'email
-      //TO DO : Update le store redux
-      if (
-        data.firstName === userData.firstName ||
-        data.lastName === userData.lastName
-      ) {
-        return toastMessage("Les valeurs doivent être différentes.", "error");
+      if (data.firstName && data.lastName) {
+        await updateNamesInFirebase(data);
       }
-      toastMessage(`Nom et prénom mis à jour avec succès !`, "success");
     } catch (error: any) {
       toastMessage(
         "Oups ! Une erreur c'est produit veuillez réessayer plus tard.",
         "error"
       );
-      console.error("Something went wrong: ", error.message);
+      console.error("Something went wrong: ", error);
       throw new Error("Something went wrong: ", error);
+    } finally {
+      setIsLoading(false);
+      setTypeOfDataFetching(null);
     }
   };
 
-  const isUserDataFetched = !!userData.firstName;
   return (
     <div className="params-container">
-      {/* //TODO :  Mettre cette div dans un composant */}
       <div className="update-container">
-        {isUserDataFetched && (
-          <div className="personal-info-container">
-            <h3>Informations personnelles</h3>
-
-            <Formik
-              initialValues={{
-                firstName: userData.firstName || "",
-                lastName: userData.lastName || "",
-              }}
-              validationSchema={verificationUpdateInfoSchema}
-              onSubmit={onSubmit}
-            >
-              {({ errors, touched }) => (
-                <Form>
-                  <div className="input-container">
-                    <div className="input-label">
-                      <label>Votre prénom</label>
-                      <Field name="firstName" placeholder="Prénom" />
-                      {errors.firstName && touched.firstName ? (
-                        <div style={{ color: "red" }}>{errors.firstName}</div>
-                      ) : (
-                        <div style={{ height: "20px", width: "10px" }}> </div>
-                      )}
-                    </div>
-
-                    <div className="input-label">
-                      <label>Votre nom</label>
-                      <Field name="lastName" placeholder="Nom" />
-                      {errors.lastName && touched.lastName ? (
-                        <div style={{ color: "red" }}>{errors.lastName}</div>
-                      ) : (
-                        <div style={{ height: "20px", width: "10px" }}> </div>
-                      )}
-                    </div>
-                  </div>
-                  <button className="update-button" type="submit">
-                    Modifier
-                  </button>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        )}
-
-        {/* //TODO :  Mettre cette div dans un composant */}
-        {isUserDataFetched && (
-          <div className="email-container">
-            <h3>Changer son e-mail</h3>
-            <Formik
-              initialValues={{
-                newEmail: userData.email || "",
-              }}
-              validationSchema={verificationUpdateEmailSchema}
-              onSubmit={onSubmit}
-            >
-              {({ errors, touched }) => (
-                <Form>
-                  <div className="input-container-password input-container">
-                    <div className="input-label">
-                      <label>Écrivez notre nouvel email</label>
-                      <Field
-                        name="newEmail"
-                        placeholder="Mon nouvel email"
-                        type="text"
-                      />
-                      {errors.newEmail && touched.newEmail ? (
-                        <div style={{ color: "red" }}>{errors.newEmail}</div>
-                      ) : (
-                        <div style={{ height: "20px", width: "10px" }}> </div>
-                      )}
-                    </div>
-                  </div>
-                  <button className="update-button" type="submit">
-                    Modifier
-                  </button>
-                </Form>
-              )}
-            </Formik>
-          </div>
-        )}
-
-        {/* //TODO :  Mettre cette div dans un composant */}
-        <div className="password-container">
-          <h3>Changer son mot de passe</h3>
-
-          <Formik
-            initialValues={{
-              oldPassword: "",
-              newPassword: "",
-              newPasswordConfirmation: "",
-            }}
-            validationSchema={verificationUpdatePasswordSchema}
-            onSubmit={onSubmit}
-          >
-            {({ errors, touched }) => (
-              <Form>
-                <div className="input-container-password input-container">
-                  <div className="input-label">
-                    <label>Votre mot de passe</label>
-                    <Field
-                      name="oldPassword"
-                      placeholder="Ancien mot de passe"
-                      type="password"
-                    />
-                    {errors.oldPassword && touched.oldPassword ? (
-                      <div style={{ color: "red" }}>{errors.oldPassword}</div>
-                    ) : (
-                      <div style={{ height: "20px", width: "10px" }}> </div>
-                    )}
-                  </div>
-
-                  <div className="input-label">
-                    <label>Nouveau mot de passe</label>
-                    <Field
-                      name="newPassword"
-                      placeholder="Nouveau mot de passe"
-                      type="password"
-                    />
-                    {errors.newPassword && touched.newPassword ? (
-                      <div style={{ color: "red" }}>{errors.newPassword}</div>
-                    ) : (
-                      <div style={{ height: "20px", width: "10px" }}> </div>
-                    )}
-                  </div>
-
-                  <div className="input-label">
-                    <label>Confirmation du mot de passe</label>
-                    <Field
-                      name="newPasswordConfirmation"
-                      placeholder="Confirmation du nouveau mot de passe"
-                      type="password"
-                    />
-                    {errors.newPasswordConfirmation &&
-                    touched.newPasswordConfirmation ? (
-                      <div style={{ color: "red" }}>
-                        {errors.newPasswordConfirmation}
-                      </div>
-                    ) : (
-                      <div style={{ height: "20px", width: "10px" }}> </div>
-                    )}
-                  </div>
-                </div>
-                {errorPassword ? (
-                  <div style={{ color: "red" }}>
-                    Les deux mot de passe ne sont pas identiques
-                  </div>
-                ) : (
-                  <> </>
-                )}
-
-                <button className="update-button" type="submit">
-                  Modifier
-                </button>
-              </Form>
-            )}
-          </Formik>
-        </div>
+        <InfoContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+        />
+        <EmailContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+          isSuccessfullFetching={isSuccessfullFetch}
+        />
+        <PasswordContainer
+          userData={userData}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+          typeOfDataFetching={typeOfDataFetching}
+          isSuccessfullFetching={isSuccessfullFetch}
+        />
       </div>
-      {/* //TODO :  Mettre cette div dans un composant */}
+
       <div className="upgrade-container">
         <div className="upgrade-space-params">
           <Image src={rocket} className="rocketImage" alt="Image of a rocket" />
@@ -284,4 +225,6 @@ export default function Params() {
       </div>
     </div>
   );
-}
+};
+
+export default Params;

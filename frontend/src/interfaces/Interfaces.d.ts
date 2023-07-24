@@ -37,6 +37,7 @@ export interface NumberOfFilesByType {
 
 // REDUX
 export interface UserState {
+  [key: string]: string | number | File[] | Invoices[];
   firstName: string;
   lastName: string;
   email: string;
@@ -58,9 +59,11 @@ export interface UpdatePasswordDataType {
   newPasswordConfirmation: string;
 }
 export interface UpdateDataType {
+  [key: string]: string;
   firstName?: string;
   lastName?: string;
   newEmail?: string;
+  password?: string;
   oldPassword?: string;
   newPassword?: string;
   newPasswordConfirmation?: string;

@@ -10,11 +10,10 @@ import { usePathname, useRouter } from "next/navigation";
 import AxiosCallApi from "@/services/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser, update, updateStorage } from "../../../slices/userSlice";
-import { createStorageUsage } from "../../pages/app/homepage";
+import { createStorageUsage } from "@/pages/app/homepage";
 import { File } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { ClipLoader } from "react-spinners";
-import { access } from "fs";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -77,7 +76,7 @@ export default function Navbar() {
     },
     {
       name: "Parameters",
-      path: "/app/userParameters",
+      path: "/app/userPage",
       icon: (
         <BsFillPersonFill
           className="icon"

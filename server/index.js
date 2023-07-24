@@ -4,15 +4,18 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/Auth.routes.js";
 import fileRoutes from "./routes/Files.routes.js";
 import userRoutes from "./routes/Users.routes.js";
+import bodyParser from "body-parser";
 
 const app = express();
 const port = 4000;
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
+  console.log(req.body);
   next();
 });
-app.use(express.json());
 
 app.use(cors());
 dotenv.config({ path: "./config/.env" });

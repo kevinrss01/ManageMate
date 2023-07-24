@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { formatFileSizeFromBytes, getTimeSinceAdd } from "@/utils/fileUtils";
 import { File } from "@/interfaces/Interfaces";
 import { BsFillTrashFill, BsFillCloudDownloadFill } from "react-icons/bs";

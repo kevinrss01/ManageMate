@@ -97,7 +97,7 @@ const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
     return iconsType[iconType] || "Type de fichier inconnu";
   };
 
-  const updateUserStateInRedux = async (fileIdDeleted: string) => {
+  const updateUserStateInRedux = (fileIdDeleted: string) => {
     const newFiles = userState.files.filter(
       (file) => file.fileId !== fileIdDeleted
     );
