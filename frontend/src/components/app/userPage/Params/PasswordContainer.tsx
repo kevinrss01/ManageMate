@@ -2,10 +2,13 @@ import { Field, Form, Formik } from "formik";
 import { verificationUpdatePasswordSchema } from "@/utils/yupShema";
 import React from "react";
 import { ComponentPropsUserPage } from "@/interfaces/UserPage";
+import { ClipLoader } from "react-spinners";
 
 const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
   userData,
   onSubmit,
+  isLoading,
+  typeOfDataFetching,
 }) => {
   return (
     <div className="password-container">
@@ -72,8 +75,18 @@ const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
               </div>
             </div>
 
-            <button className="update-button" type="submit">
-              Modifier
+            <button
+              className="update-button"
+              type="submit"
+              style={{
+                pointerEvents: isLoading ? "none" : "auto",
+              }}
+            >
+              {isLoading && typeOfDataFetching === "password" ? (
+                <ClipLoader size={20} color={"#fff"} />
+              ) : (
+                "Modifier"
+              )}
             </button>
           </Form>
         )}

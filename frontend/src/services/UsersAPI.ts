@@ -38,6 +38,20 @@ class UsersAPI {
       { headers: { Authorization: accessToken } }
     );
   }
+
+  static async updateUserPassword(
+    userId: string,
+    newPassword: string,
+    accessToken: string
+  ): Promise<any> {
+    if (!newPassword || !userId || !accessToken)
+      throw new Error("Missing data");
+    return AxiosCallApi.put(
+      formatSuffix("updatePassword"),
+      { userId, password: newPassword },
+      { headers: { Authorization: accessToken } }
+    );
+  }
 }
 
 export default UsersAPI;

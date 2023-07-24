@@ -4,6 +4,7 @@ import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import {
   validateToken,
   validateUpdateAccountBody,
+  validateUpdatePasswordBody,
 } from "../middlewares/AuthMiddlewares.js";
 import {
   getAuth,
@@ -13,6 +14,12 @@ import {
 } from "firebase/auth";
 
 const router = express.Router();
+
+const ERROR_USER_NOT_FOUND = "auth/user-not-found";
+const ERROR_INVALID_USER_ID = "auth/invalid-user-id";
+const ERROR_WEAK_PASSWORD = "auth/weak-password";
+const ERROR_USER_NOT_CONNECTED_RECENTLY =
+  "Cannot destructure property 'auth' of 'user' as it is null.";
 
 router.get("/all-info/:id", validateToken, async (req, res) => {
   try {
@@ -39,10 +46,9 @@ router.put(
   async (req, res) => {
     try {
       const auth = getAuth();
-      console.log(req.body);
       const { userId, firstName, lastName } = req.body;
       if (!firstName || !lastName) {
-        res.status(400).json({ message: "Missing data" });
+        res.status(400).json({ message: "Invalid Body" });
         return;
       }
       await updateProfile(auth.currentUser, firstName, lastName);
@@ -66,9 +72,7 @@ router.put(
     } catch (error) {
       console.error(error);
       res.status(500).json({
-        message: `Error while updating mail: ${
-          error.code ? error.code : error
-        }`,
+        message: `Error while updating mail`,
       });
     }
   }
@@ -83,7 +87,8 @@ router.put(
       const auth = getAuth();
       const { userId, email } = req.body;
       if (!email) {
-        res.status(400).json({ message: "Email is required" });
+        console.error("Email required");
+        res.status(401).json({ message: "Invalid body" });
         return;
       }
       await updateEmail(auth.currentUser, email);
@@ -104,53 +109,58 @@ router.put(
         res.status(404).json({ message: "User not found" });
       }
     } catch (error) {
-      console.error(error.message);
-      if (
-        error.message ===
-        "Cannot destructure property 'auth' of 'user' as it is null."
-      ) {
-        res.status(500).json({
-          message: `Error while updating email, please login again.`,
+      console.error(error);
+      if (error.message === ERROR_USER_NOT_CONNECTED_RECENTLY) {
+        res.status(401).json({
+          message: `Error : User not connected recently.`,
         });
       } else {
         res.status(500).json({
-          message: `Error while updating mail: ${
-            error.code ? error.code : error
-          }`,
+          message: `Error while updating mail.`,
         });
       }
     }
   }
 );
 
-router.put("/modifPassw/", async (req, res) => {
-  try {
+router.put(
+  "/updatePassword/",
+  validateToken,
+  validateUpdatePasswordBody,
+  async (req, res) => {
     const { userId, password } = req.body;
-    const auth = getAuth();
-    await updatePassword(auth.currentUser, password);
 
-    res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    if (
-      error.code === "auth/user-not-found" ||
-      error.code === "auth/invalid-user-id"
-    ) {
-      res.status(404).json({
-        message: "User not found",
-      });
-    } else if (error.code === "auth/weak-password") {
-      res.status(400).json({
-        message: "Weak password. Please choose a stronger password.",
-      });
-    } else {
-      console.error(error);
-      res.status(500).json({
-        message: `Error while updating password: ${
-          error.code ? error.code : error
-        }`,
-      });
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        throw new Error("User not logged in");
+      }
+
+      await updatePassword(currentUser, password);
+
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("error : ", error.toString());
+
+      if (
+        error.code === ERROR_USER_NOT_FOUND ||
+        error.code === ERROR_INVALID_USER_ID
+      ) {
+        res.status(404).json({ message: "User not found" });
+      } else if (error.code === ERROR_WEAK_PASSWORD) {
+        res.status(400).json({
+          message: "Weak password. Please choose a stronger password.",
+        });
+      } else if (error.message === ERROR_USER_NOT_CONNECTED_RECENTLY) {
+        res
+          .status(401)
+          .json({ message: "Error : User not connected recently." });
+      } else {
+        res.status(500).json({ message: `Error while updating password.` });
+      }
     }
   }
-});
-
+);
 export default router;

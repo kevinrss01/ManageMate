@@ -31,6 +31,8 @@ const passwordVerif = Yup.string()
   )
   .required("Mot de passe requis");
 
+const passwordRequiredVerif = Yup.string().required("Mot de passe requis");
+
 const companyNameVerif = Yup.string()
   .min(3, "Le nom de l'entreprise doit contenir au moins 3 caractères")
   .max(50, "Le nom de l'entreprise doit contenir au maximum 50 caractères")
@@ -77,8 +79,10 @@ export const verificationUpdatePasswordSchema = Yup.object().shape({
   newPassword: passwordVerif,
   newPasswordConfirmation: passwordVerif,
 });
+
 export const verificationUpdateEmailSchema = Yup.object().shape({
   newEmail: emailVerif,
+  password: passwordRequiredVerif,
 });
 
 export const paymentSchema = Yup.object().shape({

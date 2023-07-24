@@ -42,8 +42,6 @@ const FilesContainer: React.FC<FilesContainerProps> = ({
   const userState = useSelector(selectUser);
   const dispatch = useDispatch();
 
-  console.log("filteredFiles: ", filteredFiles);
-
   const updateUserStateInRedux = (fileIdDeleted: string) => {
     const newFiles = userState.files.filter(
       (file) => file.fileId !== fileIdDeleted

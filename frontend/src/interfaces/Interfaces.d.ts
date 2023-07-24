@@ -63,6 +63,7 @@ export interface UpdateDataType {
   firstName?: string;
   lastName?: string;
   newEmail?: string;
+  password?: string;
   oldPassword?: string;
   newPassword?: string;
   newPasswordConfirmation?: string;

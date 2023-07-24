@@ -14,6 +14,7 @@ import UsersAPI from "@/services/UsersAPI";
 import { useDispatch } from "react-redux";
 import { createStorageUsage } from "@/pages/app/homepage";
 import { update, updateStorage } from "../../../../slices/userSlice";
+import AuthAPI from "@/services/AuthAPI";
 
 const verifyIfPasswordMatch = (data: {
   oldPassword: string;
@@ -31,6 +32,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
   const [typeOfDataFetching, setTypeOfDataFetching] = useState<
     "names" | "password" | "email" | null
   >(null);
+  const [isSuccessfullFetch, setIsSuccessfullFetch] = useState<boolean>(false);
 
   const dispatch = useDispatch();
 
@@ -59,6 +61,50 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
     userData = updatedUser;
   };
 
+  const updateNamesInFirebase = async (data: UpdateDataType) => {
+    setTypeOfDataFetching("names");
+    const { firstName, lastName } = data;
+
+    if (firstName === userData.firstName && lastName === userData.lastName) {
+      return toastMessage("Les valeurs doivent être différentes.", "error");
+    }
+
+    if (!firstName || !lastName)
+      return toastMessage("Les valeurs ne peuvent pas être vides.", "error");
+
+    await UsersAPI.updateUserNames(
+      userData.id,
+      firstName,
+      lastName,
+      accessToken
+    );
+    updateStoreInRedux(data);
+    toastMessage(`Nom et/ou prénom mis à jour avec succès !`, "success");
+  };
+
+  const updateEmailInFirebase = async (data: UpdateDataType) => {
+    const { newEmail } = data;
+
+    if (newEmail === userData.email) {
+      return toastMessage("Les valeurs doivent être différentes.", "error");
+    }
+    if (!data.newEmail)
+      return toastMessage("L'email ne peut pas être vide.", "error");
+    await UsersAPI.updateUserEmail(userData.id, data.newEmail, accessToken);
+    updateStoreInRedux({ email: data.newEmail });
+    return toastMessage("Email mis à jour avec succès !", "success");
+  };
+
+  const updatePasswordInFirebase = async (data: UpdateDataType) => {
+    if (!data.newPassword)
+      return toastMessage("Le mot de passe ne peut pas être vide.", "error");
+    await UsersAPI.updateUserPassword(
+      userData.id,
+      data.newPassword,
+      accessToken
+    );
+  };
+
   const onSubmit = async (data: UpdateDataType): Promise<void> => {
     setIsLoading(true);
 
@@ -69,39 +115,60 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           toastMessage("Les mots de passe ne correspondent pas", "error");
           return;
         }
-        //TODO : Appel axios pour vérifier l'ancien mot de passe est correct et pour connecter l'utilisateur
-        //Appel axios pour update le mot de passe
-        return toastMessage("Mot de passe mis à jour avec succès !", "success");
+        if (
+          data.oldPassword === data.newPassword ||
+          data.oldPassword === data.newPasswordConfirmation
+        ) {
+          toastMessage(
+            "Le nouveau mot de passe doit être différent de l'ancien.",
+            "error"
+          );
+          return;
+        }
+        await AuthAPI.login(userData.email, data.oldPassword)
+          .then(async () => {
+            await updatePasswordInFirebase(data);
+            return toastMessage(
+              "Mot de passe mis à jour avec succès !",
+              "success"
+            );
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+            if (error.toString().includes("401")) {
+              toastMessage("Mot de passe incorrect.", "error");
+              return;
+            }
+            toastMessage(
+              "Une erreur est survenue. Veuillez réessayer plus tard.",
+              "error"
+            );
+          });
       }
 
-      if (data.newEmail) {
+      if (data.newEmail && data.password) {
         setTypeOfDataFetching("email");
-        if (data.newEmail === userData.email) {
-          return toastMessage("Les valeurs doivent être différentes.", "error");
-        }
+        await AuthAPI.login(userData.email, data.password)
+          .then(async () => {
+            await updateEmailInFirebase(data);
+          })
+          .catch((error) => {
+            console.error("Error: ", error);
+            if (error.toString().includes("401")) {
+              toastMessage("Mot de passe incorrect.", "error");
+              return;
+            }
+            toastMessage(
+              "Une erreur est survenue. Veuillez réessayer plus tard.",
+              "error"
+            );
+          });
 
-        await UsersAPI.updateUserEmail(userData.id, data.newEmail, accessToken);
-        await updateStoreInRedux(data);
-        return toastMessage("Email mis à jour avec succès !", "success");
+        return;
       }
 
       if (data.firstName && data.lastName) {
-        setTypeOfDataFetching("names");
-        if (
-          data.firstName === userData.firstName &&
-          data.lastName === userData.lastName
-        ) {
-          return toastMessage("Les valeurs doivent être différentes.", "error");
-        }
-
-        await UsersAPI.updateUserNames(
-          userData.id,
-          data.firstName,
-          data.lastName,
-          accessToken
-        );
-        updateStoreInRedux(data);
-        toastMessage(`Nom et prénom mis à jour avec succès !`, "success");
+        await updateNamesInFirebase(data);
       }
     } catch (error: any) {
       toastMessage(
@@ -130,12 +197,14 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           onSubmit={onSubmit}
           isLoading={isLoading}
           typeOfDataFetching={typeOfDataFetching}
+          isSuccessfullFetching={isSuccessfullFetch}
         />
         <PasswordContainer
           userData={userData}
           onSubmit={onSubmit}
           isLoading={isLoading}
           typeOfDataFetching={typeOfDataFetching}
+          isSuccessfullFetching={isSuccessfullFetch}
         />
       </div>
 

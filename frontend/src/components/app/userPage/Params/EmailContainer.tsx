@@ -1,24 +1,27 @@
 import { Field, Form, Formik } from "formik";
 import { verificationUpdateEmailSchema } from "@/utils/yupShema";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ComponentPropsUserPage } from "@/interfaces/UserPage";
+import { ClipLoader } from "react-spinners";
 
 const EmailContainer: React.FC<ComponentPropsUserPage> = ({
   userData,
   onSubmit,
+  isLoading,
+  typeOfDataFetching,
 }) => {
-  // TODO : Ajouter un input pour le mot de passe afin d'authentifier l'utilisateur avant de modifier son email
   return (
     <div className="email-container">
       <h3>Changer son e-mail</h3>
       <Formik
         initialValues={{
           newEmail: userData.email || "",
+          password: "",
         }}
         validationSchema={verificationUpdateEmailSchema}
         onSubmit={onSubmit}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, setFieldValue }) => (
           <Form>
             <div className="input-container-password input-container">
               <div className="input-label">
@@ -34,10 +37,30 @@ const EmailContainer: React.FC<ComponentPropsUserPage> = ({
                 ) : (
                   <div style={{ height: "20px", width: "10px" }}> </div>
                 )}
+                <label htmlFor="">Votre mot de passe</label>
+                <Field
+                  name="password"
+                  placeholder="Entrez votre mot de passe"
+                  type="password"
+                  autoComplete="off"
+                />
+                {errors.password && touched.password && (
+                  <div style={{ color: "red" }}>{errors.password}</div>
+                )}
               </div>
             </div>
-            <button className="update-button" type="submit">
-              Modifier
+            <button
+              className="update-button"
+              type="submit"
+              style={{
+                pointerEvents: isLoading ? "none" : "auto",
+              }}
+            >
+              {isLoading && typeOfDataFetching === "email" ? (
+                <ClipLoader size={20} color={"#fff"} />
+              ) : (
+                "Modifier"
+              )}
             </button>
           </Form>
         )}

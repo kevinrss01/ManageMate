@@ -49,7 +49,13 @@ const InfoContainer: React.FC<ComponentPropsUserPage> = ({
                 )}
               </div>
             </div>
-            <button className="update-button" type="submit">
+            <button
+              className="update-button"
+              type="submit"
+              style={{
+                pointerEvents: isLoading ? "none" : "auto",
+              }}
+            >
               {isLoading && typeOfDataFetching === "names" ? (
                 <ClipLoader size={20} color={"#fff"} />
               ) : (

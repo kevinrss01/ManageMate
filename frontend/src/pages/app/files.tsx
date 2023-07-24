@@ -86,7 +86,6 @@ export default function Files() {
         setFiles(userData.files);
         setFilteredFiles(userData.files);
       } else {
-        //console.log(data.files);
         // If there is data in redux store, use it
         setFiles([...data.files]);
         setFilteredFiles([...data.files]);
@@ -104,7 +103,6 @@ export default function Files() {
 
   const searchFiles = (value: string) => {
     if (value && isSearchClicked) {
-      console.log("enter");
       const filterFiles = [...files].filter((file) => {
         return file.name
           .toLocaleLowerCase()

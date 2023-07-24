@@ -5,4 +5,5 @@ export interface ComponentPropsUserPage {
   onSubmit: (data: UpdateDataType) => void;
   isLoading: boolean;
   typeOfDataFetching: "names" | "email" | "password" | null;
+  isSuccessfullFetching?: boolean;
 }

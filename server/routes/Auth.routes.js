@@ -78,7 +78,7 @@ router.post("/login", validateLoginBody, async (req, res) => {
       error.code === "auth/wrong-password" ||
       error.code === "auth/user-not-found"
     ) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "invalid credentials",
       });
     }
