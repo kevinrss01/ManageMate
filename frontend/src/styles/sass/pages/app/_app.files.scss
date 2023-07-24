@@ -84,6 +84,9 @@
             .under-filter-type-container {
               max-height: 150px;
               overflow: scroll;
+              position: absolute;
+              background-color: white;
+
               .under-filter-type {
                 display: flex;
                 align-items: center;
