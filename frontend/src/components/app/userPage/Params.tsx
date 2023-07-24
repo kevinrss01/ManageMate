@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { createStorageUsage } from "@/pages/app/homepage";
 import { update, updateStorage } from "../../../../slices/userSlice";
 import AuthAPI from "@/services/AuthAPI";
+import { Button } from "@tremor/react";
 
 const verifyIfPasswordMatch = (data: {
   oldPassword: string;
@@ -207,6 +208,8 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           isSuccessfullFetching={isSuccessfullFetch}
         />
       </div>
+
+      <Button>Bonjour</Button>
 
       <div className="upgrade-container">
         <div className="upgrade-space-params">

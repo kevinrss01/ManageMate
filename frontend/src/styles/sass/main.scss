@@ -1,3 +1,8 @@
+//TailwindCSS:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 // UTILS -> Variables, fonctions, mixins.
 @import "utils/variables";
 @import "utils/mixins";
