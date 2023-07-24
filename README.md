@@ -5,6 +5,7 @@ Project is not yet complete.
 
 ## Used technologies :
 
+- HTML/CSS/SCSS
 - Javascript
 - Typescript
 - NodeJs
@@ -12,3 +13,4 @@ Project is not yet complete.
 - NestJS
 - Express
 - Firebase
+- TailwindCSS (90% of the project is build with SCSS)
