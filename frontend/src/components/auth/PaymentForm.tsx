@@ -2,8 +2,6 @@ import { paymentSchema } from "@/utils/yupShema";
 import { Field, Form, Formik } from "formik";
 import { FunctionComponent } from "react";
 import { PaymentFormData } from "@/interfaces/Interfaces";
-import { FcApproval } from "react-icons/fc";
-import { useState } from "react";
 
 interface InputField {
   name: string;

@@ -191,7 +191,7 @@ const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
                       </span>
                     </div>
 
-                    <div>
+                    <div className="flex">
                       {isLoadingDelete && fileID === file.fileId ? (
                         <>
                           <ClipLoader color="#F87F3F" size={20} />

@@ -120,6 +120,9 @@ button {
       }
 
       .nextButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 90%;
         padding: 10px;
         border: 2px solid black;
@@ -139,6 +142,7 @@ button {
 
       .divider {
         display: flex;
+        align-items: center;
         width: 90%;
         padding: 20px;
         color: grey;
@@ -153,14 +157,16 @@ button {
   .containerLoginWith {
     width: 100%;
     height: 100%;
-    @include flex-column-centre;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     .loginWith {
-      width: 95%;
+      width: 98%;
       padding: 10px 10px 10px 10px;
-      height: 45px;
+      height: 65px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       transition: filter 0.4s ease;
 
@@ -216,7 +222,7 @@ button {
       padding-right: 10%;
       color: white;
       height: 100%;
-      width: 82%;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;

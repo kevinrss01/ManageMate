@@ -78,7 +78,7 @@ export default function RegistrationPage() {
                   onSubmit={onSubmit}
                   validationSchema={verificationLoginSchema}
                 >
-                  {({ errors, touched, isValid }) => (
+                  {({ errors, touched }) => (
                     <Form
                       style={{
                         display: "flex",
@@ -145,7 +145,7 @@ export default function RegistrationPage() {
               </div>
               <div className="divider">
                 <hr className="solid"></hr>
-                <span>Ou avec</span>
+                <span className="pr-2 pl-2">Ou avec</span>
                 <hr className="solid"></hr>
               </div>
               <div className="containerLoginWith">

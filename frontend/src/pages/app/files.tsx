@@ -230,7 +230,7 @@ export default function Files() {
           </div>
         </div>
         <div className="files-container">
-          <h2>Tous vos fichiers</h2>
+          <h2 className="text-3xl">Tous vos fichiers</h2>
           {isLoading ? (
             <>
               <NetflixLoader />
@@ -239,7 +239,7 @@ export default function Files() {
             <>
               <div className="filters-container">
                 <div className="open-filters-container">
-                  <h3>Filtrer mes fichiers</h3>
+                  <h3 className="text-2xl">Filtrer mes fichiers</h3>
                   <IoIosArrowForward className="icon" />
                 </div>
 

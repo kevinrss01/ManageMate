@@ -23,7 +23,7 @@ export default function FirstPart() {
           </div>
           <div className="mainTextContainer">
             <div className="h1">
-              <h1>
+              <h1 className="text-5xl">
                 L’optimisation
                 <br />
                 De votre entreprise

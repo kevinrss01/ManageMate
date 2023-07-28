@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
-import { verify } from "jsonwebtoken";
+import pkg from "jsonwebtoken";
+const { verify } = pkg;
 
 export function validateRegisterBody(req, res, next) {
   const rules = [

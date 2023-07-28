@@ -4,6 +4,15 @@ import { RegisterDataType } from "@/interfaces/auth/AuthType";
 const PREFIX = "auth";
 const formatSuffix = (suffix: string) => `${PREFIX}/${suffix}`;
 
+interface verifyTokenResponse {
+  decodedToken: {
+    userId: string;
+    role: "admin" | "user";
+    iat: number;
+    exp: number;
+  };
+}
+
 class AuthAPI {
   static async register(formValue: RegisterDataType) {
     return AxiosCallApi.post(formatSuffix("register"), formValue);
@@ -26,7 +35,7 @@ class AuthAPI {
   }
 
   static async verifyToken(token: string) {
-    return AxiosCallApi.get<{ message: string }>(formatSuffix("verifyToken"), {
+    return AxiosCallApi.get<verifyTokenResponse>(formatSuffix("verifyToken"), {
       headers: { authorization: token },
     });
   }

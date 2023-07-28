@@ -112,9 +112,9 @@ router.get("/verifyToken", (req, res) => {
       return res.status(401).json({ message: "No authorization header sent" });
     }
 
-    verify(authHeaderToken, process.env.JWT_SECRET);
+    const decoded = verify(authHeaderToken, process.env.JWT_SECRET);
 
-    res.status(200).json({ message: "Valid token" });
+    res.status(200).json({ decodedToken: decoded });
   } catch (error) {
     console.error(error);
     res.status(401).json({

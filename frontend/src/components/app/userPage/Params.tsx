@@ -209,8 +209,6 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
         />
       </div>
 
-      <Button>Bonjour</Button>
-
       <div className="upgrade-container">
         <div className="upgrade-space-params">
           <Image src={rocket} className="rocketImage" alt="Image of a rocket" />
