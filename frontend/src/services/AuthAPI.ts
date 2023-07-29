@@ -34,6 +34,10 @@ class AuthAPI {
     );
   }
 
+  static async logout() {
+    return AxiosCallApi.get(formatSuffix("logout"));
+  }
+
   static async verifyToken(token: string) {
     return AxiosCallApi.get<verifyTokenResponse>(formatSuffix("verifyToken"), {
       headers: { authorization: token },

@@ -3,6 +3,7 @@ import {
   fetchSignInMethodsForEmail,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { auth, userCollection, db } from "../config/firebase.js";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -12,7 +13,7 @@ import {
 } from "../middlewares/AuthMiddlewares.js";
 import jsonwebtoken from "jsonwebtoken";
 
-const { sign, decode, verify } = jsonwebtoken;
+const { sign, verify } = jsonwebtoken;
 
 const router = express.Router();
 
@@ -119,6 +120,18 @@ router.get("/verifyToken", (req, res) => {
     console.error(error);
     res.status(401).json({
       error: "Invalid access token",
+    });
+  }
+});
+
+router.get("/logout", async (req, res) => {
+  try {
+    await signOut(auth);
+    res.status(200).json({ message: "logout" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occured while logging out",
     });
   }
 });

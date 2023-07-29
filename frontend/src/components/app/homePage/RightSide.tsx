@@ -17,6 +17,20 @@ import {
   PercentageAndSizeByFileType,
   NumberOfFilesByType,
 } from "@/interfaces/Interfaces";
+import { FiLogOut } from "react-icons/fi";
+import { Icon } from "@tremor/react";
+import { useRouter } from "next/router";
+import AuthAPI from "@/services/AuthAPI";
+import toastMessage from "@/utils/toast";
+
+interface FileType {
+  displayName: string;
+  name: string;
+  color: string;
+  colorWithOpacity: string;
+  usagePercentage: string;
+  icon: React.ReactNode;
+}
 
 export default function RightSide() {
   //Redux
@@ -24,6 +38,7 @@ export default function RightSide() {
   const storageData = useSelector(selectStorage);
   const userFiles = userData.files ? userData.files : [];
   const usedStorage = storageData.usedStorage;
+  const router = useRouter();
 
   //Functions
   const totalSpace = formatFileSizeFromBytes(userData.totalUserStorage);
@@ -48,15 +63,6 @@ export default function RightSide() {
     getPercentageAndSizeByFileType(userFiles, userData);
   const numberOfFilesByType: NumberOfFilesByType =
     getNumberOfFilesByType(userFiles);
-
-  interface FileType {
-    displayName: string;
-    name: string;
-    color: string;
-    colorWithOpacity: string;
-    usagePercentage: string;
-    icon: React.ReactNode;
-  }
 
   const fileTypes: FileType[] = [
     {
@@ -93,6 +99,21 @@ export default function RightSide() {
     },
   ];
 
+  const handleLogout = async () => {
+    try {
+      await AuthAPI.logout();
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
+      await router.push("/auth/loginPage");
+    } catch (error) {
+      console.log(error);
+      toastMessage(
+        "Une erreur est survenue veuillez réessayer plus tard.",
+        "error"
+      );
+    }
+  };
+
   return (
     <>
       <div className="rightSideContainer">
@@ -106,6 +127,12 @@ export default function RightSide() {
               </h3>
               <p>{userData.email}</p>
             </Link>
+            <Icon
+              size="md"
+              icon={FiLogOut}
+              tooltip="Deconnexion"
+              onClick={() => handleLogout()}
+            />
           </div>
         </div>
         <div className="storageUsageContainer">

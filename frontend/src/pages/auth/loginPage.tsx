@@ -39,8 +39,8 @@ export default function RegistrationPage() {
         router.push("/app/homepage?successLogin=true");
       })
       .catch((error) => {
-        console.error(error);
-        if (error?.response?.data?.message?.includes("invalid credentials")) {
+        console.error("error:", error);
+        if (error?.toString().includes("401")) {
           setDisplayInvalidCredentialsErrorMessage(true);
           setIsLoading(false);
           return;
@@ -49,6 +49,8 @@ export default function RegistrationPage() {
           "Une erreur est survenue. Veuillez réessayer plus tard.",
           "error"
         );
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   };
