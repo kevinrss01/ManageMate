@@ -1,6 +1,5 @@
 import { Field, Form, Formik } from "formik";
 import { verificationUpdateEmailSchema } from "@/utils/yupShema";
-import React, { useEffect, useState } from "react";
 import { ComponentPropsUserPage } from "@/interfaces/UserPage";
 import { ClipLoader } from "react-spinners";
 
@@ -19,7 +18,13 @@ const EmailContainer: React.FC<ComponentPropsUserPage> = ({
           password: "",
         }}
         validationSchema={verificationUpdateEmailSchema}
-        onSubmit={onSubmit}
+        onSubmit={
+          onSubmit
+            ? onSubmit
+            : () => {
+                console.error("onSubmit is not defined");
+              }
+        }
       >
         {({ errors, touched, setFieldValue }) => (
           <Form>

@@ -5,8 +5,20 @@ import SecondPart from "@/components/index/index.SecondPart";
 import ThirdPart from "@/components/index/index.ThirdPart";
 import FifthPart from "@/components/index/index.FifthPart";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import toastMessage from "@/utils/toast";
 
 export default function Home() {
+  const router = useRouter();
+  const { deletedAccount } = router.query;
+
+  useEffect(() => {
+    if (deletedAccount) {
+      toastMessage("Votre compte a été supprimé avec succès !", "success");
+    }
+  }, [deletedAccount]);
+
   return (
     <>
       <Head>

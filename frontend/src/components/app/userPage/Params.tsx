@@ -15,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { createStorageUsage } from "@/pages/app/homepage";
 import { update, updateStorage } from "../../../../slices/userSlice";
 import AuthAPI from "@/services/AuthAPI";
-import { Button } from "@tremor/react";
+import { DeleteAccount } from "@/components/app/userPage/Params/DeleteAccount";
 
 const verifyIfPasswordMatch = (data: {
   oldPassword: string;
@@ -207,6 +207,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           typeOfDataFetching={typeOfDataFetching}
           isSuccessfullFetching={isSuccessfullFetch}
         />
+        <DeleteAccount userData={userData} />
       </div>
 
       <div className="upgrade-container">

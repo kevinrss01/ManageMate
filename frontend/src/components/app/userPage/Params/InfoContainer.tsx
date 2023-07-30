@@ -20,7 +20,13 @@ const InfoContainer: React.FC<ComponentPropsUserPage> = ({
           lastName: userData.lastName || "",
         }}
         validationSchema={verificationUpdateInfoSchema}
-        onSubmit={onSubmit}
+        onSubmit={
+          onSubmit
+            ? onSubmit
+            : () => {
+                console.error("onSubmit is not defined");
+              }
+        }
       >
         {({ errors, touched }) => (
           <Form>

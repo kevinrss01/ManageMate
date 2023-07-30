@@ -6,10 +6,11 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, userCollection, db } from "../config/firebase.js";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import {
   validateRegisterBody,
   validateLoginBody,
+  validateToken,
 } from "../middlewares/AuthMiddlewares.js";
 import jsonwebtoken from "jsonwebtoken";
 
@@ -133,6 +134,24 @@ router.get("/logout", async (req, res) => {
     res.status(500).json({
       error: "An error occured while logging out",
     });
+  }
+});
+
+router.delete("/deleteAccount", validateToken, async (req, res) => {
+  if (!auth.currentUser) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    await deleteDoc(doc(db, "users", auth.currentUser.uid));
+    await auth.currentUser.delete();
+
+    return res
+      .status(200)
+      .send("Account and related data deleted successfully");
+  } catch (error) {
+    console.error("Error deleting user and related data:", error);
+    return res.status(500).send("Error deleting user and related data");
   }
 });
 

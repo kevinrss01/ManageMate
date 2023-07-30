@@ -94,3 +94,7 @@ export const paymentSchema = Yup.object().shape({
   city: cityVerif,
   country: countryVerif,
 });
+
+export const simplePasswordSchema = Yup.object().shape({
+  password: passwordRequiredVerif,
+});

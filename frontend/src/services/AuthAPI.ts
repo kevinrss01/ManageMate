@@ -37,6 +37,11 @@ class AuthAPI {
   static async logout() {
     return AxiosCallApi.get(formatSuffix("logout"));
   }
+  static async deleteAccount(token: string) {
+    return AxiosCallApi.delete(formatSuffix("deleteAccount"), {
+      headers: { authorization: token },
+    });
+  }
 
   static async verifyToken(token: string) {
     return AxiosCallApi.get<verifyTokenResponse>(formatSuffix("verifyToken"), {

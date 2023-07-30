@@ -40,8 +40,6 @@ export default function Navbar() {
     try {
       const userRole = await AuthAPI.verifyToken(accessToken);
 
-      console.log(userRole);
-
       if (userRole?.decodedToken?.role === "admin") {
         setUserRole("admin");
       } else {
