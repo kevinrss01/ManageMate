@@ -1,5 +1,5 @@
 import AxiosCallApi from "./axios";
-import { UserState } from "@/interfaces/Interfaces";
+import { UserState, UserStateWithId } from "@/interfaces/Interfaces";
 
 const PREFIX = "users";
 const formatSuffix = (suffix: string) => `${PREFIX}/${suffix}`;
@@ -7,6 +7,12 @@ const formatSuffix = (suffix: string) => `${PREFIX}/${suffix}`;
 class UsersAPI {
   static async getAllData(id: string, accessToken: string): Promise<UserState> {
     return AxiosCallApi.get<UserState>(formatSuffix(`all-info/${id}`), {
+      headers: { Authorization: accessToken },
+    });
+  }
+
+  static async getAllUsers(accessToken: string): Promise<UserStateWithId[]> {
+    return AxiosCallApi.get<UserStateWithId[]>(formatSuffix("allUsers"), {
       headers: { Authorization: accessToken },
     });
   }
