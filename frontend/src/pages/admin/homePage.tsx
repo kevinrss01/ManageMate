@@ -14,13 +14,12 @@ import Metrics from "@/components/admin/Metrics";
 import AllUsers from "@/components/admin/AllUsers";
 
 const HomePage = () => {
-  const [users, setUsers] = useState<UserStateWithId[]>();
-  const [totalStorageBought, setTotalStorageBought] = useState<number>(0);
-  const [totalStorageUsed, setTotalStorageUsed] = useState<number>(0);
-  const [totalFiles, setTotalFiles] = useState<number>(0);
+  const [users, setUsers] = useState<UserStateWithId[]>([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
+
   const handleErrors = (
     consoleErrorMessage: string | unknown,
     message?: string
@@ -51,45 +50,12 @@ const HomePage = () => {
     }
   };
 
-  const getAllStorageBought = (users: UserStateWithId[]) => {
-    let total = 0;
-    for (const user of users) {
-      total += user.totalUserStorage;
-    }
-    return total;
-  };
-
-  const getTotalStorageUsed = (users: UserStateWithId[]) => {
-    let totalUsed = 0;
-
-    for (const user of users) {
-      console.log(user);
-      for (const file of user.files) {
-        totalUsed += file.size;
-      }
-    }
-    console.log(totalUsed);
-    return totalUsed;
-  };
-
-  const getTotalFiles = (users: UserStateWithId[]) => {
-    let totalFiles = 0;
-
-    for (const user of users) {
-      totalFiles += user.files.length;
-    }
-    return totalFiles;
-  };
-
   const fetchAllUsers = async (accessToken: string) => {
     let errorMessage = "";
     try {
       const users = await UsersAPI.getAllUsers(accessToken);
       if (users) {
         setUsers(users);
-        setTotalStorageBought(getAllStorageBought(users));
-        setTotalStorageUsed(getTotalStorageUsed(users));
-        setTotalFiles(getTotalFiles(users));
       } else {
         errorMessage =
           "Une erreur est survenue lors de la récupération des utilisateurs.";
@@ -125,43 +91,7 @@ const HomePage = () => {
     setIsLoading(false);
   }, []);
 
-  const categories: {
-    title: string;
-    metric: string;
-    icon: any;
-    color: Color;
-  }[] = [
-    {
-      title: "Chiffre d'affaire",
-      metric: ((totalStorageBought / 21474836480) * 20).toString() + " €",
-      icon: BsCashCoin,
-      color: "indigo",
-    },
-    {
-      title: "Stockage acheté total",
-      metric: formatFileSizeFromBytes(totalStorageBought),
-      icon: AiOutlineDatabase,
-      color: "blue",
-    },
-    {
-      title: "Stockage vendu total",
-      metric: formatFileSizeFromBytes(totalStorageUsed),
-      icon: BsDatabaseFillLock,
-      color: "red",
-    },
-    {
-      title: "Nombre total de fichier",
-      metric: totalFiles.toString() || "inconnu",
-      icon: GiFiles,
-      color: "green",
-    },
-    {
-      title: "Nombre d'utilisateurs",
-      metric: users?.length.toString() || "inconnu",
-      icon: FiUsers,
-      color: "amber",
-    },
-  ];
+  // TODO: Dans metrics, ajouter un camembert avec les details des fichiers pour tous les users, essayer de faire une composant reutilisable pour tous les users et pour chaque user
 
   return (
     <div>
@@ -170,7 +100,7 @@ const HomePage = () => {
         <>Loading</>
       ) : (
         <div className="p-10">
-          <Metrics categories={categories} />
+          <Metrics usersData={users} />
           <AllUsers users={users} />
         </div>
       )}
