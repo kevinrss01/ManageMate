@@ -3,20 +3,15 @@ import UsersAPI from "@/services/UsersAPI";
 import { useEffect, useState } from "react";
 import toastMessage from "@/utils/toast";
 import { useRouter } from "next/navigation";
-import { Color } from "@tremor/react";
 import { UserStateWithId } from "@/interfaces/Interfaces";
-import { formatFileSizeFromBytes } from "@/utils/fileUtils";
-import { BsCashCoin, BsDatabaseFillLock } from "react-icons/bs";
-import { AiOutlineDatabase } from "react-icons/ai";
-import { FiUsers } from "react-icons/fi";
-import { GiFiles } from "react-icons/gi";
 import Metrics from "@/components/admin/Metrics";
 import AllUsers from "@/components/admin/AllUsers";
+import AdminLoader from "@/components/loaders/AdminLoader";
 
 const HomePage = () => {
   const [users, setUsers] = useState<UserStateWithId[]>([]);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const router = useRouter();
 
@@ -40,7 +35,9 @@ const HomePage = () => {
           "Vous n'avez pas les droits pour accéder à cette page.",
           "error"
         );
-        return router.push("/app/homepage");
+        router.push("/app/homepage");
+      } else {
+        fetchAllUsers(accessToken);
       }
     } catch (err) {
       handleErrors(
@@ -72,11 +69,11 @@ const HomePage = () => {
       }
     } finally {
       if (errorMessage) toastMessage(errorMessage, "error");
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    setIsLoading(true);
     const id = localStorage.getItem("id");
     const accessToken = localStorage.getItem("token");
     if (!id || !accessToken) {
@@ -87,8 +84,6 @@ const HomePage = () => {
     }
 
     verifyUserRole(accessToken);
-    fetchAllUsers(accessToken);
-    setIsLoading(false);
   }, []);
 
   // TODO: Dans metrics, ajouter un camembert avec les details des fichiers pour tous les users, essayer de faire une composant reutilisable pour tous les users et pour chaque user
@@ -97,7 +92,7 @@ const HomePage = () => {
     <div>
       <h1 className="text-center text-3xl m-5">Page administrateur</h1>
       {isLoading ? (
-        <>Loading</>
+        <AdminLoader />
       ) : (
         <div className="p-10">
           <Metrics usersData={users} />

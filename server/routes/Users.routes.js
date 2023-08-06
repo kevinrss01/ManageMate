@@ -189,4 +189,50 @@ router.put(
     }
   }
 );
+
+router.put("/addStorage", validateToken, async (req, res) => {
+  try {
+    const { userId, invoice } = req.body;
+    const userRef = doc(db, "users", userId);
+    const snapshot = await getDoc(userRef);
+    const userData = snapshot.data();
+
+    const {
+      billAddress,
+      id,
+      paymentDate,
+      paymentMethod,
+      totalAmount,
+      totalStorage,
+    } = invoice;
+
+    const newInvoice = {
+      billAddress: billAddress,
+      id,
+      paymentDate,
+      paymentMethod,
+      totalAmount,
+      totalStorage,
+    };
+
+    if (userData) {
+      const updatedData = {
+        ...userData,
+        totalUserStorage: userData.totalUserStorage + 21474836480,
+        invoices: [...userData.invoices, newInvoice],
+      };
+
+      await updateDoc(userRef, updatedData);
+      res.status(200).json({ message: "Storage updated successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: `Error while updating storage`,
+    });
+  }
+});
+
 export default router;

@@ -43,12 +43,6 @@ export default function RightSide() {
   //Functions
   const totalSpace = formatFileSizeFromBytes(userData.totalUserStorage);
   let availableSpace = formatFileSizeFromBytes(storageData.availableStorage);
-  if (
-    userData.totalUserStorage !== storageData.availableStorage &&
-    totalSpace === availableSpace
-  ) {
-    availableSpace = "19.9 Go";
-  }
 
   const totalPercentageUsed = (): number => {
     const totalPercentageUsed = (
@@ -106,7 +100,7 @@ export default function RightSide() {
       localStorage.removeItem("id");
       await router.push("/auth/loginPage");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toastMessage(
         "Une erreur est survenue veuillez réessayer plus tard.",
         "error"
@@ -213,7 +207,7 @@ export default function RightSide() {
               <div
                 className="button-upgrade"
                 onClick={() => {
-                  //
+                  router.push("/auth/paymentPage");
                 }}
               >
                 Augmenter

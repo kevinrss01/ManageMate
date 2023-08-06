@@ -1,5 +1,5 @@
 import AxiosCallApi from "./axios";
-import { UserState, UserStateWithId } from "@/interfaces/Interfaces";
+import { UserState, UserStateWithId, Invoices } from "@/interfaces/Interfaces";
 
 const PREFIX = "users";
 const formatSuffix = (suffix: string) => `${PREFIX}/${suffix}`;
@@ -55,6 +55,19 @@ class UsersAPI {
     return AxiosCallApi.put(
       formatSuffix("updatePassword"),
       { userId, password: newPassword },
+      { headers: { Authorization: accessToken } }
+    );
+  }
+
+  static async addStorage(
+    userId: string,
+    invoice: Invoices,
+    accessToken: string
+  ): Promise<any> {
+    if (!userId || !invoice) throw new Error("Missing data");
+    return AxiosCallApi.put(
+      formatSuffix("addStorage"),
+      { userId, invoice },
       { headers: { Authorization: accessToken } }
     );
   }

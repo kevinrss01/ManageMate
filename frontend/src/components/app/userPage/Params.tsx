@@ -16,6 +16,7 @@ import { createStorageUsage } from "@/pages/app/homepage";
 import { update, updateStorage } from "../../../../slices/userSlice";
 import AuthAPI from "@/services/AuthAPI";
 import { DeleteAccount } from "@/components/app/userPage/Params/DeleteAccount";
+import { useRouter } from "next/router";
 
 const verifyIfPasswordMatch = (data: {
   oldPassword: string;
@@ -36,6 +37,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
   const [isSuccessfullFetch, setIsSuccessfullFetch] = useState<boolean>(false);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const updateStoreInRedux = (data: UpdateDataType) => {
     let updatedUser = userData;
@@ -217,7 +219,7 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
           <div
             className="button-upgrade"
             onClick={() => {
-              //
+              router.push("/auth/paymentPage");
             }}
           >
             Augmenter

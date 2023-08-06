@@ -15,7 +15,7 @@ import {
   Button,
 } from "@tremor/react";
 import { Dialog, Transition } from "@headlessui/react";
-import UserDetails from "@/components/admin/UserDetails";
+import UserDetails from "@/components/admin/allUsers/UserDetails";
 
 interface AllUsersProps {
   users: UserStateWithId[];

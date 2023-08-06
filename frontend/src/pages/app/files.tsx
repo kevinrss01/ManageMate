@@ -230,15 +230,15 @@ export default function Files() {
           </div>
         </div>
         <div className="files-container">
-          <h2 className="text-3xl">
-            Tous vos fichiers ({files.length} fichiers)
-          </h2>
           {isLoading ? (
-            <>
+            <div className="w-[100%] h-[100%] flex items-center justify-center mt-20">
               <NetflixLoader />
-            </>
+            </div>
           ) : (
             <>
+              <h2 className="text-3xl">
+                Tous vos fichiers ({files.length} fichiers)
+              </h2>
               <div className="filters-container">
                 <div className="open-filters-container">
                   <h3 className="text-2xl">Filtrer mes fichiers</h3>

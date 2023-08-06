@@ -51,7 +51,7 @@ class AxiosCallApi {
       );
       return response.data;
     } catch (error: any) {
-      console.log(error?.response ? error.response?.data?.message : error);
+      console.error(error?.response ? error.response?.data?.message : error);
       throw new Error(error);
     }
   }
