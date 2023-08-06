@@ -1,5 +1,5 @@
 import PaymentForm from "@/components/auth/PaymentForm";
-import { PaymentFormData } from "@/interfaces/Interfaces";
+import { PaymentFormData, Invoices } from "@/interfaces/Interfaces";
 import { RegisterDataType } from "@/interfaces/auth/AuthType";
 import { v4 as uuidv4 } from "uuid";
 import toastMessage from "@/utils/toast";
@@ -7,7 +7,9 @@ import React, { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useRouter } from "next/router";
 import AuthAPI from "@/services/AuthAPI";
+import UsersAPI from "@/services/UsersAPI";
 import { ColorRing } from "react-loader-spinner";
+import invoices from "@/components/app/userPage/Invoices";
 
 loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -15,41 +17,49 @@ loadStripe(
     : ""
 );
 
-export const saveUserDataInSessionStorage = (values: PaymentFormData) => {
+export const saveUserDataInSessionStorage = (
+  values: PaymentFormData,
+  newStorage: Boolean
+) => {
   try {
-    const primaryRegisterData = sessionStorage.getItem("registerData");
-    if (!primaryRegisterData) {
-      throw new Error("No primary register data");
-    }
-    const { email, firstName, lastName, password } =
-      JSON.parse(primaryRegisterData);
-
-    const data: RegisterDataType = {
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      invoices: [
-        {
-          id: uuidv4(),
-          billAddress: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            company: values.company,
-            address: values.address,
-            postalCode: values.postalCode,
-            city: values.city,
-            country: values.country,
-          },
-          totalAmount: 20,
-          totalStorage: "20 GO",
-          paymentMethod: "cb",
-          paymentDate: new Date().toLocaleDateString("fr-FR"),
-        },
-      ],
-      password: password,
+    const invoices: Invoices = {
+      id: uuidv4(),
+      billAddress: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        company: values.company,
+        address: values.address,
+        postalCode: values.postalCode,
+        city: values.city,
+        country: values.country,
+      },
+      totalAmount: 20,
+      totalStorage: "20 GO",
+      paymentMethod: "cb",
+      paymentDate: new Date().toLocaleDateString("fr-FR"),
     };
 
-    sessionStorage.setItem("userData", JSON.stringify(data));
+    if (newStorage) {
+      sessionStorage.setItem("userData", JSON.stringify(invoices));
+    } else {
+      const primaryRegisterData = sessionStorage.getItem("registerData");
+      if (!primaryRegisterData) {
+        throw new Error("No primary register data");
+      }
+      const { email, firstName, lastName, password } =
+        JSON.parse(primaryRegisterData);
+
+      const data: RegisterDataType = {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        invoices: [invoices],
+        password: password,
+      };
+
+      sessionStorage.setItem("userData", JSON.stringify(data));
+    }
+
     toastMessage("Vos données de facturation ont été enregistrées.", "success");
   } catch (error: any) {
     console.error(error);
@@ -75,13 +85,6 @@ export default function PaymentPage() {
   const { canceled, success } = router.query;
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/app/homepage");
-    }
-  }, []);
-
-  useEffect(() => {
     if (canceled) {
       toastMessage("Le paiement a été annulé, veuillez réessayer.", "error");
       return;
@@ -92,29 +95,11 @@ export default function PaymentPage() {
     }
   }, [canceled, success]);
 
-  const handleSuccessPayment = async () => {
-    setIsLoaded(true);
-    toastMessage(
-      "Le paiement a été effectué avec succès. Vous allez être redirigé",
-      "success"
-    );
-
-    const userData = sessionStorage.getItem("userData");
-
-    if (!userData) {
-      toastMessage(
-        "Aucune donnée utilisateur trouvée, veuillez nous contacter.",
-        "error"
-      );
-      setIsLoaded(false);
-      return;
-    }
-
-    const userDataParse = JSON.parse(userData);
+  const createNewCustomer = async (userDataParse: RegisterDataType) => {
     await AuthAPI.register(userDataParse)
       .then((res) => {
-        // TODO : Set token in local storage
         localStorage.setItem("id", res.id);
+        localStorage.setItem("token", res.accessToken);
         router.push(`/app/homepage?success=true`);
       })
       .catch((error) => {
@@ -123,12 +108,73 @@ export default function PaymentPage() {
           "Une erreur est survenue lors de la création de votre compte, veuillez nous contacter.",
           "error"
         );
-        setIsLoaded(false);
       });
   };
 
+  const addNewStorage = async (invoices: Invoices) => {
+    try {
+      const userData = sessionStorage.getItem("userData");
+      const userId = localStorage.getItem("id");
+      const accessToken = localStorage.getItem("token");
+
+      if (!userData || !userId || !accessToken) {
+        toastMessage(
+          "Aucune donnée utilisateur trouvée, veuillez nous contacter.",
+          "error"
+        );
+        console.error("No id or no token or no userData in localStorage");
+        return;
+      }
+
+      await UsersAPI.addStorage(userId, invoices, accessToken);
+      router.push(`/app/homepage`);
+    } catch (error) {
+      console.error(error);
+      toastMessage(
+        "Une erreur est survenue lors de l'ajout de votre stockage, veuillez nous contacter.",
+        "error"
+      );
+    }
+  };
+
+  const handleSuccessPayment = async () => {
+    try {
+      setIsLoaded(true);
+      const accessToken = localStorage.getItem("token");
+      const userData = sessionStorage.getItem("userData");
+
+      if (!userData) {
+        toastMessage(
+          "Aucune donnée utilisateur trouvée, veuillez nous contacter.",
+          "error"
+        );
+        setIsLoaded(false);
+        return;
+      }
+
+      const userDataParse: RegisterDataType | Invoices = JSON.parse(userData);
+
+      toastMessage(
+        "Le paiement a été effectué avec succès. Vous allez être redirigé",
+        "success"
+      );
+
+      if (accessToken) {
+        await addNewStorage(userDataParse as Invoices);
+      } else {
+        await createNewCustomer(userDataParse as RegisterDataType);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoaded(false);
+    }
+  };
+
   const registerFacturationData = async (data: PaymentFormData) => {
-    saveUserDataInSessionStorage(data);
+    const accessToken = localStorage.getItem("token");
+
+    saveUserDataInSessionStorage(data, !!accessToken);
     setInvoiceDataSaved(true);
   };
 

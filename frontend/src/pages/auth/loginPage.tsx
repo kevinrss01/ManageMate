@@ -39,8 +39,8 @@ export default function RegistrationPage() {
         router.push("/app/homepage?successLogin=true");
       })
       .catch((error) => {
-        console.error(error);
-        if (error?.response?.data?.message?.includes("invalid credentials")) {
+        console.error("error:", error);
+        if (error?.toString().includes("401")) {
           setDisplayInvalidCredentialsErrorMessage(true);
           setIsLoading(false);
           return;
@@ -49,6 +49,8 @@ export default function RegistrationPage() {
           "Une erreur est survenue. Veuillez réessayer plus tard.",
           "error"
         );
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   };
@@ -78,7 +80,7 @@ export default function RegistrationPage() {
                   onSubmit={onSubmit}
                   validationSchema={verificationLoginSchema}
                 >
-                  {({ errors, touched, isValid }) => (
+                  {({ errors, touched }) => (
                     <Form
                       style={{
                         display: "flex",
@@ -145,7 +147,7 @@ export default function RegistrationPage() {
               </div>
               <div className="divider">
                 <hr className="solid"></hr>
-                <span>Ou avec</span>
+                <span className="pr-2 pl-2">Ou avec</span>
                 <hr className="solid"></hr>
               </div>
               <div className="containerLoginWith">

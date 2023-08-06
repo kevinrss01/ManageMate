@@ -35,6 +35,10 @@ export interface NumberOfFilesByType {
   others: number;
 }
 
+export interface UserStateWithId extends UserState {
+  _id: string;
+}
+
 // REDUX
 export interface UserState {
   [key: string]: string | number | File[] | Invoices[];

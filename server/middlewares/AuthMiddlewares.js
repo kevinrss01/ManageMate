@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
-import { verify } from "jsonwebtoken";
+import pkg, { decode } from "jsonwebtoken";
+const { verify } = pkg;
 
 export function validateRegisterBody(req, res, next) {
   const rules = [
@@ -83,10 +84,31 @@ export const validateToken = (req, res, next) => {
       verify(accessToken, process.env.JWT_SECRET);
       next();
     } else {
-      res.status(401).json({ message: "No access token found" });
+      console.error("No access token found");
+      res.status(401).json({ message: "Access denied" });
     }
   } catch (error) {
     console.error(error);
-    res.status(401).json({ message: "Invalid access token" });
+    res.status(401).json({ message: "Access denied" });
+  }
+};
+
+export const validateTokenAdmin = (req, res, next) => {
+  try {
+    const accessToken = req.headers.authorization;
+    if (accessToken) {
+      const decodedToken = verify(accessToken, process.env.JWT_SECRET);
+      if (decodedToken?.role !== "admin") {
+        console.error("Access denied for non-admin user");
+        return res.status(401).json({ message: "Access denied" });
+      }
+      next();
+    } else {
+      console.error("No access token found");
+      res.status(401).json({ message: "Access denied" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Access denied" });
   }
 };

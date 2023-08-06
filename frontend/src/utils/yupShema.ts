@@ -59,7 +59,7 @@ const countryVerif = Yup.string()
 
 export const verificationLoginSchema = Yup.object().shape({
   email: emailVerif,
-  password: passwordVerif,
+  password: passwordRequiredVerif,
 });
 
 export const verificationRegisterSchema = Yup.object().shape({
@@ -93,4 +93,8 @@ export const paymentSchema = Yup.object().shape({
   postalCode: postalCodeVerif,
   city: cityVerif,
   country: countryVerif,
+});
+
+export const simplePasswordSchema = Yup.object().shape({
+  password: passwordRequiredVerif,
 });

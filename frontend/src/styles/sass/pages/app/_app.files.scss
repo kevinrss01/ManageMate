@@ -1,5 +1,4 @@
 .files-pages-container {
-  background-color: white;
   display: flex;
 
   .files-pages-main {
@@ -21,9 +20,8 @@
         .searchIcon {
           padding: 10px;
           border: lightgray 1px solid;
-          height: 30px;
-          width: 30px;
-          font-size: 10px;
+          width: 40px;
+          font-size: 52px;
           border-right: none;
           color: grey;
           background-color: #ebe9e8;
@@ -84,13 +82,17 @@
             .under-filter-type-container {
               max-height: 150px;
               overflow: scroll;
+              position: absolute;
+              background-color: white;
+
               .under-filter-type {
                 display: flex;
                 align-items: center;
                 height: 40px;
-                width: 80%;
+                width: 100%;
                 cursor: pointer;
-
+                padding: 10Px;
+                text-align: center;
                 &:hover {
                   background-color: $orange;
                 }
@@ -106,13 +108,13 @@
 
         .file {
           display: flex;
-
           flex-direction: column;
           height: 200px;
           width: 200px;
           margin: 0 4% 4% 0;
           gap: 10px;
           box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+          background-color: white ;
 
           .name-type-container {
             display: flex;

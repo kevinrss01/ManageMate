@@ -21,7 +21,13 @@ const PasswordContainer: React.FC<ComponentPropsUserPage> = ({
           newPasswordConfirmation: "",
         }}
         validationSchema={verificationUpdatePasswordSchema}
-        onSubmit={onSubmit}
+        onSubmit={
+          onSubmit
+            ? onSubmit
+            : () => {
+                console.error("onSubmit is not defined");
+              }
+        }
       >
         {({ errors, touched }) => (
           <Form>

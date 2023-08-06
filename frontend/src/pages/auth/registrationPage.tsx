@@ -126,7 +126,7 @@ export default function RegistrationPage() {
                 <h2>CRÉER UN COMPTE</h2>
                 <div></div>
               </div>
-              <div className="inputsContainer">
+              <div className="inputsContainer w-max">
                 <Formik
                   initialValues={initialValues}
                   onSubmit={onSubmit}
@@ -160,7 +160,7 @@ export default function RegistrationPage() {
                             setPasswordValid
                           )}
                           <Field
-                            className="firstInput"
+                            className="firstInput w-max"
                             type="password"
                             placeholder="Mot de passe"
                             name="password"

@@ -46,9 +46,10 @@
 
         .personal-info-container,
         .password-container,
-        .email-container {
+        .email-container,
+        .delete-account-container {
           border: 1px solid grey;
-          width: 700px;
+          width: 80%;
           margin: 20px 0 0 10%;
           padding: 10px;
 
@@ -56,6 +57,7 @@
             width: 100%;
             text-align: center;
             margin-bottom: 20px;
+            font-size: 20px;
           }
 
           form {

@@ -67,5 +67,15 @@
         transition: color 0.2s ease-in-out;
       }
     }
+
+    .crown-icon{
+      font-size: 40px;
+      color: $icons-color;
+      cursor: pointer;
+
+      &:hover{
+        color: $orange;
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 import Navbar from "@/components/app/Navbar";
 import RightSide from "@/components/app/homePage/RightSide";
 import { fetchUserData, createStorageUsage } from "./homepage";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { update, updateStorage } from "../../../slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import NetflixLoader from "@/components/loaders/FilesPageLoader";
 import FilesContainer from "@/components/app/filesPage/FilesContainer";
 import toastMessage from "@/utils/toast";
 import { useRouter } from "next/router";
+import { useClickOutside } from "@react-hookz/web";
 
 interface Filter {
   [key: string]: (files: File[], extension?: string) => void;
@@ -37,6 +38,7 @@ export default function Files() {
 
   const dispatch = useDispatch();
   const data = useSelector(selectUser);
+  const ref = useRef(null);
 
   const handleErrors = useCallback(
     (consoleErrorMessage: string | unknown, message?: string) => () => {
@@ -201,6 +203,11 @@ export default function Files() {
     setFilteredFiles(data.files);
   };
 
+  //Handle click outside of filters
+  useClickOutside(ref, () => {
+    setIsOpenFilters(isOpenFilters);
+  });
+
   return (
     <div className="files-pages-container">
       <Navbar />
@@ -215,26 +222,30 @@ export default function Files() {
                 setSearchValue(e.target.value);
               }}
               onClick={() => {
-                setIsSearchClicked(true);
+                if (!isSearchClicked) {
+                  setIsSearchClicked(true);
+                }
               }}
             />
           </div>
         </div>
         <div className="files-container">
-          <h2>Tous vos fichiers</h2>
           {isLoading ? (
-            <>
+            <div className="w-[100%] h-[100%] flex items-center justify-center mt-20">
               <NetflixLoader />
-            </>
+            </div>
           ) : (
             <>
+              <h2 className="text-3xl">
+                Tous vos fichiers ({files.length} fichiers)
+              </h2>
               <div className="filters-container">
                 <div className="open-filters-container">
-                  <h3>Filtrer mes fichiers</h3>
+                  <h3 className="text-2xl">Filtrer mes fichiers</h3>
                   <IoIosArrowForward className="icon" />
                 </div>
 
-                <div className="filters">
+                <div className="filters" ref={ref}>
                   {typeFilter.map((filter, index) => {
                     return (
                       <div key={index} className="filter-container">
@@ -265,7 +276,10 @@ export default function Files() {
                           />
                         </div>
                         {isOpenFilters && typeOfFilterOpen === filter.type && (
-                          <div className="under-filter-type-container">
+                          <div
+                            className="under-filter-type-container"
+                            ref={ref}
+                          >
                             {filter.underFilterType.map(
                               (underFilter, index: number) => {
                                 return (

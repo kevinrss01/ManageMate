@@ -20,6 +20,7 @@ import FilesAPI from "@/services/FilesAPI";
 import toastMessage from "@/utils/toast";
 import { createStorageUsage } from "@/pages/app/homepage";
 import { iconsType } from "@/utils/fileUtils";
+import { UserState } from "@/interfaces/Interfaces";
 
 const icons: Record<string, React.ReactNode> = {
   pdf: <AiFillFileText style={{ color: "green" }} />,
@@ -38,12 +39,35 @@ const icons: Record<string, React.ReactNode> = {
   others: <AiOutlineFile />,
 };
 
+function countObjectsAddedInLast24Hours(data: UserState) {
+  // Obtenir le timestamp actuel en millisecondes
+  const now = new Date().getTime();
+
+  // Filtrer le tableau pour obtenir uniquement les objets ajoutés dans les dernières 24 heures
+  const objectsAddedInLast24Hours = data.files.filter((obj) => {
+    // Convertir le timestamp Firebase en millisecondes
+
+    if (typeof obj.dateAdded === "object") {
+      const objTime =
+        obj.dateAdded.seconds * 1000 + obj.dateAdded.nanoseconds / 1000000;
+
+      // Vérifier si l'objet a été ajouté dans les dernières 24 heures
+      return now - objTime <= 24 * 60 * 60 * 1000;
+    } else {
+      return 0;
+    }
+  });
+
+  // Retourner le nombre d'objets ajoutés dans les dernières 24 heures
+  return objectsAddedInLast24Hours.length;
+}
+
 const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
   userId,
   userAccessToken,
 }) => {
-  const [fileID, setFileID] = useState("");
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+  const [fileID, setFileID] = useState<string>("");
+  const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
   const userState = useSelector(selectUser);
   const [userFiles, setUserFiles] = useState(userState.files.slice(0, 5));
@@ -144,6 +168,7 @@ const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
     <>
       <div className="mainContainer">
         <h3>Fichier(s) récent(s)</h3>
+
         <div className="filesContainer">
           {userFiles.length === 0 ? (
             <>
@@ -191,7 +216,7 @@ const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
                       </span>
                     </div>
 
-                    <div>
+                    <div className="flex">
                       {isLoadingDelete && fileID === file.fileId ? (
                         <>
                           <ClipLoader color="#F87F3F" size={20} />
@@ -222,6 +247,10 @@ const Main: React.FC<{ userId: string; userAccessToken: string }> = ({
             </>
           )}
         </div>
+        <h2>
+          Fichier(s) ajouté(s) ces dernières 24h :{" "}
+          <b>{countObjectsAddedInLast24Hours(userState)}</b>
+        </h2>
       </div>
     </>
   );

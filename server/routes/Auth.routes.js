@@ -3,16 +3,18 @@ import {
   fetchSignInMethodsForEmail,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { auth, userCollection, db } from "../config/firebase.js";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
 import {
   validateRegisterBody,
   validateLoginBody,
+  validateToken,
 } from "../middlewares/AuthMiddlewares.js";
 import jsonwebtoken from "jsonwebtoken";
 
-const { sign, decode, verify } = jsonwebtoken;
+const { sign, verify } = jsonwebtoken;
 
 const router = express.Router();
 
@@ -112,14 +114,44 @@ router.get("/verifyToken", (req, res) => {
       return res.status(401).json({ message: "No authorization header sent" });
     }
 
-    verify(authHeaderToken, process.env.JWT_SECRET);
+    const decoded = verify(authHeaderToken, process.env.JWT_SECRET);
 
-    res.status(200).json({ message: "Valid token" });
+    res.status(200).json({ decodedToken: decoded });
   } catch (error) {
     console.error(error);
     res.status(401).json({
       error: "Invalid access token",
     });
+  }
+});
+
+router.get("/logout", async (req, res) => {
+  try {
+    await signOut(auth);
+    res.status(200).json({ message: "logout" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occured while logging out",
+    });
+  }
+});
+
+router.delete("/deleteAccount", validateToken, async (req, res) => {
+  if (!auth.currentUser) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  try {
+    await deleteDoc(doc(db, "users", auth.currentUser.uid));
+    await auth.currentUser.delete();
+
+    return res
+      .status(200)
+      .send("Account and related data deleted successfully");
+  } catch (error) {
+    console.error("Error deleting user and related data:", error);
+    return res.status(500).send("Error deleting user and related data");
   }
 });
 

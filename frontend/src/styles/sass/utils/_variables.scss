@@ -1,4 +1,4 @@
-
+//FONTS
 @font-face {
   font-family: 'Garet';
   src: url('../../../../public/fonts/garet/Garet-book.ttf') format('truetype');
@@ -14,6 +14,11 @@
   src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap') format('truetype')
 }
 
+$primary-font-family: 'Garet';
+$secondary-font-family: 'Inter';
+$third-font-family: 'GaretBold';
+
+//COLORS
 $primary-color: #e7dfd8;
 $secondary-color: #ffffff;
 $black-color: #3f363f;
@@ -21,8 +26,6 @@ $icons-color: #9f9a9f;
 $grey-container: darken(#f8f6f5, 3%);
 $orange: #F87F3F;
 
-$primary-font-family: 'Garet';
-$secondary-font-family: 'Inter';
-$third-font-family: 'GaretBold';
+
 
 

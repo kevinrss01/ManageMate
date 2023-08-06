@@ -13,6 +13,7 @@ import UsersAPI from "@/services/UsersAPI";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../../slices/userSlice";
 import authAPI from "@/services/AuthAPI";
+import HomePageLoader from "@/components/loaders/HomePageLoader";
 
 export const createStorageUsage = (userData: UserState) => {
   try {
@@ -170,11 +171,7 @@ export default function Homepage() {
     <div className="homePageContainer">
       {isLoading ? (
         <>
-          <PulseLoader
-            color="#F87F3F"
-            size={100}
-            style={{ position: "absolute", left: "30%", top: "40%" }}
-          />
+          <HomePageLoader />
         </>
       ) : (
         <>

@@ -89,7 +89,7 @@ const FilesContainer: React.FC<FilesContainerProps> = ({
     <div className="files">
       {filteredFiles.length === 0 ? (
         <>
-          <h2>Aucun fichier trouvé</h2>
+          <h2 className="text-2xl">Aucun fichier trouvé</h2>
         </>
       ) : (
         <>

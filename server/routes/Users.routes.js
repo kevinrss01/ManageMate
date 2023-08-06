@@ -1,8 +1,15 @@
 import express from "express";
-import { auth, db } from "../config/firebase.js";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../config/firebase.js";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  collection,
+} from "firebase/firestore";
 import {
   validateToken,
+  validateTokenAdmin,
   validateUpdateAccountBody,
   validateUpdatePasswordBody,
 } from "../middlewares/AuthMiddlewares.js";
@@ -20,6 +27,25 @@ const ERROR_INVALID_USER_ID = "auth/invalid-user-id";
 const ERROR_WEAK_PASSWORD = "auth/weak-password";
 const ERROR_USER_NOT_CONNECTED_RECENTLY =
   "Cannot destructure property 'auth' of 'user' as it is null.";
+
+router.get("/allUsers", validateTokenAdmin, async (req, res) => {
+  try {
+    const usersCollectionRef = collection(db, "users");
+    const usersSnapshot = await getDocs(usersCollectionRef);
+
+    let users = [];
+    usersSnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: `Error while getting users : ${error.code ? error.code : error}`,
+    });
+  }
+});
 
 router.get("/all-info/:id", validateToken, async (req, res) => {
   try {
@@ -163,4 +189,50 @@ router.put(
     }
   }
 );
+
+router.put("/addStorage", validateToken, async (req, res) => {
+  try {
+    const { userId, invoice } = req.body;
+    const userRef = doc(db, "users", userId);
+    const snapshot = await getDoc(userRef);
+    const userData = snapshot.data();
+
+    const {
+      billAddress,
+      id,
+      paymentDate,
+      paymentMethod,
+      totalAmount,
+      totalStorage,
+    } = invoice;
+
+    const newInvoice = {
+      billAddress: billAddress,
+      id,
+      paymentDate,
+      paymentMethod,
+      totalAmount,
+      totalStorage,
+    };
+
+    if (userData) {
+      const updatedData = {
+        ...userData,
+        totalUserStorage: userData.totalUserStorage + 21474836480,
+        invoices: [...userData.invoices, newInvoice],
+      };
+
+      await updateDoc(userRef, updatedData);
+      res.status(200).json({ message: "Storage updated successfully" });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: `Error while updating storage`,
+    });
+  }
+});
+
 export default router;

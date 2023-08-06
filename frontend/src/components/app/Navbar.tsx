@@ -1,5 +1,5 @@
 import { BsPlus } from "react-icons/bs";
-import { AiFillHome } from "react-icons/ai";
+import { AiFillHome, AiTwotoneCrown } from "react-icons/ai";
 import { RiFoldersLine } from "react-icons/ri";
 import { BsFillPersonFill } from "react-icons/bs";
 import Image from "next/image";
@@ -14,13 +14,14 @@ import { createStorageUsage } from "@/pages/app/homepage";
 import { File } from "@/interfaces/Interfaces";
 import toastMessage from "@/utils/toast";
 import { ClipLoader } from "react-spinners";
+import AuthAPI from "@/services/AuthAPI";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [userId, setUserId] = useState<string>("");
   const [userAccessToken, setUserAccessToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  //const [isClicked, setIsClicked] = useState<string>("");
+  const [userRole, setUserRole] = useState<"" | "user" | "admin">("");
   const userData = useSelector(selectUser);
   const router = useRouter();
 
@@ -30,8 +31,26 @@ export default function Navbar() {
   ) => {
     console.error(consoleErrorMessage);
     localStorage.removeItem("token");
+    localStorage.removeItem("id");
     message ? toastMessage(message, "error") : null;
     router.push("/auth/loginPage");
+  };
+
+  const verifyUserRole = async (accessToken: string) => {
+    try {
+      const userRole = await AuthAPI.verifyToken(accessToken);
+
+      if (userRole?.decodedToken?.role === "admin") {
+        setUserRole("admin");
+      } else {
+        setUserRole("user");
+      }
+    } catch (err) {
+      handleErrors(
+        "Une erreur est survenue lors de la vérification du rôle de l'utilisateur.",
+        "Une erreur est survenue, veuillez vous reconnecter."
+      );
+    }
   };
 
   useEffect(() => {
@@ -46,9 +65,16 @@ export default function Navbar() {
     }
     setUserId(id);
     setUserAccessToken(accessToken);
+    verifyUserRole(accessToken).then(() => {
+      //
+    });
   }, []);
 
   const dispatch = useDispatch();
+
+  const handleClickAdminIcon = () => {
+    router.push("/admin/homePage");
+  };
 
   const hoverColor = {
     color: "#f77e3f",
@@ -213,6 +239,14 @@ export default function Navbar() {
               );
             })}
           </div>
+          {userRole === "admin" && (
+            <div className="adminLogoContainer w-[100%] flex items-center justify-center pb-3">
+              <AiTwotoneCrown
+                className="crown-icon"
+                onClick={() => handleClickAdminIcon()}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
