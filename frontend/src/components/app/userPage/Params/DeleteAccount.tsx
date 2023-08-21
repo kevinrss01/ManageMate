@@ -7,6 +7,9 @@ import { ComponentPropsUserPage } from "@/interfaces/UserPage";
 import toastMessage from "@/utils/toast";
 import AuthAPI from "@/services/AuthAPI";
 import { useRouter } from "next/navigation";
+import { emailJSData } from "@/utils/constant";
+import emailjs from "@emailjs/browser";
+import { createFormFromObject } from "@/pages/auth/paymentPage";
 
 export const DeleteAccount: React.FC<ComponentPropsUserPage> = ({
   userData,
@@ -15,6 +18,7 @@ export const DeleteAccount: React.FC<ComponentPropsUserPage> = ({
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { serviceId, templateId, publicKey } = emailJSData;
 
   const onSubmit = async (values: { password: string }) => {
     setIsLoading(true);
@@ -33,6 +37,31 @@ export const DeleteAccount: React.FC<ComponentPropsUserPage> = ({
 
           localStorage.removeItem("token");
           localStorage.removeItem("id");
+
+          const formElement = createFormFromObject({
+            subject: "Votre compte Manage Mate a bien été supprimé",
+            user_email: userData.email,
+            user_name: userData.firstName,
+            message:
+              "Votre compte et toutes vos données ont bien été définitivement supprimé. Si vous souhaitez de nouveau avoir accès à Manage Mate, vous devez de nouveau créer un compte. ",
+          });
+
+          emailjs
+            .sendForm(serviceId, templateId, formElement, publicKey)
+            .then(
+              (result) => {
+                console.log(result.text);
+              },
+              (error) => {
+                console.error(error.text);
+              }
+            )
+            .catch((error) => {
+              console.error(error);
+            })
+            .finally(() => {
+              document.body.removeChild(formElement);
+            });
           router.push("/?deletedAccount=true");
         })
         .catch((err) => {

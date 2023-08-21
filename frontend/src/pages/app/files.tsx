@@ -21,8 +21,6 @@ interface Filter {
   [key: string]: (files: File[], extension?: string) => void;
 }
 
-// TODO : Permettre de retirer les filtres
-
 export default function Files() {
   const [isSearchClicked, setIsSearchClicked] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>("");

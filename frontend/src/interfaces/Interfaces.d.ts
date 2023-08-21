@@ -99,3 +99,9 @@ export interface PaymentFormData {
   city: string;
   country: string;
 }
+
+export interface UserEmailMessage {
+  user_email: string;
+  user_name: string;
+  message: string;
+}

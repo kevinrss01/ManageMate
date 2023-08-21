@@ -9,7 +9,8 @@ import { useRouter } from "next/router";
 import AuthAPI from "@/services/AuthAPI";
 import UsersAPI from "@/services/UsersAPI";
 import { ColorRing } from "react-loader-spinner";
-import invoices from "@/components/app/userPage/Invoices";
+import emailjs from "@emailjs/browser";
+import { emailJSData } from "@/utils/constant";
 
 loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -77,9 +78,30 @@ export const saveUserDataInSessionStorage = (
   }
 };
 
+export const createFormFromObject = (obj: {
+  subject: string;
+  user_name: string;
+  message: string;
+  user_email: string;
+}) => {
+  const form = document.createElement("form");
+  form.style.display = "none";
+
+  for (const [key, value] of Object.entries(obj)) {
+    const input = document.createElement("input");
+    input.name = key;
+    input.value = value as string;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  return form;
+};
+
 export default function PaymentPage() {
   const [isLoaded, setIsLoaded] = useState<Boolean>(false);
   const [invoiceDataSaved, setInvoiceDataSaved] = useState<Boolean>(false);
+  const { serviceId, templateId, publicKey } = emailJSData;
 
   const router = useRouter();
   const { canceled, success } = router.query;
@@ -152,6 +174,15 @@ export default function PaymentPage() {
         return;
       }
 
+      const dataForEmail = {
+        subject: "Bienvenue chez Manage Mate " + JSON.parse(userData).firstName,
+        user_name: JSON.parse(userData).firstName,
+        message:
+          "Bienvenue chez Manage Mate, votre stockage est maintenant actif ! Merci de nous avoir choisi et n'hésiter pas à nous contacter pour toutes questions.",
+        user_email: JSON.parse(userData).email,
+      };
+
+      const formElement = createFormFromObject(dataForEmail);
       const userDataParse: RegisterDataType | Invoices = JSON.parse(userData);
 
       toastMessage(
@@ -163,6 +194,22 @@ export default function PaymentPage() {
         await addNewStorage(userDataParse as Invoices);
       } else {
         await createNewCustomer(userDataParse as RegisterDataType);
+        emailjs
+          .sendForm(serviceId, templateId, formElement, publicKey)
+          .then(
+            (result) => {
+              console.log(result.text);
+            },
+            (error) => {
+              console.error(error.text);
+            }
+          )
+          .catch((error) => {
+            console.error(error);
+          })
+          .finally(() => {
+            document.body.removeChild(formElement);
+          });
       }
     } catch (error) {
       console.error(error);
