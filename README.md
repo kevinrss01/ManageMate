@@ -1,7 +1,7 @@
 # ManageMate
-[IN PROGRESS]Web application that allows real-time file management. Project done as part of my bachelor’s degree at IPSSI school. Done with @lansor.
+[IN PROGRESS]Web application that allows real-time file management. The project was done as part of my bachelor’s degree at IPSSI school. Done with @lansor.
 
-Project is not yet complete.
+The project is not yet complete.
 
 ## Used technologies :
 
@@ -13,4 +13,4 @@ Project is not yet complete.
 - NestJS
 - Express
 - Firebase
-- TailwindCSS (90% of the project is build with SCSS)
+- TailwindCSS (90% of the project is built with SCSS)
