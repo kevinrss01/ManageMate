@@ -27,6 +27,7 @@ const ERROR_INVALID_USER_ID = "auth/invalid-user-id";
 const ERROR_WEAK_PASSWORD = "auth/weak-password";
 const ERROR_USER_NOT_CONNECTED_RECENTLY =
   "Cannot destructure property 'auth' of 'user' as it is null.";
+const ERROR_EMAIL_ALREADY_IN_USE = "auth/email-already-in-use";
 
 router.get("/allUsers", validateTokenAdmin, async (req, res) => {
   try {
@@ -139,6 +140,10 @@ router.put(
       if (error.message === ERROR_USER_NOT_CONNECTED_RECENTLY) {
         res.status(401).json({
           message: `Error : User not connected recently.`,
+        });
+      } else if (error.code === ERROR_EMAIL_ALREADY_IN_USE) {
+        res.status(400).json({
+          message: `Error : Email already in use.`,
         });
       } else {
         res.status(500).json({
