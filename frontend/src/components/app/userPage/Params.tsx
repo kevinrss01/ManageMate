@@ -160,7 +160,11 @@ const Params: React.FC<{ userData: UserState; accessToken: string }> = ({
             if (error.toString().includes("401")) {
               toastMessage("Mot de passe incorrect.", "error");
               return;
+            } else if (error.toString().includes("400")) {
+              toastMessage("Cet email est déjà utilisé.", "error");
+              return;
             }
+
             toastMessage(
               "Une erreur est survenue. Veuillez réessayer plus tard.",
               "error"

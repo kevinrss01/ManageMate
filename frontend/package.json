@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^3.11.0",
     "@react-hookz/web": "^23.1.0",
     "@react-pdf/renderer": "^3.1.12",
     "@reduxjs/toolkit": "^1.9.5",
@@ -20,6 +21,7 @@
     "@types/react-dom": "18.2.7",
     "@types/uuid": "^9.0.2",
     "axios": "^1.4.0",
+    "emailjs": "^4.0.3",
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
     "formik": "^2.4.2",
