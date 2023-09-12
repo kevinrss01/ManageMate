@@ -1,16 +1,25 @@
 # ManageMate
-Web application that allows real-time file management. The project was done as part of my bachelor’s degree at IPSSI school. Done with @lansor.
+Web application that allows real-time file management. The project was done as part of my bachelor’s degree at IPSSI school.
 
-The project is not yet complete.
+Presentation of the project : https://www.youtube.com/watch?v=F23flkjKVJI
 
 ## Used technologies :
 
-- HTML/CSS/SCSS
-- Javascript
+### Front-end
+
+- Next.js
+- React.js
 - Typescript
-- NodeJs
-- ReactJS
-- NestJS
+- HTML/CSS/SCSS
+- TailwindCSS (90% of the project is built with SCSS) + Tremor.so
+- Axios
+- Formik + yup
+
+### Back-end
+- Javascript
 - Express
 - Firebase
-- TailwindCSS (90% of the project is built with SCSS)
+- JWT token
+- Node.js
+
+I used *Vercel* to deploy the front-end and *firebase function* to deploy the server.
